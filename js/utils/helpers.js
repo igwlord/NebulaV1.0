@@ -2,6 +2,12 @@
  * 🛠️ NEBULA FINANCIAL - UTILIDADES Y HELPERS
  * ============================================
  * Funciones utilitarias y helpers para la aplicación
+ * 
+ * CloudSonnet4: Formateo predictivo de miles implementado
+ * - Función formatThousands(value): formateo en tiempo real (4.000 / 10.000 / 100.100 / 1.000.111)
+ * - Función applyThousandsFormatting(): aplicación automática a inputs numéricos
+ * - Aplicado en todos los campos de moneda: deudas, metas de ahorro, transacciones
+ * - Event listeners para formato predictivo durante la escritura
  */
 
 // ===============================================
@@ -356,6 +362,51 @@ export function interpolateColor(color1, color2, factor) {
     const b = Math.round(b1 + factor * (b2 - b1));
     
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+/**
+ * 💰 CloudSonnet4: Formateo predictivo de miles en tiempo real
+ * Aplica formato 4.000 / 10.000 / 100.100 / 1.000.111
+ * @param {string} value - Valor del input
+ * @returns {string} Valor formateado
+ */
+export function formatThousands(value) {
+    if (!value) return '';
+    
+    // Remover todo excepto números
+    const cleanValue = value.toString().replace(/[^\d]/g, '');
+    
+    // Aplicar formato con puntos cada 3 dígitos
+    return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+/**
+ * 💰 CloudSonnet4: Aplicar formateo automático a input numérico
+ * @param {HTMLElement} input - Elemento input
+ */
+export function applyThousandsFormatting(input) {
+    if (!input) return;
+    
+    // Evento input para formateo en tiempo real
+    input.addEventListener('input', (e) => {
+        const cursorPosition = e.target.selectionStart;
+        const oldValue = e.target.value;
+        const newValue = formatThousands(oldValue);
+        
+        // Solo actualizar si cambió el valor
+        if (newValue !== oldValue) {
+            e.target.value = newValue;
+            
+            // Mantener posición del cursor
+            const newCursorPosition = cursorPosition + (newValue.length - oldValue.length);
+            e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+        }
+    });
+    
+    // Formatear valor inicial si existe
+    if (input.value) {
+        input.value = formatThousands(input.value);
+    }
 }
 
 // 💡 MEJORAS SUGERIDAS (NO IMPLEMENTADAS):

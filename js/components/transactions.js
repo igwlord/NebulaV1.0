@@ -2,6 +2,13 @@
  * 💰 NEBULA FINANCIAL - TRANSACTIONS COMPONENT
  * ============================================
  * Componente para gestión de transacciones
+ * 
+ * CloudSonnet4: Correcciones aplicadas
+ * - Fix en renderTransactionsView: pasar parámetro type correctamente al render()  
+ * - Títulos diferenciados para secciones "Ingresos" y "Gastos"
+ * - Tooltips específicos para cada sección con descripciones útiles
+ * - Eliminación de duplicación en la sección "Gestión de Ingresos"
+ * - Formateo automático de miles aplicado a inputs numéricos (.numeric-input)
  */
 
 import { createIcon, formatCurrency, ICONS, CATEGORIES, getMonthKey, generateId, saveToLocalStorage } from '../utils/helpers.js';
@@ -13,10 +20,13 @@ class TransactionsComponent {
     
     /**
      * 💰 Renderizar vista de transacciones
-     */
-    render(type = 'income') {
+     */    render(type = 'income') {
         this.type = type;
+        // CloudSonnet4: Títulos diferenciados y tooltips específicos
         const title = type === 'income' ? 'Ingresos' : 'Gastos';
+        const tooltip = type === 'income' 
+            ? 'Añade todos tus ingresos regulares aquí' 
+            : 'Registra cada gasto para controlar tu presupuesto';
         const isExpense = type === 'expense';
         
         const currentMonthKey = getMonthKey();
@@ -28,7 +38,14 @@ class TransactionsComponent {
         return `
             <div class="${window.appState?.theme?.surface || 'bg-black/20'} rounded-2xl shadow-lg p-6 backdrop-blur-md">
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-bold ${window.appState?.theme?.textPrimary || 'text-white'}">💰 Gestión de ${title}</h2>
+                    <div>
+                        <h2 class="text-2xl font-bold ${window.appState?.theme?.textPrimary || 'text-white'}">
+                            ${type === 'income' ? '💰' : '💸'} ${title}
+                        </h2>
+                        <p class="text-sm ${window.appState?.theme?.textSecondary || 'text-gray-400'} mt-1" title="${tooltip}">
+                            ${tooltip}
+                        </p>
+                    </div>
                     
                     <div class="flex flex-col sm:flex-row gap-2">
                         <button id="repeat-month-button" data-type="${type}" class="flex items-center gap-2 text-sm ${window.appState?.theme?.textSecondary || 'text-gray-300'} hover:${window.appState?.theme?.accent || 'text-white'} transition-colors px-3 py-2 rounded-lg hover:bg-black/10 backdrop-blur-sm" title="Copia las transacciones del mes anterior">
@@ -200,7 +217,8 @@ class TransactionsComponent {
 export function renderTransactionsView(type = 'income') {
     const transactionsComponent = new TransactionsComponent();
     transactionsComponent.type = type;
-    return transactionsComponent.render();
+    // CloudSonnet4: Fix para pasar el tipo correctamente al render
+    return transactionsComponent.render(type);
 }
 
 // Exportar componente

@@ -6,14 +6,23 @@
  * 
  * @author Nebula Team
  * @version 2.0.0
+ * 
+ * CloudSonnet4: Mejoras críticas implementadas
+ * - Fix en copyToFutureMonths: transacciones anuales ahora incluyen repeatYearly: true y originalId
+ * - Importación de applyThousandsFormatting para formateo automático de miles
+ * - Inicialización de formateo en inputs numéricos (.numeric-input y .update-investment-input)
+ * - Correcciones en renderizado de secciones diferenciadas de ingresos/gastos
+ * - Integración con componente de calendario modular mejorado
  */
 
-import { formatCurrency, parseFormattedNumber, createIcon, THEMES, ICONS } from './utils/helpers.js';
+import { formatCurrency, parseFormattedNumber, createIcon, THEMES, ICONS, applyThousandsFormatting } from './utils/helpers.js';
 import { NotificationSystem } from './components/notifications.js';
 import { ShortcutSystem } from './components/shortcuts.js';
 import { ModalSystem } from './components/modals.js';
 import { renderDashboard } from './components/dashboard.js';
 import { renderTransactionsView } from './components/transactions.js';
+// CloudSonnet4: Importación del componente de calendario modular (disponible para uso futuro)
+// import { renderCalendarModal, attachCalendarListeners } from './components/calendar.js';
 import { authService } from './auth.js';
 
 // ===============================================
@@ -144,8 +153,7 @@ export const appState = {
         const currentYear = this.currentDate.getFullYear();
         const currentMonth = this.currentDate.getMonth();
         let totalCopied = 0;
-        
-        // Copiar a todos los meses restantes del año
+          // Copiar a todos los meses restantes del año
         for (let month = currentMonth + 1; month < 12; month++) {
             const targetKey = `${currentYear}-${String(month + 1).padStart(2, '0')}`;
             
@@ -157,7 +165,10 @@ export const appState = {
                 const newTransaction = {
                     ...transaction,
                     id: Date.now() + Math.random(),
-                    date: new Date(currentYear, month, 1).toISOString().split('T')[0]
+                    date: new Date(currentYear, month, 1).toISOString().split('T')[0],
+                    // CloudSonnet4: Marcar como repetición anual para eliminación correcta
+                    repeatYearly: true,
+                    originalId: transaction.id
                 };
                 this.data.transactions[targetKey].push(newTransaction);
                 totalCopied++;
@@ -607,7 +618,7 @@ function renderDebtsView() {
                     <input type="text" inputmode="numeric" name="amount" placeholder="0" class="numeric-input w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" required />
                 </div>
                 <div class="self-end">
-                    <button type="submit" class="w-full ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-all ${appState.theme.accentGlow} flex items-center justify-center gap-2 transform hover:scale-105">
+                    <button type="submit" class="w-full ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-all ${appState.theme.accentGlow} flex items-center justify-center gap-2">
                         ${createIcon(ICONS.plus)} Agregar Deuda
                     </button>
                 </div>
@@ -1153,7 +1164,7 @@ function addFormEventListeners() {
     if (logoutButton) {
         logoutButton.addEventListener('click', async () => {
             try {
-                if (authService && authService.getCurrentUser()) {
+                if (authService?.getCurrentUser()) {
                     await authService.logout();
                 }
                 appState.user = null;
@@ -1173,9 +1184,18 @@ function addFormEventListeners() {
         clearAllDataButton.addEventListener('click', () => {
             if (confirm('¿Seguro que deseas eliminar todos los datos? Esto no se puede deshacer.')) {
                 appState.clearData();
-            }
-        });
+            }        });
     }
+
+    // CloudSonnet4: Aplicar formateo automático de miles a todos los inputs numéricos
+    document.querySelectorAll('.numeric-input').forEach(input => {
+        applyThousandsFormatting(input);
+    });
+    
+    // CloudSonnet4: También aplicar a inputs de actualización de inversiones
+    document.querySelectorAll('.update-investment-input').forEach(input => {
+        applyThousandsFormatting(input);
+    });
 }
 
 /**

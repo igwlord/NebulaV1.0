@@ -6,6 +6,13 @@
  * 
  * @author Nebula Team
  * @version 2.0.0
+ * 
+ * CloudSonnet4: Implementación completa de navegación circular A/D en dockbar
+ * - Mapeo global de teclas A y D para navegación en dock
+ * - Navegación circular con wrap-around automático
+ * - Gestión visual de clases 'active' en elementos del dock
+ * - Ignorar atajos cuando el usuario está escribiendo en inputs/textarea
+ * - Integración con renderDock y updateDockGlider para feedback visual
  */
 
 import { createIcon, ICONS } from '../utils/helpers.js';
@@ -164,24 +171,42 @@ export const ShortcutSystem = {
                 window.renderApp();
             }
         }
-    },
-
-    /**
-     * 🧭 CloudSonnet4: Navegar por el dock con A y D
+    },    /**
+     * 🧭 CloudSonnet4: Navegación circular A/D en dockbar con efectos visuales
      * @param {string} direction - 'left' o 'right'
      */
     navigateDock(direction) {
         const dockItems = ['dashboard', 'income', 'expenses', 'goals', 'investments', 'debts', 'settings'];
         const currentIndex = dockItems.indexOf(window.appState?.activeView || 'dashboard');
         
+        // CloudSonnet4: navegación circular A/D en dockbar
         let newIndex;
         if (direction === 'left') {
+            // CloudSonnet4: A decrementa con wrap-around
             newIndex = currentIndex > 0 ? currentIndex - 1 : dockItems.length - 1;
         } else {
+            // CloudSonnet4: D incrementa con wrap-around  
             newIndex = currentIndex < dockItems.length - 1 ? currentIndex + 1 : 0;
         }
         
+        // CloudSonnet4: Actualizar clases active en elementos del dock
+        const dockButtons = document.querySelectorAll('[data-view]');
+        dockButtons.forEach((btn, index) => {
+            if (index === currentIndex) {
+                btn.classList.remove('active');
+            }
+            if (index === newIndex) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // CloudSonnet4: Navegar y llamar a renderDock para actualizar visual
         this.navigateTo(dockItems[newIndex]);
+        
+        // CloudSonnet4: Actualizar glider del dock si existe
+        if (window.updateDockGlider) {
+            setTimeout(() => window.updateDockGlider(), 50);
+        }
     },
     
     /**
