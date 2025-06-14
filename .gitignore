@@ -1,0 +1,46 @@
+# 🔐 NEBULA FINANCIAL - ARCHIVOS SENSIBLES
+# ========================================
+
+# Variables de entorno
+.env
+.env.local
+.env.development
+.env.production
+
+# Configuración de Firebase (si contiene keys)
+firebase-config.local.js
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencias
+node_modules/
+.npm
+.yarn-integrity
+
+# Cache
+.cache/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Backups
+*.backup
+*_backup.*
+backup_*
+
+# Archivos temporales
+*.tmp
+*.temp
