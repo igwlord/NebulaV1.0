@@ -26,19 +26,22 @@ export const ShortcutSystem = {
         this.addGlobalEventListener();
         console.log('⚡ Sistema de atajos inicializado');
     },
-    
-    /**
+      /**
      * 📝 Registrar atajos por defecto
      */
     registerDefaultShortcuts() {
-        // Navegación principal
-        this.register('KeyD', () => this.navigateTo('dashboard'), 'Dashboard');
-        this.register('KeyI', () => this.navigateTo('income'), 'Ingresos');
-        this.register('KeyG', () => this.navigateTo('expenses'), 'Gastos');
-        this.register('KeyN', () => this.navigateTo('investments'), 'Inversiones');
-        this.register('KeyP', () => this.navigateTo('debts'), 'Deudas');
-        this.register('KeyM', () => this.navigateTo('goals'), 'Metas');
-        this.register('KeyA', () => this.navigateTo('settings'), 'Ajustes');
+        // CloudSonnet4: Navegación del dock con A y D
+        this.register('KeyA', () => this.navigateDock('left'), 'Dock: Izquierda');
+        this.register('KeyD', () => this.navigateDock('right'), 'Dock: Derecha');
+        
+        // Navegación principal (con teclas alternativas)
+        this.register('Digit1', () => this.navigateTo('dashboard'), 'Dashboard');
+        this.register('Digit2', () => this.navigateTo('income'), 'Ingresos');
+        this.register('Digit3', () => this.navigateTo('expenses'), 'Gastos');
+        this.register('Digit4', () => this.navigateTo('investments'), 'Inversiones');
+        this.register('Digit5', () => this.navigateTo('debts'), 'Deudas');
+        this.register('Digit6', () => this.navigateTo('goals'), 'Metas');
+        this.register('Digit7', () => this.navigateTo('settings'), 'Ajustes');
         
         // Navegación temporal
         this.register('ArrowLeft', () => this.navigateMonth(-1), 'Mes anterior');
@@ -150,8 +153,7 @@ export const ShortcutSystem = {
     // ===============================================
     // 🎯 ACCIONES DE ATAJOS
     // ===============================================
-    
-    /**
+      /**
      * 🧭 Navegar a una vista
      * @param {string} view - Vista de destino
      */
@@ -162,6 +164,24 @@ export const ShortcutSystem = {
                 window.renderApp();
             }
         }
+    },
+
+    /**
+     * 🧭 CloudSonnet4: Navegar por el dock con A y D
+     * @param {string} direction - 'left' o 'right'
+     */
+    navigateDock(direction) {
+        const dockItems = ['dashboard', 'income', 'expenses', 'goals', 'investments', 'debts', 'settings'];
+        const currentIndex = dockItems.indexOf(window.appState?.activeView || 'dashboard');
+        
+        let newIndex;
+        if (direction === 'left') {
+            newIndex = currentIndex > 0 ? currentIndex - 1 : dockItems.length - 1;
+        } else {
+            newIndex = currentIndex < dockItems.length - 1 ? currentIndex + 1 : 0;
+        }
+        
+        this.navigateTo(dockItems[newIndex]);
     },
     
     /**

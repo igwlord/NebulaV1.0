@@ -197,9 +197,7 @@ export class NebulaAuth {
                 console.log('🔄 Actualizando perfil existente');
             }
             
-            await userRef.set(userData, { merge: true });
-            
-        } catch (error) {
+            await userRef.set(userData, { merge: true });        } catch (error) {
             console.error('❌ Error creando perfil:', error);
         }
     }

@@ -178,7 +178,22 @@ export const appState = {
             NotificationSystem.show('Inversión actualizada correctamente', 'success');
             renderApp();
         }
-    }
+    },
+    
+    // CloudSonnet4: Función de reordenamiento de elementos
+    reorderItem(type, index, direction) {
+        const array = this.data[type];
+        if (!array || index < 0 || index >= array.length) return false;
+        
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        if (newIndex < 0 || newIndex >= array.length) return false;
+        
+        // Intercambiar elementos
+        [array[index], array[newIndex]] = [array[newIndex], array[index]];
+        
+        this.saveData();
+        return true;
+    },
 };
 
 // ===============================================
@@ -207,6 +222,15 @@ export function renderApp() {
         dockRoot.innerHTML = '';
     } else {
         let viewHTML = '';
+        
+        // CloudSonnet4: Mensaje de bienvenida sutil
+        const welcomeMessage = `
+            <div class="fixed top-4 left-4 z-30 pointer-events-none">
+                <div class="text-xs ${appState.theme.textSecondary} opacity-60 font-medium">
+                    Bienvenido: ${appState.user.displayName || 'Usuario'}
+                </div>
+            </div>
+        `;
         
         // Agregar selector de mes para vistas que lo requieren
         if(!['settings', 'achievements', 'goals', 'investments', 'debts'].includes(appState.activeView)) {
@@ -240,7 +264,7 @@ export function renderApp() {
                 viewHTML += renderComingSoon(appState.activeView);
         }
         
-        contentRoot.innerHTML = `<main class="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full view-transition">${viewHTML}</main>`;
+        contentRoot.innerHTML = `${welcomeMessage}<main class="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full view-transition">${viewHTML}</main>`;
         dockRoot.innerHTML = renderDock();
     }
     
@@ -441,14 +465,27 @@ function updateDockGlider() {
  * 🎯 Renderizar vista de Metas de Ahorro
  */
 function renderGoalsView() {
-    const goalsHTML = appState.data.goals.map(goal => `
+    const goalsHTML = appState.data.goals.map((goal, index) => `
         <div class="bg-white/5 p-4 rounded-lg">
             <div class="flex justify-between items-start">
-                <div>
+                <div class="flex-1">
                     <p class="font-bold ${appState.theme.textPrimary}">${goal.name}</p>
                     <p class="text-sm ${appState.theme.textSecondary} mt-1">${formatCurrency(goal.saved)} / ${formatCurrency(goal.target)}</p>
                 </div>
-                <button class="delete-goal-button text-red-500/70 hover:text-red-500" data-goal-id="${goal.id}">${createIcon(ICONS.trash, 'w-5 h-5')}</button>
+                <div class="flex items-center gap-2">
+                    <!-- CloudSonnet4: Botones de reordenamiento -->
+                    <button class="reorder-button text-${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors" 
+                            data-direction="up" data-type="goals" data-index="${index}" 
+                            ${index === 0 ? 'disabled opacity-50' : ''} title="Mover arriba">
+                        ${createIcon(ICONS.chevronUp, 'w-4 h-4')}
+                    </button>
+                    <button class="reorder-button text-${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors" 
+                            data-direction="down" data-type="goals" data-index="${index}" 
+                            ${index === appState.data.goals.length - 1 ? 'disabled opacity-50' : ''} title="Mover abajo">
+                        ${createIcon(ICONS.chevronDown, 'w-4 h-4')}
+                    </button>
+                    <button class="delete-goal-button text-red-500/70 hover:text-red-500" data-goal-id="${goal.id}">${createIcon(ICONS.trash, 'w-5 h-5')}</button>
+                </div>
             </div>
             <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
                 <div class="${appState.theme.accentBg} h-2.5 rounded-full" style="width: ${((goal.saved / goal.target) * 100)}%"></div>
@@ -474,11 +511,24 @@ function renderGoalsView() {
  * 📈 Renderizar vista de Inversiones
  */
 function renderInvestmentsView() {
-    const investmentsHTML = appState.data.investments.map(inv => `
+    const investmentsHTML = appState.data.investments.map((inv, index) => `
         <div class="bg-white/5 p-4 rounded-lg">
             <div class="flex justify-between items-start mb-2">
-                <h4 class="font-bold ${appState.theme.textPrimary}">${inv.name}</h4>
-                <button class="delete-investment-button text-red-500/70 hover:text-red-500" data-investment-id="${inv.id}">${createIcon(ICONS.trash, 'w-5 h-5')}</button>
+                <h4 class="font-bold ${appState.theme.textPrimary} flex-1">${inv.name}</h4>
+                <div class="flex items-center gap-2">
+                    <!-- CloudSonnet4: Botones de reordenamiento -->
+                    <button class="reorder-button text-${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors" 
+                            data-direction="up" data-type="investments" data-index="${index}" 
+                            ${index === 0 ? 'disabled opacity-50' : ''} title="Mover arriba">
+                        ${createIcon(ICONS.chevronUp, 'w-4 h-4')}
+                    </button>
+                    <button class="reorder-button text-${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors" 
+                            data-direction="down" data-type="investments" data-index="${index}" 
+                            ${index === appState.data.investments.length - 1 ? 'disabled opacity-50' : ''} title="Mover abajo">
+                        ${createIcon(ICONS.chevronDown, 'w-4 h-4')}
+                    </button>
+                    <button class="delete-investment-button text-red-500/70 hover:text-red-500" data-investment-id="${inv.id}">${createIcon(ICONS.trash, 'w-5 h-5')}</button>
+                </div>
             </div>
             <p class="text-sm ${appState.theme.textSecondary} mb-2">${inv.type}</p>
             <div class="space-y-1">
@@ -523,11 +573,22 @@ function renderInvestmentsView() {
  * 💳 Renderizar vista de Deudas
  */
 function renderDebtsView() {
-    const debtsHTML = appState.data.debts.map(debt => `
+    const debtsHTML = appState.data.debts.map((debt, index) => `
         <li class="backdrop-blur-sm rounded-lg flex justify-between items-center p-4 ${appState.theme.surface}">
-            <div><p class="font-semibold ${appState.theme.textPrimary}">${debt.description}</p></div>
-            <div class="flex items-center gap-4">
+            <div class="flex-1"><p class="font-semibold ${appState.theme.textPrimary}">${debt.description}</p></div>
+            <div class="flex items-center gap-2">
                 <p class="font-bold text-lg ${appState.theme.negative}">${formatCurrency(debt.amount)}</p>
+                <!-- CloudSonnet4: Botones de reordenamiento -->
+                <button class="reorder-button text-${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors" 
+                        data-direction="up" data-type="debts" data-index="${index}" 
+                        ${index === 0 ? 'disabled opacity-50' : ''} title="Mover arriba">
+                    ${createIcon(ICONS.chevronUp, 'w-4 h-4')}
+                </button>
+                <button class="reorder-button text-${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors" 
+                        data-direction="down" data-type="debts" data-index="${index}" 
+                        ${index === appState.data.debts.length - 1 ? 'disabled opacity-50' : ''} title="Mover abajo">
+                    ${createIcon(ICONS.chevronDown, 'w-4 h-4')}
+                </button>
                 <button class="delete-debt-button text-red-500/70 hover:text-red-500 transition-colors" data-debt-id="${debt.id}">${createIcon(ICONS.trash, 'w-5 h-5')}</button>
             </div>
         </li>
@@ -563,18 +624,32 @@ function renderDebtsView() {
 
 /**
  * ⚙️ Renderizar vista de Configuración
+ * CloudSonnet4: Refactorizado con nuevas funcionalidades
  */
 function renderSettingsView() {
+    // CloudSonnet4: Temas renombrados con nuevos nombres
+    const themeNames = {
+        aureoAmanecer: 'Obsidiana Nebulosa',
+        crisonVespertino: 'Atardecer de Cuarzo', 
+        aguamarinaCeleste: 'Galaxia Aurora',
+        purpureoMistico: 'Noche Cósmica'
+    };
+    
+    // CloudSonnet4: Previews de temas mejorados
     const themesHTML = Object.entries(THEMES).map(([key, theme]) => `
-        <button data-theme-key="${key}" class="theme-selector p-4 rounded-lg border-2 transition-all ${appState.themeKey === key ? `${theme.accentBorder} scale-105 shadow-lg` : 'border-transparent opacity-70 hover:opacity-100'}">
-            <div class="w-full h-16 rounded-md mb-2" style="background: ${theme.gradient}"></div>
-            <p class="${appState.theme.textPrimary}">${theme.name}</p>
+        <button data-theme-key="${key}" class="theme-selector p-3 rounded-xl border-2 transition-all ${appState.themeKey === key ? `${theme.accentBorder} scale-105 shadow-lg` : 'border-transparent opacity-70 hover:opacity-100 hover:scale-102'}">
+            <div class="w-full h-20 rounded-lg mb-3 relative overflow-hidden" style="background: ${theme.gradient}">
+                <div class="absolute inset-2 rounded border border-white/20 flex items-center justify-center">
+                    <div class="w-3 h-3 rounded-full" style="background: ${theme.sunColor}; box-shadow: 0 0 10px ${theme.sunColor}80;"></div>
+                </div>
+            </div>
+            <p class="font-medium ${appState.theme.textPrimary} text-sm">${themeNames[key] || theme.name}</p>
         </button>
     `).join('');
 
     // Sección de cuenta solo si es usuario invitado
     const accountSectionHTML = appState.user?.method === 'guest' ? `
-        <div>
+        <div class="pb-6 border-b border-white/10">
             <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">👤 Cuenta</h3>
             <div class="space-y-3">
                 <div class="${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
@@ -602,19 +677,73 @@ function renderSettingsView() {
             <h2 class="text-2xl font-bold ${appState.theme.textPrimary} mb-6">⚙️ Ajustes y Personalización</h2>
             <div class="space-y-8">
                 ${accountSectionHTML}
+                
+                <!-- CloudSonnet4: Sección de temas mejorada -->
                 <div>
-                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🎨 Tema Visual</h3>
+                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🎨 Temas Visuales</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">${themesHTML}</div>
                 </div>
+                
+                <!-- CloudSonnet4: Herramientas refactorizadas -->
                 <div>
                     <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🛠️ Herramientas</h3>
-                     <button id="open-shortcuts-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                        ${createIcon(ICONS.zap, `w-6 h-6 ${appState.theme.accent}`)}
-                        <div>
-                            <p class="font-bold ${appState.theme.textPrimary}">⚡ Atajos de Teclado</p>
-                            <p class="text-sm ${appState.theme.textSecondary}">Navega más rápido por la aplicación.</p>
-                        </div>
-                    </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button id="export-local-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
+                            ${createIcon(ICONS.download, `w-6 h-6 ${appState.theme.accent}`)}
+                            <div>
+                                <p class="font-bold ${appState.theme.textPrimary}">Exportar Backup</p>
+                                <p class="text-sm ${appState.theme.textSecondary}">Descarga copia de tus datos</p>
+                            </div>
+                        </button>
+                        
+                        <button id="import-local-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
+                            ${createIcon(ICONS.upload, `w-6 h-6 ${appState.theme.accent}`)}
+                            <div>
+                                <p class="font-bold ${appState.theme.textPrimary}">Importar Backup</p>
+                                <p class="text-sm ${appState.theme.textSecondary}">Restaurar datos desde archivo</p>
+                            </div>
+                        </button>
+                        
+                        <button id="export-excel-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
+                            <div class="w-6 h-6 ${appState.theme.accent} flex items-center justify-center">
+                                <span class="text-green-500 font-bold text-xs">XL</span>
+                            </div>
+                            <div>
+                                <p class="font-bold ${appState.theme.textPrimary}">Exportar a Excel</p>
+                                <p class="text-sm ${appState.theme.textSecondary}">Crear hoja de cálculo</p>
+                            </div>
+                        </button>
+                        
+                        <button id="open-shortcuts-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
+                            ${createIcon(ICONS.zap, `w-6 h-6 ${appState.theme.accent}`)}
+                            <div>
+                                <p class="font-bold ${appState.theme.textPrimary}">Atajos de Teclado</p>
+                                <p class="text-sm ${appState.theme.textSecondary}">A: Izquierda | D: Derecha</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- CloudSonnet4: Sección de sesión y datos -->
+                <div>
+                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🔐 Sesión y Datos</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button id="logout-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
+                            ${createIcon(ICONS.logOut, `w-6 h-6 ${appState.theme.accent}`)}
+                            <div>
+                                <p class="font-bold ${appState.theme.textPrimary}">Cerrar Sesión</p>
+                                <p class="text-sm ${appState.theme.textSecondary}">Salir de tu cuenta</p>
+                            </div>
+                        </button>
+                        
+                        <button id="clear-all-data-button" class="text-left flex items-center gap-3 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 p-4 rounded-lg transition-colors backdrop-blur-md">
+                            ${createIcon(ICONS.trash, `w-6 h-6 text-red-400`)}
+                            <div>
+                                <p class="font-bold text-red-300">Borrar Todos los Datos</p>
+                                <p class="text-sm text-red-400/80">⚠️ Acción irreversible</p>
+                            </div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -901,6 +1030,20 @@ function addFormEventListeners() {
             appState.saveData();
             NotificationSystem.show('Deuda eliminada', 'info');
             renderApp();
+        });    });
+
+    // CloudSonnet4: Event listeners para botones de reordenamiento
+    document.querySelectorAll('.reorder-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const btn = e.target.closest('.reorder-button');
+            const type = btn.dataset.type;
+            const index = parseInt(btn.dataset.index);
+            const direction = btn.dataset.direction;
+            
+            if (appState.reorderItem(type, index, direction)) {
+                NotificationSystem.show('Orden actualizado', 'success');
+                renderApp();
+            }
         });
     });
 
@@ -914,9 +1057,125 @@ function addFormEventListeners() {
             if (newValue > 0) {
                 appState.updateInvestmentValue(investmentId, newValue);
                 input.value = '';
+            }        });
+    });
+
+    // CloudSonnet4: Event listeners para nuevas funcionalidades de Settings
+    
+    // Exportar backup local
+    const exportLocalButton = document.getElementById('export-local-button');
+    if (exportLocalButton) {
+        exportLocalButton.addEventListener('click', () => {
+            const data = {
+                transactions: appState.data.transactions,
+                investments: appState.data.investments,
+                debts: appState.data.debts,
+                goals: appState.data.goals,
+                exportDate: new Date().toISOString(),
+                version: '2.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nebula-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            NotificationSystem.show('Backup exportado correctamente', 'success');
+        });
+    }
+    
+    // Importar backup local
+    const importLocalButton = document.getElementById('import-local-button');
+    if (importLocalButton) {
+        importLocalButton.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            if (data.transactions || data.investments || data.debts || data.goals) {
+                                appState.data = {
+                                    transactions: data.transactions || {},
+                                    investments: data.investments || [],
+                                    debts: data.debts || [],
+                                    goals: data.goals || []
+                                };
+                                appState.saveData();
+                                NotificationSystem.show('Backup importado correctamente', 'success');
+                                renderApp();
+                            } else {
+                                NotificationSystem.show('Archivo de backup inválido', 'error');
+                            }
+                        } catch {
+                            NotificationSystem.show('Error al leer el archivo', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        });
+    }
+    
+    // Exportar a Excel
+    const exportExcelButton = document.getElementById('export-excel-button');
+    if (exportExcelButton) {
+        exportExcelButton.addEventListener('click', () => {
+            let csvContent = 'data:text/csv;charset=utf-8,';
+            csvContent += 'Fecha,Tipo,Descripción,Categoria,Monto\n';
+            
+            Object.entries(appState.data.transactions).forEach(([month, transactions]) => {
+                transactions.forEach(t => {
+                    csvContent += `${t.date},${t.type === 'income' ? 'Ingreso' : 'Gasto'},"${t.description}","${t.category || ''}",${t.amount}\n`;
+                });
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `nebula-financial-${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+            
+            NotificationSystem.show('Archivo Excel exportado', 'success');
+        });
+    }
+    
+    // Cerrar sesión
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            try {
+                if (authService && authService.getCurrentUser()) {
+                    await authService.logout();
+                }
+                appState.user = null;
+                localStorage.removeItem('nebula_guest_user');
+                NotificationSystem.show('Sesión cerrada', 'info');
+                renderApp();
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                NotificationSystem.show('Error al cerrar sesión', 'error');
             }
         });
-    });
+    }
+    
+    // Borrar todos los datos
+    const clearAllDataButton = document.getElementById('clear-all-data-button');
+    if (clearAllDataButton) {
+        clearAllDataButton.addEventListener('click', () => {
+            if (confirm('¿Seguro que deseas eliminar todos los datos? Esto no se puede deshacer.')) {
+                appState.clearData();
+            }
+        });
+    }
 }
 
 /**

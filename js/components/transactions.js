@@ -140,18 +140,51 @@ class TransactionsComponent {
         
         return newTransaction;
     }
-    
-    /**
+      /**
      * 🗑️ Eliminar transacción
-     */    deleteTransaction(transactionId) {
+     * CloudSonnet4: Mejorado para manejar repeticiones anuales
+     */    
+    deleteTransaction(transactionId) {
         const monthKey = getMonthKey();
-        const transactions = window.appState?.data?.transactions?.[monthKey];
+        let deletedCount = 0;
         
+        // Buscar y eliminar la transacción en el mes actual
+        const transactions = window.appState?.data?.transactions?.[monthKey];
         if (transactions) {
             const index = transactions.findIndex(t => t.id === transactionId);
             if (index > -1) {
+                const transaction = transactions[index];
                 transactions.splice(index, 1);
+                deletedCount++;
+                
+                // CloudSonnet4: Si tiene repetición anual, eliminar todas las instancias futuras
+                if (transaction.repeatYearly) {
+                    const allMonthKeys = Object.keys(window.appState.data.transactions);
+                    allMonthKeys.forEach(key => {
+                        if (key > monthKey) { // Solo meses futuros
+                            const futureTransactions = window.appState.data.transactions[key];
+                            const futureIndex = futureTransactions.findIndex(t => 
+                                t.originalId === transactionId || 
+                                (t.description === transaction.description && 
+                                 t.amount === transaction.amount && 
+                                 t.type === transaction.type &&
+                                 t.repeatYearly)
+                            );
+                            if (futureIndex > -1) {
+                                futureTransactions.splice(futureIndex, 1);
+                                deletedCount++;
+                            }
+                        }
+                    });
+                }
+                
                 saveToLocalStorage('financialData', window.appState.data);
+                
+                // Mostrar mensaje informativo
+                if (deletedCount > 1) {
+                    window.NotificationSystem?.show(`Eliminadas ${deletedCount} transacciones (incluyendo repeticiones anuales)`, 'success');
+                }
+                
                 return true;
             }
         }
