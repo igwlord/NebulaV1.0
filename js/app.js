@@ -922,82 +922,152 @@ function addFormEventListeners() {
 /**
  * 🔐 Manejar proceso de login
  */
+/**
+ * 🔐 Manejar proceso de login
+ * 
+ * FUNCIONALIDAD:
+ * - Gestiona el flujo de autenticación para Google y modo invitado
+ * - Actualiza estado de carga durante el proceso
+ * - Maneja errores con mensajes específicos y fallbacks inteligentes
+ * - Evita duplicación de notificaciones
+ * 
+ * PARÁMETROS:
+ * @param {string} method - 'google' para Google Login, 'guest' para modo invitado
+ * 
+ * PROCESO:
+ * 1. Activa estado de carga
+ * 2. Ejecuta método de autenticación correspondiente
+ * 3. Maneja resultado (éxito o error)
+ * 4. Actualiza UI con notificaciones apropiadas
+ * 5. Maneja fallbacks para errores específicos
+ * 
+ * MANEJO DE ERRORES:
+ * - auth/unauthorized-domain → Sugerencia configuración Firebase
+ * - auth/operation-not-allowed → Google Auth no habilitado
+ * - Modo invitado falla → Recarga automática de página
+ * - Error general → Verificación de usuario ya autenticado
+ * 
+ * CÓMO PROBAR:
+ * 1. handleLogin('guest') → debe funcionar siempre
+ * 2. handleLogin('google') → requiere Firebase configurado
+ * 3. Ver notificaciones en UI después del login
+ */
 async function handleLogin(method) {
     try {
+        // 1. Preparar UI para proceso de login
         appState.isLoading = true;
         renderApp();
         
         console.log(`🔐 Iniciando login con método: ${method}`);
         
-        let result;
-          if (method === 'google') {
-            // Login con Google
-            result = await authService.signInWithGoogle();
-        } else if (method === 'guest') {
-            // Login como invitado (anónimo o offline)
-            result = await authService.signInAsGuest();        } else {
-            throw new Error(`Método de login no soportado: ${method}`);
-        }
+        // 2. Ejecutar método de autenticación seleccionado
+        const result = await executeAuthMethod(method);
         
+        // 3. Procesar resultado del login
         if (result.success) {
-            console.log('✅ Login exitoso:', result.user);
-            // El estado del usuario se actualizará automáticamente por el listener de auth
-            // Solo mostrar notificación si no estamos en loading (evitar duplicados)
-            if (!appState.isLoading) {
-                const welcomeMsg = result.user.displayName ? 
-                    `¡Bienvenido ${result.user.displayName}!` : 
-                    '¡Bienvenido a Nebula Financial!';
-                NotificationSystem.show(welcomeMsg, 'success');
-            }
+            handleLoginSuccess(result);
         } else {
-            console.error('❌ Error en login:', result.error);
-            
-            // Verificar si a pesar del error, el usuario se autenticó (Firebase listener)
-            const currentUser = authService.getCurrentUser();
-            if (currentUser) {
-                console.log('✅ A pesar del error, usuario autenticado:', currentUser.displayName);
-                return; // No mostrar error si el usuario está autenticado
-            }
-            
-            appState.isLoading = false;
-            renderApp();
-            
-            // Mensajes específicos según el tipo de error y método
-            if (method === 'google') {
-                if (result.error === 'auth/unauthorized-domain') {
-                    NotificationSystem.show(
-                        '🔧 Configuración pendiente: Este dominio no está autorizado. Usa el modo invitado mientras tanto.', 
-                        'warning'
-                    );
-                } else if (result.error === 'auth/operation-not-allowed') {
-                    NotificationSystem.show(
-                        '🔧 Google Auth no habilitado en Firebase. Usa el modo invitado para continuar.', 
-                        'warning'
-                    );
-                } else {
-                    NotificationSystem.show(
-                        result.helpText || 'Error con Google. Prueba el modo invitado para acceder.', 
-                        'warning'
-                    );
-                }
-            } else if (method === 'guest') {
-                // Error en modo invitado (esto no debería pasar con la nueva implementación)
-                NotificationSystem.show(
-                    'Error en modo invitado. Recargando la página...', 
-                    'error'
-                );
-                setTimeout(() => location.reload(), 2000);
-            } else {
-                NotificationSystem.show(result.message || 'Error al iniciar sesión', 'error');
-            }
+            handleLoginError(result, method);
         }
         
     } catch (error) {
-        console.error('❌ Error en handleLogin:', error);
-        appState.isLoading = false;
-        renderApp();
-        NotificationSystem.show('Error de conexión. Intenta nuevamente.', 'error');
+        handleLoginException(error);
     }
+}
+
+/**
+ * 🔧 Ejecutar método de autenticación específico
+ * Función auxiliar para reducir complejidad de handleLogin
+ */
+async function executeAuthMethod(method) {
+    if (method === 'google') {
+        return await authService.signInWithGoogle();
+    } else if (method === 'guest') {
+        return await authService.signInAsGuest();
+    } else {
+        throw new Error(`Método de login no soportado: ${method}`);
+    }
+}
+
+/**
+ * ✅ Manejar login exitoso
+ * Función auxiliar para reducir complejidad de handleLogin
+ */
+function handleLoginSuccess(result) {
+    console.log('✅ Login exitoso:', result.user);
+    // Solo mostrar notificación si no estamos en loading (evitar duplicados)
+    if (!appState.isLoading) {
+        const welcomeMsg = result.user.displayName ? 
+            `¡Bienvenido ${result.user.displayName}!` : 
+            '¡Bienvenido a Nebula Financial!';
+        NotificationSystem.show(welcomeMsg, 'success');
+    }
+}
+
+/**
+ * ❌ Manejar errores de login
+ * Función auxiliar para reducir complejidad de handleLogin
+ */
+function handleLoginError(result, method) {
+    console.error('❌ Error en login:', result.error);
+    
+    // Verificar si a pesar del error, el usuario se autenticó (Firebase listener)
+    const currentUser = authService.getCurrentUser();
+    if (currentUser) {
+        console.log('✅ A pesar del error, usuario autenticado:', currentUser.displayName);
+        return; // No mostrar error si el usuario está autenticado
+    }
+    
+    appState.isLoading = false;
+    renderApp();
+    
+    // Mostrar mensajes específicos según el tipo de error y método
+    showSpecificErrorMessage(result, method);
+}
+
+/**
+ * 🚨 Mostrar mensajes de error específicos
+ * Función auxiliar para manejar diferentes tipos de errores
+ */
+function showSpecificErrorMessage(result, method) {
+    if (method === 'google') {
+        if (result.error === 'auth/unauthorized-domain') {
+            NotificationSystem.show(
+                '🔧 Configuración pendiente: Este dominio no está autorizado. Usa el modo invitado mientras tanto.', 
+                'warning'
+            );
+        } else if (result.error === 'auth/operation-not-allowed') {
+            NotificationSystem.show(
+                '🔧 Google Auth no habilitado en Firebase. Usa el modo invitado para continuar.', 
+                'warning'
+            );
+        } else {
+            NotificationSystem.show(
+                result.helpText || 'Error con Google. Prueba el modo invitado para acceder.', 
+                'warning'
+            );
+        }
+    } else if (method === 'guest') {
+        // Error en modo invitado (esto no debería pasar con la nueva implementación)
+        NotificationSystem.show(
+            'Error en modo invitado. Recargando la página...', 
+            'error'
+        );
+        setTimeout(() => location.reload(), 2000);
+    } else {
+        NotificationSystem.show(result.message || 'Error al iniciar sesión', 'error');
+    }
+}
+
+/**
+ * 💥 Manejar excepciones no controladas
+ * Función auxiliar para errores inesperados
+ */
+function handleLoginException(error) {
+    console.error('❌ Error en handleLogin:', error);
+    appState.isLoading = false;
+    renderApp();
+    NotificationSystem.show('Error de conexión. Intenta nuevamente.', 'error');
 }
 
 // ===============================================
@@ -1132,3 +1202,16 @@ function showErrorScreen(error) {
         </div>
     `;
 }
+
+// 💡 MEJORAS SUGERIDAS (NO IMPLEMENTADAS):
+// 1. Sistema de persistencia unificado: Crear una clase DataManager que unifique
+//    el manejo de localStorage, sessionStorage y Firestore. Esto permitiría
+//    sincronización automática entre dispositivos cuando el usuario esté logueado
+//    con Google, y fallback local cuando esté en modo invitado. Incluir compresión
+//    de datos y limpieza automática de datos antiguos.
+//
+// 2. State Management con observadores: Implementar un sistema de estado reactivo
+//    donde los componentes se suscriban automáticamente a cambios en appState.
+//    Esto eliminaría las llamadas manuales a renderApp() y garantizaría UI
+//    siempre actualizada. Usar patrón Observer o similar para detectar cambios
+//    en propiedades específicas y actualizar solo las partes necesarias del DOM.

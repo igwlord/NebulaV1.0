@@ -195,13 +195,28 @@ export function getMonthName(date = new Date()) {
  * @returns {string} ID único
  */
 export function generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
 /**
  * 💾 Guardar en localStorage de forma segura
- * @param {string} key - Clave
- * @param {any} data - Datos a guardar
+ * 
+ * PROPÓSITO:
+ * Wrapper seguro para localStorage que maneja errores automáticamente
+ * (cuota excedida, incognito mode, localStorage deshabilitado)
+ * 
+ * PARÁMETROS:
+ * @param {string} key - Clave única para identificar los datos
+ * @param {any} data - Datos a guardar (se serializan automáticamente a JSON)
+ * 
+ * MANEJO DE ERRORES:
+ * - QuotaExceededError: localStorage lleno
+ * - SecurityError: modo incógnito o localStorage deshabilitado
+ * - TypeError: datos no serializables
+ * 
+ * CÓMO PROBAR:
+ * saveToLocalStorage('test', {nombre: 'test'})
+ * // Verificar en DevTools → Application → Local Storage
  */
 export function saveToLocalStorage(key, data) {
     try {
@@ -325,14 +340,13 @@ export function animateCounter(element, start, end, duration = 1000) {
 export function interpolateColor(color1, color2, factor) {
     const hex1 = color1.replace('#', '');
     const hex2 = color2.replace('#', '');
+      const r1 = parseInt(hex1.substring(0, 2), 16);
+    const g1 = parseInt(hex1.substring(2, 4), 16);
+    const b1 = parseInt(hex1.substring(4, 6), 16);
     
-    const r1 = parseInt(hex1.substr(0, 2), 16);
-    const g1 = parseInt(hex1.substr(2, 2), 16);
-    const b1 = parseInt(hex1.substr(4, 2), 16);
-    
-    const r2 = parseInt(hex2.substr(0, 2), 16);
-    const g2 = parseInt(hex2.substr(2, 2), 16);
-    const b2 = parseInt(hex2.substr(4, 2), 16);
+    const r2 = parseInt(hex2.substring(0, 2), 16);
+    const g2 = parseInt(hex2.substring(2, 4), 16);
+    const b2 = parseInt(hex2.substring(4, 6), 16);
     
     const r = Math.round(r1 + factor * (r2 - r1));
     const g = Math.round(g1 + factor * (g2 - g1));
@@ -340,5 +354,16 @@ export function interpolateColor(color1, color2, factor) {
     
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
+
+// 💡 MEJORAS SUGERIDAS (NO IMPLEMENTADAS):
+// 1. Utilidades de validación de datos: Agregar funciones para validar inputs
+//    financieros (montos, categorías, fechas) con sanitización automática.
+//    Incluir validación de rangos, formatos de moneda regional, y prevención
+//    de inyección de código. Esto mejoraría la seguridad y consistencia de datos.
+//
+// 2. Sistema de cache inteligente: Implementar funciones de cache con TTL
+//    (time-to-live) para datos costosos de calcular como estadísticas y gráficos.
+//    Incluir invalidación automática cuando cambien los datos base. Esto
+//    mejoraría significativamente el rendimiento en dashboards complejos.
 
 

@@ -1,7 +1,30 @@
 /**
  * 🔐 NEBULA FINANCIAL - AUTHENTICATION MODULE
  * ===========================================
- * Sistema completo de autenticación con Firebase
+ * Sistema completo de autenticación con Firebase y modo offline
+ * 
+ * FUNCIONALIDADES:
+ * - Google Login con Firebase Authentication
+ * - Modo Invitado offline (sin Firebase) 
+ * - Gestión de estados de autenticación
+ * - Persistencia de sesión
+ * - Manejo robusto de errores con fallbacks
+ * 
+ * MÉTODOS PRINCIPALES:
+ * - signInWithGoogle(): Login con cuenta Google
+ * - signInAsGuest(): Modo invitado offline
+ * - signOut(): Cerrar sesión
+ * - onAuthStateChanged(): Listener de cambios de estado
+ * 
+ * SEGURIDAD:
+ * - Validación de tokens automática
+ * - Manejo seguro de errores sin exposición de datos
+ * - Fallback robusto ante fallos de Firebase
+ * 
+ * CÓMO PROBAR:
+ * 1. authService.signInAsGuest() → debe crear usuario offline
+ * 2. authService.signInWithGoogle() → debe abrir popup de Google
+ * 3. authService.getCurrentUser() → debe retornar usuario actual
  */
 
 export class NebulaAuth {
@@ -10,7 +33,8 @@ export class NebulaAuth {
         this.isInitialized = false;
         this.authStateListeners = [];
         
-        // Inicializar Firebase cuando esté listo
+        // ⚠️ REFACTOR NOTE: Constructor asíncrono es antipatrón
+        // TODO: Mover inicialización a método separado llamado externamente
         this.initializeFirebase();
     }
       /**
@@ -72,10 +96,35 @@ export class NebulaAuth {
             prompt: 'select_account'
         });
     }
-    
-    /**
+      /**
      * 🚪 Iniciar sesión con Google
-     */    async signInWithGoogle() {
+     * 
+     * PROCESO:
+     * 1. Verifica que Firebase esté inicializado y disponible
+     * 2. Abre popup de Google para autenticación
+     * 3. Obtiene credenciales y token de acceso (opcional)
+     * 4. Crea/actualiza perfil de usuario en Firestore
+     * 5. Formatea y retorna datos del usuario
+     * 
+     * MANEJO DE ERRORES:
+     * - Firebase no disponible → Error con sugerencia de modo invitado
+     * - Popup bloqueado → Instrucciones para desbloquear
+     * - Network failed → Sugerencia de verificar conexión
+     * - Credential null → No crítico, login sigue funcionando
+     * 
+     * RETORNA:
+     * - success: true/false
+     * - user: objeto con datos del usuario (si success=true)
+     * - token: access token de Google (puede ser null)
+     * - error/message: detalles del error (si success=false)
+     * 
+     * CÓMO PROBAR:
+     * 1. Ejecutar: authService.signInWithGoogle()
+     * 2. Debería abrir popup de Google
+     * 3. Verificar en console: "✅ Sesión iniciada exitosamente"
+     * 4. Verificar: authService.getCurrentUser() retorna datos
+     */
+    async signInWithGoogle() {
         try {
             if (!this.isInitialized) {
                 throw new Error('Sistema de autenticación no inicializado');
@@ -172,11 +221,14 @@ export class NebulaAuth {
             if (window.renderApp) {
                 window.renderApp();
             }
-        }
-    }
+        }    }
     
     /**
      * 🚪 Cerrar sesión
+     * 
+     * CÓMO PROBAR:
+     * - Ejecutar: authService.signOut()
+     * - Verificar: authService.getCurrentUser() retorna null
      */
     async signOut() {
         try {
@@ -189,8 +241,39 @@ export class NebulaAuth {
             console.error('❌ Error cerrando sesión:', error);
             return this.handleAuthError(error);
         }
-    }    /**
+    }
+    
+    /**
      * 👥 Iniciar sesión como invitado (MODO OFFLINE PURO)
+     * 
+     * PROPÓSITO:
+     * Este método implementa un sistema de usuario invitado completamente offline
+     * que NO depende de Firebase en absoluto. Garantiza acceso a la aplicación
+     * independientemente del estado de Firebase.
+     * 
+     * PROCESO:
+     * 1. Crea un usuario local con ID único basado en timestamp
+     * 2. Guarda los datos en localStorage para persistencia
+     * 3. Retorna usuario válido para el sistema de autenticación
+     * 
+     * CARACTERÍSTICAS:
+     * - Sin llamadas a Firebase (100% offline)
+     * - Persistencia entre sesiones del navegador
+     * - Fallback ultra-robusto con manejo de errores de localStorage
+     * - Compatible con toda la funcionalidad de la aplicación
+     * 
+     * DATOS DEL USUARIO INVITADO:
+     * - uid: 'guest_' + timestamp único
+     * - displayName: 'Invitado'
+     * - email: null (no hay email en modo invitado)
+     * - isAnonymous: true (marca como usuario invitado)
+     * - mode: 'offline' (indica el modo de funcionamiento)
+     * 
+     * CÓMO PROBAR:
+     * 1. Ejecutar: authService.signInAsGuest()
+     * 2. Verificar en localStorage: clave 'nebula_guest_user'
+     * 3. Verificar: authService.getCurrentUser().isAnonymous === true
+     * 4. Recargar página → debería mantener datos del invitado
      */
     async signInAsGuest() {
         try {
@@ -351,3 +434,14 @@ export const authService = new NebulaAuth();
 
 // También mantener compatibilidad global
 window.NebulaAuth = authService;
+
+// 💡 MEJORAS SUGERIDAS (NO IMPLEMENTADAS):
+// 1. Factory Pattern para inicialización: Reemplazar constructor asíncrono con un patrón
+//    factory que retorne Promise. Ejemplo: NebulaAuth.create().then(auth => ...). Esto
+//    resuelve el antipatrón del constructor asíncrono y permite manejo apropiado de errores
+//    de inicialización sin afectar la creación del objeto.
+//
+// 2. Sistema de retry automático: Implementar reintentos automáticos para operaciones
+//    fallidas de autenticación (especialmente útil para problemas de red temporales).
+//    Incluir backoff exponencial y límite de intentos. Esto mejoraría la UX en conexiones
+//    inestables sin requerir intervención manual del usuario.

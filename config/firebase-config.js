@@ -1,10 +1,29 @@
 /**
  * 🔥 NEBULA FINANCIAL - FIREBASE CONFIGURATION
  * ============================================
- * Configuración robusta de Firebase con manejo de errores
+ * Configuración robusta de Firebase con manejo de errores y fallbacks
+ * 
+ * FUNCIONALIDAD:
+ * - Configuración completa de Firebase Authentication y Firestore
+ * - Validación automática de credenciales
+ * - Detección de disponibilidad de Firebase SDK
+ * - Fallback robusto para modo offline
+ * - Exportación global segura para compatibilidad
+ * 
+ * SEGURIDAD:
+ * ⚠️ IMPORTANTE: Las credenciales están hardcodeadas para desarrollo.
+ * 🔒 Para producción, considerar usar variables de entorno del servidor.
+ * 📝 Revisar regularmente permisos de Firebase Console.
+ * 
+ * CÓMO PROBAR:
+ * 1. Abrir DevTools → Console
+ * 2. Verificar logs: "🔥 Firebase config cargado: ✅ Válido"
+ * 3. Comprobar: window.NebulaConfig.isValid === true
+ * 4. Probar: window.NebulaConfig.hasFirebase === true
  */
 
-// Configuración de Firebase (credenciales reales)
+// 🔐 Configuración de Firebase (credenciales reales)
+// ⚠️ SECURITY NOTE: Estas claves son seguras para frontend, pero revisar permisos en Firebase Console
 const firebaseConfig = {
     apiKey: "AIzaSyCk9hfIQXFQoPplvcdWqM62dbpl5L5Hzcg",
     authDomain: "nebula-v2-94054.firebaseapp.com", 
@@ -14,20 +33,21 @@ const firebaseConfig = {
     appId: "1:568313746240:web:8b86cc922438022672a0a5"
 };
 
-// Configuración de autenticación
+// 🔐 Configuración de autenticación
+// Define qué métodos de login están disponibles y cómo se comportan
 const authConfig = {
     providers: {
         google: {
             enabled: true,
-            scopes: ['profile', 'email']
+            scopes: ['profile', 'email'] // Permisos solicitados a Google
         },
         anonymous: {
-            enabled: true // Para modo invitado
+            enabled: true // Habilita modo invitado sin registro
         }
     },
-    persistence: 'local',
+    persistence: 'local', // Mantener sesión entre cierres del navegador
     redirectUrl: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000',
-    cookiePolicy: 'single_host_origin'
+    cookiePolicy: 'single_host_origin' // Política de cookies para seguridad
 };
 
 // Configuración de Firestore
@@ -40,11 +60,25 @@ const firestoreConfig = {
         debts: 'user_debts',
         settings: 'user_settings'
     },
-    enableOfflineSupport: true,
-    cacheSizeBytes: 40000000 // 40MB cache
+    enableOfflineSupport: true,    cacheSizeBytes: 40000000 // 40MB cache
 };
 
-// Función de validación con manejo de errores robusto
+/**
+ * 🔍 Validación de configuración de Firebase
+ * 
+ * PROPÓSITO:
+ * - Verifica que las credenciales de Firebase estén configuradas
+ * - Detecta configuraciones de placeholder (que contienen 'TU_')
+ * - Proporciona feedback claro sobre el estado de la configuración
+ * 
+ * RETORNA:
+ * - true: Firebase configurado y listo para usar
+ * - false: Configuración incompleta, usar modo offline
+ * 
+ * CÓMO PROBAR:
+ * - Consola: validateConfig() debe retornar true
+ * - Ver logs: "✅ Configuración de Firebase validada correctamente"
+ */
 function validateConfig() {
     try {
         const required = ['apiKey', 'authDomain', 'projectId'];
@@ -141,3 +175,14 @@ try {
         console.log('🔄 Configuración fallback aplicada');
     }
 }
+
+// 💡 MEJORAS SUGERIDAS (NO IMPLEMENTADAS):
+// 1. Sistema de configuración por entorno: Implementar detección automática del entorno
+//    (desarrollo/staging/producción) y cargar configuraciones específicas desde archivos
+//    separados o variables de entorno del servidor. Esto permitiría tener diferentes
+//    proyectos Firebase para cada entorno sin cambiar código.
+//
+// 2. Validación avanzada de permisos: Agregar verificación en tiempo real de los
+//    permisos configurados en Firebase Console (Rules de Firestore, métodos de auth
+//    habilitados, dominios autorizados) y mostrar warnings específicos si detecta
+//    configuraciones potencialmente inseguras o incompletas.
