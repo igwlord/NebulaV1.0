@@ -1,0 +1,284 @@
+/* 
+ * 🎨 NEBULA FINANCIAL - ESTILOS PARA MODALES MEJORADOS
+ * CloudSonnet4: Estilos adicionales para el sistema de modales sin cierre automático
+ * @version 2.1.0
+ */
+
+/* ===============================================
+   💫 FEEDBACK VISUAL INLINE
+   =============================================== */
+
+.inline-feedback {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 10000;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    backdrop-filter: blur(8px);
+}
+
+.inline-feedback.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.inline-feedback.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.inline-feedback.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ===============================================
+   🪟 MODALES ACTIVOS
+   =============================================== */
+
+.modal-active {
+    border: 2px solid var(--primary-color, #6366f1) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(16px) !important;
+    z-index: 1000 !important;
+}
+
+.modal-content {
+    position: relative;
+    /* Asegurar posicionamiento para feedback */
+}
+
+/* ===============================================
+   📅 CALENDARIO MEJORADO
+   =============================================== */
+
+.month-dropdown-item {
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.month-dropdown-item:hover {
+    transform: translateY(-1px);
+    background-color: rgba(99, 102, 241, 0.1);
+}
+
+.month-dropdown-item.active {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.year-nav-btn:hover {
+    background: var(--primary-color, #6366f1);
+    color: white;
+    transform: scale(1.1);
+}
+
+#calendar-dropdown {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#calendar-dropdown:not(.hidden) {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ===============================================
+   📝 FORMULARIOS MEJORADOS
+   =============================================== */
+
+.form-modal {
+    position: relative;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-submit-btn {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.form-submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.form-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* ===============================================
+   🎯 LISTAS DE ELEMENTOS MEJORADAS
+   =============================================== */
+
+.transaction-item, 
+.investment-item, 
+.debt-item, 
+.goal-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.transaction-item:hover, 
+.investment-item:hover, 
+.debt-item:hover, 
+.goal-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+}
+
+.transaction-item.newly-added {
+    animation: highlightNew 2s ease-out;
+}
+
+@keyframes highlightNew {
+    0% {
+        background-color: rgba(34, 197, 94, 0.2);
+        transform: scale(1.02);
+    }
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+/* ===============================================
+   🎨 BOTONES DE ACCIÓN MEJORADOS
+   =============================================== */
+
+.delete-btn, 
+.edit-btn, 
+.action-btn {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.delete-btn:hover {
+    background-color: #ef4444;
+    color: white;
+    transform: scale(1.1);
+}
+
+.edit-btn:hover {
+    background-color: #3b82f6;
+    color: white;
+    transform: scale(1.1);
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ===============================================
+   💫 EFECTOS DE CARGA Y TRANSICIONES
+   =============================================== */
+
+.updating {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.updating::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ===============================================
+   📱 RESPONSIVE IMPROVEMENTS
+   =============================================== */
+
+@media (max-width: 768px) {
+    .inline-feedback {
+        right: 5px;
+        font-size: 11px;
+        padding: 3px 8px;
+    }
+    
+    #calendar-dropdown {
+        width: 90vw;
+        max-width: 320px;
+    }
+    
+    .modal-active {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    }
+}
+
+/* ===============================================
+   🎭 TEMA DARK MODE SUPPORT
+   =============================================== */
+
+[data-theme="dark"] .inline-feedback.success {
+    background: linear-gradient(135deg, #065f46, #047857);
+}
+
+[data-theme="dark"] .inline-feedback.error {
+    background: linear-gradient(135deg, #991b1b, #b91c1c);
+}
+
+[data-theme="dark"] .modal-active {
+    border-color: #a78bfa !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+/* ===============================================
+   ⚡ OPTIMIZACIONES DE RENDIMIENTO
+   =============================================== */
+
+.will-change-transform {
+    will-change: transform;
+}
+
+.gpu-accelerated {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}

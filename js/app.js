@@ -635,126 +635,30 @@ function renderDebtsView() {
 
 /**
  * ⚙️ Renderizar vista de Configuración
- * CloudSonnet4: Refactorizado con nuevas funcionalidades
+ * CloudSonnet4: Refactorizado con diseño compacto
  */
 function renderSettingsView() {
-    // CloudSonnet4: Temas renombrados con nuevos nombres
-    const themeNames = {
-        aureoAmanecer: 'Obsidiana Nebulosa',
-        crisonVespertino: 'Atardecer de Cuarzo', 
-        aguamarinaCeleste: 'Galaxia Aurora',
-        purpureoMistico: 'Noche Cósmica'
-    };
-    
-    // CloudSonnet4: Previews de temas mejorados
     const themesHTML = Object.entries(THEMES).map(([key, theme]) => `
-        <button data-theme-key="${key}" class="theme-selector p-3 rounded-xl border-2 transition-all ${appState.themeKey === key ? `${theme.accentBorder} scale-105 shadow-lg` : 'border-transparent opacity-70 hover:opacity-100 hover:scale-102'}">
-            <div class="w-full h-20 rounded-lg mb-3 relative overflow-hidden" style="background: ${theme.gradient}">
-                <div class="absolute inset-2 rounded border border-white/20 flex items-center justify-center">
-                    <div class="w-3 h-3 rounded-full" style="background: ${theme.sunColor}; box-shadow: 0 0 10px ${theme.sunColor}80;"></div>
-                </div>
-            </div>
-            <p class="font-medium ${appState.theme.textPrimary} text-sm">${themeNames[key] || theme.name}</p>
+        <button data-theme-key="${key}" class="theme-selector p-2 rounded-lg border transition-all ${appState.themeKey === key ? `${theme.accentBorder} scale-105` : 'border-transparent opacity-70 hover:opacity-100 hover:scale-102'}">
+            <div class="w-full h-16 rounded-md mb-2" style="background: ${theme.gradient}"></div>
+            <p class="text-sm font-medium ${appState.theme.textPrimary}">${theme.name}</p>
         </button>
     `).join('');
 
-    // Sección de cuenta solo si es usuario invitado
-    const accountSectionHTML = appState.user?.method === 'guest' ? `
-        <div class="pb-6 border-b border-white/10">
-            <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">👤 Cuenta</h3>
-            <div class="space-y-3">
-                <div class="${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                    <div class="flex items-center gap-3">
-                        ${createIcon(ICONS.info, `w-6 h-6 ${appState.theme.accent}`)}
-                        <div>
-                            <p class="font-bold ${appState.theme.textPrimary}">Modo Invitado</p>
-                            <p class="text-sm ${appState.theme.textSecondary}">Tus datos se guardan localmente en este dispositivo.</p>
-                        </div>
-                    </div>
-                </div>
-                <button data-login-method="google" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                    ${createIcon(ICONS.mail, `w-6 h-6 ${appState.theme.accent}`)}
-                    <div>
-                        <p class="font-bold ${appState.theme.textPrimary}">Conectar con Google</p>
-                        <p class="text-sm ${appState.theme.textSecondary}">Sincroniza tus datos con tu cuenta de Google.</p>
-                    </div>
-                </button>
-            </div>
-        </div>
-    ` : '';
-
     return `
-        <div class="${appState.theme.surface} rounded-2xl shadow-lg p-6">
-            <h2 class="text-2xl font-bold ${appState.theme.textPrimary} mb-6">⚙️ Ajustes y Personalización</h2>
-            <div class="space-y-8">
-                ${accountSectionHTML}
-                
-                <!-- CloudSonnet4: Sección de temas mejorada -->
+        <div class="${appState.theme.surface} rounded-lg shadow-md p-4 max-w-sm mx-auto fixed top-16 right-4 z-50">
+            <h2 class="text-lg font-bold ${appState.theme.textPrimary} mb-4">⚙️ Ajustes</h2>
+            <div class="space-y-4">
                 <div>
-                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🎨 Temas Visuales</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">${themesHTML}</div>
+                    <h3 class="text-md font-semibold ${appState.theme.textPrimary} mb-2">🎨 Temas</h3>
+                    <div class="grid grid-cols-2 gap-2">${themesHTML}</div>
                 </div>
-                
-                <!-- CloudSonnet4: Herramientas refactorizadas -->
                 <div>
-                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🛠️ Herramientas</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button id="export-local-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                            ${createIcon(ICONS.download, `w-6 h-6 ${appState.theme.accent}`)}
-                            <div>
-                                <p class="font-bold ${appState.theme.textPrimary}">Exportar Backup</p>
-                                <p class="text-sm ${appState.theme.textSecondary}">Descarga copia de tus datos</p>
-                            </div>
-                        </button>
-                        
-                        <button id="import-local-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                            ${createIcon(ICONS.upload, `w-6 h-6 ${appState.theme.accent}`)}
-                            <div>
-                                <p class="font-bold ${appState.theme.textPrimary}">Importar Backup</p>
-                                <p class="text-sm ${appState.theme.textSecondary}">Restaurar datos desde archivo</p>
-                            </div>
-                        </button>
-                        
-                        <button id="export-excel-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                            <div class="w-6 h-6 ${appState.theme.accent} flex items-center justify-center">
-                                <span class="text-green-500 font-bold text-xs">XL</span>
-                            </div>
-                            <div>
-                                <p class="font-bold ${appState.theme.textPrimary}">Exportar a Excel</p>
-                                <p class="text-sm ${appState.theme.textSecondary}">Crear hoja de cálculo</p>
-                            </div>
-                        </button>
-                        
-                        <button id="open-shortcuts-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                            ${createIcon(ICONS.zap, `w-6 h-6 ${appState.theme.accent}`)}
-                            <div>
-                                <p class="font-bold ${appState.theme.textPrimary}">Atajos de Teclado</p>
-                                <p class="text-sm ${appState.theme.textSecondary}">A: Izquierda | D: Derecha</p>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- CloudSonnet4: Sección de sesión y datos -->
-                <div>
-                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🔐 Sesión y Datos</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button id="logout-button" class="text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
-                            ${createIcon(ICONS.logOut, `w-6 h-6 ${appState.theme.accent}`)}
-                            <div>
-                                <p class="font-bold ${appState.theme.textPrimary}">Cerrar Sesión</p>
-                                <p class="text-sm ${appState.theme.textSecondary}">Salir de tu cuenta</p>
-                            </div>
-                        </button>
-                        
-                        <button id="clear-all-data-button" class="text-left flex items-center gap-3 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 p-4 rounded-lg transition-colors backdrop-blur-md">
-                            ${createIcon(ICONS.trash, `w-6 h-6 text-red-400`)}
-                            <div>
-                                <p class="font-bold text-red-300">Borrar Todos los Datos</p>
-                                <p class="text-sm text-red-400/80">⚠️ Acción irreversible</p>
-                            </div>
-                        </button>
-                    </div>
+                    <h3 class="text-md font-semibold ${appState.theme.textPrimary} mb-2">🛠️ Herramientas</h3>
+                    <button id="open-shortcuts-button" class="w-full flex items-center gap-2 ${appState.theme.surface} hover:bg-black/10 p-2 rounded-md transition-colors">
+                        ${createIcon(ICONS.zap, `w-5 h-5 ${appState.theme.accent}`)}
+                        <span class="text-sm ${appState.theme.textPrimary}">Atajos de Teclado</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1280,6 +1184,12 @@ function handleLoginSuccess(result) {
             `¡Bienvenido ${result.user.displayName}!` : 
             '¡Bienvenido a Nebula Financial!';
         NotificationSystem.show(welcomeMsg, 'success');
+    }
+
+    // Redirigir automáticamente al dashboard después de la autenticación
+    if (appState.user) {
+        appState.activeView = 'dashboard';
+        renderApp();
     }
 }
 

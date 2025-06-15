@@ -3,15 +3,28 @@
   publish = "."
   command = "echo 'No build process needed - Static site ready!'"
 
-# Headers for security and performance
+# 🔒 Headers for security and performance (Enhanced)
 [[headers]]
   for = "/*"
   [headers.values]
+    # Prevenir clickjacking
     X-Frame-Options = "DENY"
+    # Protección XSS (mantenido para compatibilidad)
     X-XSS-Protection = "1; mode=block"
+    # Prevenir MIME sniffing
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://www.gstatic.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self' https:;"
+    # Política de referrer estricta
+    Referrer-Policy = "strict-origin-when-cross-origin"    # Política de seguridad de contenido (CSP) AVANZADA con reporte
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://www.gstatic.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; img-src 'self' data: https: blob:; connect-src 'self' https: wss: data:; font-src 'self' https://fonts.gstatic.com data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; report-uri /csp-report-endpoint;"
+    # Forzar HTTPS en producción
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"    # Controlar permisos de navegador (REFORZADO)
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), screen-wake-lock=(), fullscreen=(self), autoplay=()"
+    # Prevenir ataques de tiempo (Cross-Origin-Opener-Policy)
+    Cross-Origin-Opener-Policy = "same-origin"
+    # Prevenir ataques de datos (Cross-Origin-Embedder-Policy)
+    Cross-Origin-Embedder-Policy = "require-corp"
+    # Información del servidor
+    X-Powered-By = "Nebula Financial v2.1 - Fase 4 Security Enhanced"
 
 # Redirect all traffic to index-v2.html (main app)
 [[redirects]]

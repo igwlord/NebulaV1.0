@@ -225,19 +225,27 @@ export class NebulaAuth {
      * 🚪 Cerrar sesión
      * 
      * CÓMO PROBAR:
-     * - Ejecutar: authService.signOut()
+     * - Ejecutar: authService.logout()
      * - Verificar: authService.getCurrentUser() retorna null
      */
-    async signOut() {
+    async logout() {
         try {
+            if (!this.isInitialized) {
+                throw new Error('Sistema de autenticación no inicializado');
+            }
+
+            // Verificar que Firebase esté disponible
+            if (typeof firebase === 'undefined' || !firebase.apps.length) {
+                throw new Error('Firebase no está disponible.');
+            }
+
+            // Cerrar sesión con Firebase
             await firebase.auth().signOut();
-            console.log('✅ Sesión cerrada correctamente');
-            
-            return { success: true };
-            
+            this.user = null;
+            console.log('✅ Sesión cerrada exitosamente');
         } catch (error) {
-            console.error('❌ Error cerrando sesión:', error);
-            return this.handleAuthError(error);
+            console.error('❌ Error al cerrar sesión:', error);
+            throw error;
         }
     }
     

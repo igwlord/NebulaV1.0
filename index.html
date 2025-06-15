@@ -1,269 +1,135 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<head>    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Nebula - Tu Universo Financiero</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌌</text></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#FCD34D">
+    
+    <!-- 🚀 Preload recursos críticos para performance -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"></noscript>
+    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js" as="script">
+    
+    <!-- CSS Crítico para LCP optimizado -->
+    <link rel="stylesheet" href="css/critical.css">
+    
+    <!-- CSS No Crítico - Carga asíncrona -->
+    <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/styles.css"></noscript><script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <style>
-        /* --- Fuentes y Estilos Base --- */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            min-height: -webkit-fill-available; /* iOS specific */
+        /* 🚀 CSS CRÍTICO MÍNIMO - Solo para evitar FOUC */
+        body { 
+            margin: 0; 
+            background: #000; 
+            font-family: 'Inter', sans-serif; 
             overflow-x: hidden;
-            position: relative;
-            background-color: #000;
-            transition: background-color 0.5s ease;
-            -webkit-tap-highlight-color: transparent;
         }
-        :root { --bg-gradient: linear-gradient(to bottom right, #000000, #0d0d0d, #1a1a1a); }
-        body::before {
-            content: ''; position: absolute; inset: 0; background: var(--bg-gradient); z-index: -2; opacity: 1; transition: opacity 1s ease-in-out;
+        /* Dock positioning crítico */
+        .dock-container { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            z-index: 20; 
         }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
-
-        /* --- Animaciones y Partículas (CSS Puro) --- */
-        .particle-layer { position: absolute; inset: 0; overflow: hidden; }
-        .particle { position: absolute; border-radius: 50%; will-change: transform, opacity; }
-        
-        .view-transition { animation: fadeIn 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .modal-enter { animation: modal-in 0.3s ease-out forwards; }
-        .modal-leave { animation: modal-out 0.3s ease-in forwards; }
-        @keyframes modal-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }        @keyframes modal-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
-        
-        .dock-container {
-            position: relative;
-            padding: 6px;
-            border-radius: 24px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-          .nav-button {
-            transition: all 0.3s ease;
-            border-radius: 16px;
-            position: relative;
-            z-index: 10;
-        }
-        
-        .nav-button.active {
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 
-                        inset 0 0 20px rgba(255, 255, 255, 0.1);
-            transform: scale(1.05);
-        }
-        
-        .nav-button.active > svg {
-            filter: brightness(1.3) drop-shadow(0 0 8px currentColor);
-            transform: scale(1.1);
-        }
-        
-        .nav-button:hover:not(.active) {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.06);
-        }
-        
-        .nav-button:active {
-            transform: translateY(0) scale(0.98);
-        }
-
-        .login-card { animation: float-in 1s ease-out forwards; }
-        @keyframes float-in { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }        /* --- Animaciones de Paralaje para Nuevos Temas Dramáticos --- */
-        
-        /* 1. Áureo Amanecer - Polvo dorado flotante */
-        @keyframes float {
-            0% { transform: translateY(0px) translateX(0px); }
-            50% { transform: translateY(-20px) translateX(10px); }
-            100% { transform: translateY(0px) translateX(-5px); }
-        }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* 2. Crisón Vespertino - Niebla carmesí */
-        @keyframes drift {
-            0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0.1; }
-            50% { opacity: 0.3; }
-            100% { transform: translateX(30px) translateY(-20px) rotate(180deg); opacity: 0.05; }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 0.8; transform: scale(1.2); }
-        }
-
-        /* 3. Aguamarina Celeste - Flujo acuático */
-        @keyframes wave {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.1; }
-            50% { transform: scale(1.1) rotate(180deg); opacity: 0.3; }
-        }
-        @keyframes bubble {
-            0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
-            50% { transform: translateY(-50vh) scale(1); opacity: 0.4; }
-            100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
-        }
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.4; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.3); }
-        }
-
-        /* 4. Violeta Real - Aura real */
-        @keyframes orbit {
-            0% { transform: rotate(var(--angle)) translateY(var(--radius)) rotate(calc(-1 * var(--angle))); }
-            100% { transform: rotate(calc(var(--angle) + 360deg)) translateY(var(--radius)) rotate(calc(-1 * (var(--angle) + 360deg))); }
-        }
-        @keyframes sparkle {
-            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
-            50% { opacity: 1; transform: scale(1) rotate(180deg); }
-        }        @keyframes glow {
-            0%, 100% { opacity: 0.3; box-shadow: 0 0 2px currentColor; }
-            50% { opacity: 1; box-shadow: 0 0 8px currentColor, 0 0 12px currentColor; }
-        }
-
-        /* --- Efectos para títulos de mes --- */
-        @keyframes titleShimmer {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
-        @keyframes titleGlow {
-            0%, 100% { 
-                text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
-                transform: scale(1);
-            }
-            50% { 
-                text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
-                transform: scale(1.02);
-            }
-        }
-
-        /* Efecto de brillo sutil para el texto del título */
-        .title-glow {
-            animation: titleGlow 3s ease-in-out infinite;
-        }
-
-        /* Efecto shimmer para el fondo del título */
-        .title-shimmer {
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            background-size: 200% 100%;
-            animation: titleShimmer 3s ease-in-out infinite;
-        }/* --- Nuevas animaciones para notificaciones --- */
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            max-width: 380px;
-            width: 100%;
-            pointer-events: none;
-        }
-        
-        .notification {
-            backdrop-filter: blur(12px);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            transform: translateX(400px);
-            opacity: 0;
-            pointer-events: auto;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        
-        .notification.success {
-            background: rgba(34, 197, 94, 0.15);
-            border-color: #22c55e;
-            color: #dcfce7;
-        }
-        
-        .notification.error {
-            background: rgba(239, 68, 68, 0.15);
-            border-color: #ef4444;
-            color: #fecaca;
-        }
-        
-        .notification.info {
-            background: rgba(59, 130, 246, 0.15);
-            border-color: #3b82f6;
-            color: #dbeafe;
-        }
-        
-        .notification.warning {
-            background: rgba(245, 158, 11, 0.15);
-            border-color: #f59e0b;
-            color: #fef3c7;
-        }
-        
-        .notification-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .notification-body {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .notification-close {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: none;
-            border: none;
-            color: currentColor;
-            opacity: 0.6;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: opacity 0.2s;
-        }
-        
-        .notification-close:hover {
-            opacity: 1;
-        }
-        
-        @media (max-width: 640px) {
-            .notification-container {
-                left: 16px;
-                right: 16px;
-                top: 16px;
-                max-width: none;
-            }
-        }
-    </style>
+        /* Content spacing crítico */
+        #content-root { 
+            padding-bottom: 96px; 
+        }    </style>
 </head>
 <body>    <div id="app-container">
         <div id="parallax-bg" class="fixed inset-0 z-0 perspective-[1000px]"></div>
-        <div id="content-root" class="relative z-10 pb-24"></div>
+        <div id="content-root" class="relative z-10 pb-24" role="main" aria-label="Contenido principal de la aplicación"></div>
         <div id="dock-root" class="fixed bottom-0 left-0 right-0 z-20"></div>
         <div id="modal-root" class="fixed inset-0 z-50 pointer-events-none"></div>
         <!-- Sistema de Notificaciones Moderno -->
-        <div id="notification-container" class="notification-container"></div>
-    </div><script type="module">
+        <div id="notification-container" class="notification-container"></div>    </div><script src="js/utils/security.js"></script>
+    <script src="js/utils/input-validation.js"></script>
+      <!-- 🚀 CloudSonnet4 - Módulos especializados para arquitectura modular -->
+    <script src="js/modules/dashboard.js"></script>
+    <script src="js/modules/settings.js"></script>
+    <script src="js/modules/calendar.js"></script>
+    <script src="js/modules/dock-navigation.js"></script>
+    <script src="js/modules/grid-cards.js"></script>
+    <script src="js/modules/income.js"></script>
+    <script src="js/modules/expenses.js"></script>
+    <script src="js/modules/goals.js"></script>
+    <script src="js/modules/investments.js"></script>
+    <script src="js/modules/debts.js"></script>
+    
+    <script type="module">
         // ===============================================
         // 🌌 NEBULA FINANCIAL APP - CONFIGURACIÓN CORE
-        // ===============================================
-          /**
+        // ===============================================        // 🔒 INICIALIZAR SISTEMA DE SEGURIDAD
+        if (typeof NebulaSecurityUtils !== 'undefined') {
+            NebulaSecurityUtils.init();
+            console.log('🔒 Sistema de seguridad Nebula inicializado');
+        }
+        
+        // 🔒 INICIALIZAR VALIDADOR DE ENTRADA
+        if (typeof NebulaInputValidator !== 'undefined') {
+            console.log('🔒 Sistema de validación de entrada inicializado');
+        }        // 🚨 TIMESTAMP DEBUG: Asegurar recarga fresca
+        console.log('🕐 TIMESTAMP CARGA:', new Date().toISOString(), 'Cache-bust activo');        console.log('🔄 VERSION CÓDIGO:', 'v2.4_CLEAN_RESTORE_' + Date.now());
+        console.log('🚀 VALIDACIONES CORREGIDAS - SYNTAX LIMPIO');
+        // 🎯 SHORTCUT SYSTEM STATUS se verificará después de la declaración
+        
+        // 🔒 FUNCIONES DE SEGURIDAD - Protección XSS
+        /**
+         * Sanitiza strings para prevenir ataques XSS
+         * @param {string} str - String a sanitizar
+         * @returns {string} String sanitizado
+         */
+        function sanitizeHTML(str) {
+            if (typeof str !== 'string') return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        /**
+         * Sanitiza objetos con propiedades de texto
+         * @param {object} obj - Objeto a sanitizar
+         * @returns {object} Objeto sanitizado
+         */
+        function sanitizeObject(obj) {
+            if (!obj || typeof obj !== 'object') return obj;
+            const sanitized = {};
+            for (const [key, value] of Object.entries(obj)) {
+                if (typeof value === 'string') {
+                    sanitized[key] = sanitizeHTML(value);
+                } else if (typeof value === 'object') {
+                    sanitized[key] = sanitizeObject(value);
+                } else {
+                    sanitized[key] = value;
+                }
+            }
+            return sanitized;
+        }
+
+        /**
+         * Establece innerHTML de forma segura
+         * @param {Element} element - Elemento DOM
+         * @param {string} html - HTML a insertar (será sanitizado si contiene entrada de usuario)
+         * @param {boolean} trusted - Si el HTML viene de código confiable (default: true)
+         */
+        function safeSetInnerHTML(element, html, trusted = true) {
+            if (!element) return;
+            if (trusted) {
+                element.innerHTML = html; // HTML confiable del código de la app
+            } else {
+                element.textContent = html; // Entrada de usuario - solo texto
+            }
+        }
+
+        /**
          * 🎨 DEFINICIÓN DE TEMAS VISUALES
          * Cada tema define colores, gradientes y efectos de partículas únicos
          * Todos centrados alrededor del SOL como estrella principal de la aplicación
@@ -405,9 +271,8 @@
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.id = `notification-${id}`;
-                
-                notification.innerHTML = `
-                    <button class="notification-close" onclick="NotificationSystem.remove('${id}')">
+                  notification.innerHTML = `
+                    <button class="notification-close" onclick="NotificationSystem.remove('${id}')" aria-label="Cerrar notificación" role="button">
                         ${createIcon(ICONS.x, 'w-4 h-4')}
                     </button>
                     <div class="notification-header">
@@ -472,22 +337,36 @@
             isLoading: false,
             activeView: 'dashboard',
             activeModal: null,
-            
-            // --- Configuración y Preferencias ---
-            isPrivate: JSON.parse(localStorage.getItem('isPrivateMode')) ?? true,
-            themeKey: localStorage.getItem('financialTheme') || 'aureoAmanecer',
+              // --- Configuración y Preferencias ---
+            isPrivate: (() => {
+                try {
+                    return NebulaSecurityUtils ? 
+                        NebulaSecurityUtils.secureGetItem('isPrivateMode', true) :
+                        JSON.parse(localStorage.getItem('isPrivateMode')) ?? true;
+                } catch { return true; }
+            })(),
+            themeKey: (() => {
+                try {
+                    return NebulaSecurityUtils ? 
+                        NebulaSecurityUtils.secureGetItem('financialTheme', 'aureoAmanecer') :
+                        localStorage.getItem('financialTheme') || 'aureoAmanecer';
+                } catch { return 'aureoAmanecer'; }
+            })(),
             
             // --- Estado Temporal de Navegación ---
             currentDate: new Date(),
             calendarViewYear: new Date().getFullYear(),
-            
-            // --- Datos Financieros Principales ---
-            data: JSON.parse(localStorage.getItem('financialData')) || { 
-                transactions: {}, 
-                goals: [], 
-                investments: [], 
-                debts: [] 
-            },
+              // --- Datos Financieros Principales ---
+            data: (() => {
+                try {
+                    const defaultData = { transactions: {}, goals: [], investments: [], debts: [] };
+                    return NebulaSecurityUtils ? 
+                        NebulaSecurityUtils.secureGetItem('financialData', defaultData) :
+                        JSON.parse(localStorage.getItem('financialData')) || defaultData;
+                } catch { 
+                    return { transactions: {}, goals: [], investments: [], debts: [] }; 
+                }
+            })(),
             
             // --- Getters Computados ---
             get theme() { 
@@ -497,12 +376,29 @@
             get currentMonthKey() { 
                 return `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, '0')}`; 
             },
-            
-            // --- Persistencia de Datos ---
+              // --- Persistencia de Datos ---
             saveState() {
-                localStorage.setItem('financialTheme', this.themeKey);
-                localStorage.setItem('financialData', JSON.stringify(this.data));
-                localStorage.setItem('isPrivateMode', JSON.stringify(this.isPrivate));
+                try {
+                    if (NebulaSecurityUtils) {
+                        // Usar almacenamiento seguro cifrado
+                        NebulaSecurityUtils.secureSetItem('financialTheme', this.themeKey);
+                        NebulaSecurityUtils.secureSetItem('financialData', this.data);
+                        NebulaSecurityUtils.secureSetItem('isPrivateMode', this.isPrivate);
+                        console.log('🔒 Estado guardado de forma segura');
+                    } else {
+                        // Fallback a localStorage normal
+                        localStorage.setItem('financialTheme', this.themeKey);
+                        localStorage.setItem('financialData', JSON.stringify(this.data));
+                        localStorage.setItem('isPrivateMode', JSON.stringify(this.isPrivate));
+                        console.log('⚠️ Estado guardado sin cifrado (fallback)');
+                    }
+                } catch (error) {
+                    console.error('❌ Error guardando estado:', error);
+                    // Último recurso: localStorage directo
+                    localStorage.setItem('financialTheme', this.themeKey);
+                    localStorage.setItem('financialData', JSON.stringify(this.data));
+                    localStorage.setItem('isPrivateMode', JSON.stringify(this.isPrivate));
+                }
             },
             
             // --- Autenticación ---
@@ -797,30 +693,28 @@
                 // Agregar selector de mes para vistas que lo requieren
                 if(!['settings', 'achievements', 'goals', 'investments', 'debts'].includes(appState.activeView)) {
                    viewHTML += renderMonthSelector();
-                }
-
-                // Renderizar vista según selección activa
+                }                // Renderizar vista según selección activa
                 switch (appState.activeView) {
                     case 'dashboard': 
-                        viewHTML += renderDashboard(); 
+                        viewHTML += window.NebulaDashboardModule ? window.NebulaDashboardModule.render() : renderDashboard(); 
                         break;
                     case 'income': 
-                        viewHTML += renderTransactionsView('income'); 
+                        viewHTML += window.NebulaIncomeModule ? window.NebulaIncomeModule.render() : renderTransactionsView('income'); 
                         break;
                     case 'expenses': 
-                        viewHTML += renderTransactionsView('expense'); 
+                        viewHTML += window.NebulaExpensesModule ? window.NebulaExpensesModule.render() : renderTransactionsView('expense'); 
                         break;
                     case 'goals': 
-                        viewHTML += renderGoalsView(); 
+                        viewHTML += window.NebulaGoalsModule ? window.NebulaGoalsModule.render() : renderGoalsView(); 
                         break;
                     case 'investments': 
-                        viewHTML += renderInvestmentsView(); 
+                        viewHTML += window.NebulaInvestmentsModule ? window.NebulaInvestmentsModule.render() : renderInvestmentsView(); 
                         break;
                     case 'debts': 
-                        viewHTML += renderDebtsView(); 
+                        viewHTML += window.NebulaDebtsModule ? window.NebulaDebtsModule.render() : renderDebtsView(); 
                         break;
                     case 'settings': 
-                        viewHTML += renderSettingsView(); 
+                        viewHTML += window.NebulaSettingsModule ? window.NebulaSettingsModule.render() : renderSettingsView(); 
                         break;
                     default: 
                         viewHTML += renderComingSoon(appState.activeView);
@@ -831,10 +725,19 @@
             }
             
             addEventListeners();
-            
-            // Actualizar glider después del renderizado
+              // Actualizar glider después del renderizado
             setTimeout(() => updateDockGlider(), 100);
         }
+
+        // 🚀 CloudSonnet4 - Función global para cargar secciones (para uso de módulos)
+        window.loadSection = function(sectionName) {
+            if (sectionName && sectionName !== appState.activeView) {
+                appState.activeView = sectionName;
+            }
+            window.currentSection = appState.activeView; // Para que los módulos sepan en qué sección están
+            renderApp();
+        };
+
           // ===============================================
         // 🎭 FUNCIONES DE RENDERIZADO DE VISTAS ESPECIALES
         // ===============================================
@@ -922,13 +825,12 @@
                     </div>
                     
                     <!-- Controles de navegación centrados -->
-                    <div class="flex items-center justify-center gap-4">
-                        <button id="month-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes anterior (←)">
+                    <div class="flex items-center justify-center gap-4">                        <button id="month-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes anterior (←)" aria-label="Ir al mes anterior" role="button">
                             ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
                         </button>
                         
                         <div class="relative">
-                            <button id="calendar-dropdown-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Seleccionar mes (C)">
+                            <button id="calendar-dropdown-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Seleccionar mes (C)" aria-label="Abrir selector de mes" role="button" aria-haspopup="true" aria-expanded="false">
                                 ${createIcon(ICONS.calendar, "w-6 h-6")}
                             </button>
                             
@@ -1040,7 +942,7 @@
                             <button id="calendar-year-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full">
                                 ${createIcon(ICONS.chevronLeft, "w-8 h-8")}
                             </button>
-                            <input type="number" id="calendar-year-input" value="${appState.calendarViewYear}" class="text-2xl font-bold ${appState.theme.textPrimary} bg-transparent w-24 text-center focus:outline-none focus:bg-black/20 rounded-lg backdrop-blur-md">
+                            <input type="number" id="calendar-year-input" value="${appState.calendarViewYear}" class="text-2xl font-bold ${appState.theme.textPrimary} bg-transparent w-24 text-center focus:outline-none focus:bg-black/20 rounded-lg backdrop-blur-md" aria-label="Año del calendario" min="1900" max="2100">
                             <button id="calendar-year-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full">
                                 ${createIcon(ICONS.chevronRight, "w-8 h-8")}
                             </button>
@@ -1127,8 +1029,7 @@
                 <div class="flex flex-col items-center justify-center text-slate-900 w-full h-full">
                     <div class="relative mb-4">
                         <div class="flex items-center gap-2">
-                            <p class="text-sm font-medium opacity-70">Patrimonio Neto</p>
-                            <button id="privacy-toggle" class="text-slate-900/50 hover:text-slate-900 transition-colors" title="Ocultar información">
+                            <p class="text-sm font-medium opacity-70">Patrimonio Neto</p>                            <button id="privacy-toggle" class="text-slate-900/50 hover:text-slate-900 transition-colors" title="Ocultar información" aria-label="Alternar modo privacidad" aria-pressed="${appState.privacyMode}" role="button">
                                 ${createIcon(ICONS.eye, "w-5 h-5")}
                             </button>
                         </div>
@@ -1321,9 +1222,8 @@
                         <div class="${appState.theme.accentBg} h-2.5 rounded-full" style="width: ${((goal.saved / goal.target) * 100)}%"></div>
                     </div>
                 </div>
-            `).join('');
-            return `
-                <div class="backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface}">
+            `).join('');            return `
+                <div class="${appState.theme.surface} rounded-2xl shadow-lg p-6">
                     <h2 class="text-2xl font-bold ${appState.theme.textPrimary} mb-6">Metas de Ahorro</h2>
                     <form id="goal-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-end">
                         <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Nombre de la Meta</label><input type="text" name="name" placeholder="Ej: Viaje a Marte" class="w-full bg-white/10 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none" required /></div>
@@ -1334,8 +1234,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${goalsHTML || `<p class="${appState.theme.textSecondary} col-span-full text-center py-4">Aún no has definido metas.</p>`}</div>
                 </div>
             `;
-        }
-          function renderDebtsView() {
+        }        function renderDebtsView() {
             const debtsHTML = appState.data.debts.map(debt => `
                 <li class="backdrop-blur-sm rounded-lg flex justify-between items-center p-4 ${appState.theme.surface}">
                     <div><p class="font-semibold ${appState.theme.textPrimary}">${debt.description}</p></div>
@@ -1561,17 +1460,15 @@
                     const newLength = e.target.value.length;
                     e.target.setSelectionRange(cursorPosition + (newLength - originalLength), cursorPosition + (newLength - originalLength));
                 });
-            });
-
-            // Formularios
+            });            // 🔒 Formularios con protección XSS
             const transactionForm = document.getElementById('transaction-form');
             if (transactionForm) {
                 transactionForm.addEventListener('submit', e => {
                     e.preventDefault();
                     const transactionData = {
                         type: appState.activeView === 'income' ? 'income' : 'expense',
-                        description: e.target.elements.description.value,
-                        category: e.target.elements.category ? e.target.elements.category.value : undefined,
+                        description: sanitizeHTML(e.target.elements.description.value),
+                        category: e.target.elements.category ? sanitizeHTML(e.target.elements.category.value) : undefined,
                         amount: parseFormattedNumber(e.target.elements.amount.value)
                     };
                     
@@ -1589,8 +1486,8 @@
                     e.preventDefault();
                     const initial = parseFormattedNumber(e.target.elements.initialAmount.value);
                     appState.addInvestment({ 
-                        name: e.target.elements.name.value, 
-                        type: e.target.elements.type.value, 
+                        name: sanitizeHTML(e.target.elements.name.value), 
+                        type: sanitizeHTML(e.target.elements.type.value), 
                         initialAmount: initial, 
                         currentAmount: initial 
                     });
@@ -1604,7 +1501,7 @@
                 goalForm.addEventListener('submit', e => {
                     e.preventDefault();
                     appState.addGoal({ 
-                        name: e.target.elements.name.value, 
+                        name: sanitizeHTML(e.target.elements.name.value), 
                         target: parseFormattedNumber(e.target.elements.target.value) 
                     });
                     e.target.reset();
@@ -1617,8 +1514,8 @@
                 debtForm.addEventListener('submit', e => {
                     e.preventDefault();
                     appState.addDebt({ 
-                        description: e.target.elements.description.value, 
-                        amount: parseFormattedNumber(e.target.elements.amount.value) 
+                        description: sanitizeHTML(e.target.elements.description.value), 
+                        amount: parseFormattedNumber(e.target.elements.amount.value)
                     });
                     e.target.reset();
                     NotificationSystem.success('Éxito', 'Deuda registrada correctamente');
@@ -1764,11 +1661,90 @@
             }
         }
           // ===============================================
-        // ⌨️ SISTEMA DE SHORTCUTS MEJORADO
+        // 🚀 FUNCIONES DE PERFORMANCE - Optimización de eventos
+        /**
+         * Debounce para optimizar eventos de input frecuentes
+         * @param {Function} func - Función a ejecutar
+         * @param {number} wait - Tiempo de espera en ms
+         * @returns {Function} Función debounced
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        /**
+         * Throttle para limitar ejecución de funciones
+         * @param {Function} func - Función a ejecutar
+         * @param {number} limit - Límite en ms
+         * @returns {Function} Función throttled
+         */
+        function throttle(func, limit) {
+            let inThrottle;
+            return function(...args) {
+                if (!inThrottle) {
+                    func.apply(this, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        }
+
+        /**
+         * Lazy loading para elementos que aparecen en viewport
+         * @param {string} selector - Selector CSS de elementos
+         * @param {Function} callback - Función a ejecutar cuando sea visible
+         */
+        function observeIntersection(selector, callback) {
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            callback(entry.target);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll(selector).forEach(el => observer.observe(el));
+            } else {
+                // Fallback para navegadores sin IntersectionObserver
+                document.querySelectorAll(selector).forEach(callback);
+            }        }
+
+        // ===============================================
+        // 🧮 FUNCIONES DE CÁLCULO FINANCIERO
+        // ===============================================
+        
+        function calculateSummary() {
+            const currentTransactions = appState.data.transactions[appState.currentMonthKey] || [];
+            const totalIncome = currentTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const totalExpenses = currentTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            
+            const allTransactions = Object.values(appState.data.transactions).flat();
+            const totalSavings = allTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0) - allTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const totalInvestments = appState.data.investments.reduce((sum, i) => sum + i.currentAmount, 0);
+            const totalDebts = appState.data.debts.reduce((sum, d) => sum + d.amount, 0);
+            
+            const balance = totalIncome - totalExpenses;
+            const netWorth = totalSavings + totalInvestments - totalDebts;
+            
+            return { balance, netWorth, totalInvestments, totalDebts, totalIncome, totalExpenses };
+        }
+
+        // ===============================================
+        // 🚀 SISTEMA DE ATAJOS DE TECLADO RESTAURADO
         // ===============================================
         
         /**
-         * 🎮 Gestor de Atajos de Teclado Robusto
+         * � Gestor de Atajos de Teclado Robusto
          * Sistema completo para manejar shortcuts en todos los navegadores
          */
         const ShortcutSystem = {
@@ -1778,7 +1754,7 @@
             init() {
                 this.registerDefaultShortcuts();
                 this.attachListener();
-                NotificationSystem.init();
+                console.log('✅ ShortcutSystem inicializado correctamente');
             },
             
             /**
@@ -1821,9 +1797,6 @@
             
             /**
              * Registra un nuevo atajo
-             * @param {string} key - Tecla o combinación
-             * @param {Function} callback - Función a ejecutar
-             * @param {string} description - Descripción del atajo
              */
             register(key, callback, description = '') {
                 this.shortcuts.set(key.toLowerCase(), { callback, description });
@@ -1831,7 +1804,6 @@
             
             /**
              * Elimina un atajo
-             * @param {string} key - Tecla a eliminar
              */
             unregister(key) {
                 this.shortcuts.delete(key.toLowerCase());
@@ -1839,8 +1811,6 @@
             
             /**
              * Verifica si una tecla debería ser ignorada
-             * @param {KeyboardEvent} event - Evento de teclado
-             * @returns {boolean}
              */
             shouldIgnoreEvent(event) {
                 const activeElement = document.activeElement;
@@ -1854,7 +1824,6 @@
             
             /**
              * Maneja el evento de teclado
-             * @param {KeyboardEvent} event - Evento de teclado
              */
             handleKeyDown(event) {
                 if (!this.isActive || this.shouldIgnoreEvent(event)) {
@@ -1886,7 +1855,6 @@
             
             /**
              * Obtiene lista de atajos registrados
-             * @returns {Array} Lista de atajos con descripciones
              */
             getShortcutsList() {
                 return Array.from(this.shortcuts.entries()).map(([key, data]) => ({
@@ -1897,195 +1865,12 @@
             
             /**
              * Activa/desactiva el sistema de shortcuts
-             * @param {boolean} active - Estado deseado
-             */
-            setActive(active) {
+             */            setActive(active) {
                 this.isActive = active;
-            }
-        };
+            }        };
 
-        function calculateSummary() {
-            const currentTransactions = appState.data.transactions[appState.currentMonthKey] || [];
-            const totalIncome = currentTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            const totalExpenses = currentTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-            
-            const allTransactions = Object.values(appState.data.transactions).flat();
-            const totalSavings = allTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0) - allTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-            const totalInvestments = appState.data.investments.reduce((sum, i) => sum + i.currentAmount, 0);
-            const totalDebts = appState.data.debts.reduce((sum, d) => sum + d.amount, 0);
-            
-            const balance = totalIncome - totalExpenses;
-            const netWorth = totalSavings + totalInvestments - totalDebts;            return { balance, netWorth, totalInvestments, totalDebts, totalIncome, totalExpenses };
-        }
-
-        // ===============================================
-        // 🚀 INICIALIZACIÓN DE LA APLICACIÓN
-        // ===============================================
-          /**
-         * 🎬 Punto de entrada principal
-         * Inicializa todos los sistemas y renderiza la interfaz
-         */
-        function initializeApp() {
-            try {
-                console.log('🚀 Inicializando Nebula Financial App...');
-                
-                // Inicializar referencias DOM
-                contentRoot = document.getElementById('content-root');
-                dockRoot = document.getElementById('dock-root');
-                parallaxBg = document.getElementById('parallax-bg');
-                modalRoot = document.getElementById('modal-root');
-                
-                // Verificar que los elementos del DOM existan
-                const appElement = document.getElementById('app-container');
-                const modalElement = document.getElementById('modal-root');
-                  if (!appElement) {
-                    console.error('❌ Elemento #app-container no encontrado');
-                    return;
-                }
-                
-                if (!modalElement) {
-                    console.error('❌ Elemento #modal-root no encontrado');
-                    return;
-                }
-                
-                // Inicializar sistemas
-                ShortcutSystem.init();
-                NotificationSystem.init();
-                
-                // Renderizar aplicación
-                renderApp();
-                
-                // Asegurar posicionamiento correcto del glider
-                setTimeout(updateDockGlider, 200);
-                
-                // Mostrar mensaje de bienvenida si es la primera vez
-                const isFirstVisit = !localStorage.getItem('nebula_visited');
-                if (isFirstVisit) {
-                    localStorage.setItem('nebula_visited', 'true');
-                    setTimeout(() => {
-                        NotificationSystem.info('¡Bienvenido!', 
-                            'Presiona H para ver los atajos de teclado disponibles', 6000);
-                    }, 2000);
-                }
-                
-                console.log('✅ Nebula Financial App inicializada correctamente');            } catch (error) {
-                console.error('❌ Error inicializando la aplicación:', error);
-                console.error('❌ Stack trace:', error.stack);
-                
-                // Mostrar información detallada del error
-                const errorDetails = `
-                    Error: ${error.message}
-                    
-                    Elementos DOM:
-                    - appContainer: ${!!document.getElementById('app-container')}
-                    - contentRoot: ${!!document.getElementById('content-root')}
-                    - dockRoot: ${!!document.getElementById('dock-root')}
-                    - parallaxBg: ${!!document.getElementById('parallax-bg')}
-                    - modalRoot: ${!!document.getElementById('modal-root')}
-                    
-                    Document ready state: ${document.readyState}
-                `;
-                
-                console.error('❌ Detalles del error:', errorDetails);
-                
-                // Intentar mostrar un mensaje de error al usuario
-                document.body.innerHTML = `
-                    <div style="color: white; text-align: center; padding: 50px; font-family: Arial, sans-serif; background: #000;">
-                        <h1>🌌 Nebula Financial</h1>
-                        <p style="color: #ff6b6b;">Error al cargar la aplicación. Por favor, recarga la página.</p>
-                        <pre style="color: #ffa500; font-size: 12px; text-align: left; background: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; overflow-x: auto;">${errorDetails}</pre>
-                        <button onclick="location.reload()" style="background: #4ECDC4; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 20px;">
-                            Recargar
-                        </button>
-                    </div>
-                `;
-            }
-        }
-          // Inicializar cuando el DOM esté listo - Versión mejorada para Live Server
-        function safeInitialize() {
-            try {
-                // Verificar que todos los elementos necesarios estén disponibles
-                if (!document.body || !document.getElementById('app-container')) {
-                    console.log('DOM not ready, retrying...');
-                    setTimeout(safeInitialize, 100);
-                    return;
-                }
-                
-                initializeApp();
-            } catch (error) {
-                console.error('Error initializing app:', error);
-                setTimeout(safeInitialize, 200);
-            }
-        }
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', safeInitialize);
-        } else if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            // Add a small delay to ensure everything is fully loaded before initialization
-            setTimeout(safeInitialize, 50);
-        } else {
-            safeInitialize();
-        }
-
-        // Debug: Agregar logging para Live Server
-        console.log('🔍 Debug: Script cargado, document.readyState:', document.readyState);
-        console.log('🔍 Debug: Elementos DOM disponibles:', {
-            body: !!document.body,
-            appContainer: !!document.getElementById('app-container'),
-            contentRoot: !!document.getElementById('content-root'),
-            dockRoot: !!document.getElementById('dock-root'),
-            parallaxBg: !!document.getElementById('parallax-bg'),
-            modalRoot: !!document.getElementById('modal-root')
-        });
-        
-        // 💡 MEJORAS SUGERIDAS (NO IMPLEMENTADAS):
-        // 
-        // 1. 🔒 SEGURIDAD Y VALIDACIÓN:
-        //    - Implementar validación de entrada más robusta para prevenir XSS
-        //    - Añadir sanitización de datos antes de guardar en localStorage
-        //    - Implementar sistema de backup automático de datos
-        // 
-        // 2. 📱 EXPERIENCIA MÓVIL MEJORADA:
-        //    - Añadir gestos de swipe para navegación entre meses
-        //    - Implementar vibración táctil en botones importantes
-        //    - Optimizar tamaños de toque para dispositivos móviles
-        // 
-        // 3. 📊 ANÁLISIS Y REPORTES:
-        //    - Crear gráficos interactivos con Chart.js para visualizar tendencias
-        //    - Implementar categorización automática de gastos con ML básico
-        //    - Añadir exportación de datos a CSV/PDF
-        // 
-        // 4. 🎯 FUNCIONALIDADES AVANZADAS:
-        //    - Sistema de presupuestos por categoría con alertas
-        //    - Recordatorios de pagos recurrentes
-        //    - Integración con APIs bancarias (PSD2) para importar transacciones
-        // 
-        // 5. 🎨 PERSONALIZACIÓN VISUAL:
-        //    - Editor de temas personalizado con preview en tiempo real
-        //    - Efectos de partículas configurables por usuario
-        //    - Modo de alto contraste para accesibilidad
-        // 
-        // 6. ⚡ OPTIMIZACIÓN DE RENDIMIENTO:
-        //    - Implementar lazy loading para listas largas de transacciones
-        //    - Usar Web Workers para cálculos financieros complejos
-        //    - Cachear renderizado de vistas para navegación más rápida
-        // 
-        // 7. 🔄 SINCRONIZACIÓN Y COLABORACIÓN:
-        //    - Sistema de sincronización multi-dispositivo
-        //    - Compartir presupuestos familiares con roles y permisos
-        //    - Historial de cambios con posibilidad de deshacer
-        // 
-        // 8. 🌐 INTERNACIONALIZACIÓN:
-        //    - Soporte multi-idioma con archivos de traducción JSON
-        //    - Formato de moneda configurable por región        //    - Fechas y números localizados según configuración del usuario
-        //
-        // 🧪 TESTING Y VALIDACIÓN:
-        // - Para probar la aplicación, abrir en navegador y verificar:
-        //   * Navegación entre vistas funciona correctamente
-        //   * Creación y eliminación de transacciones
-        //   * Cambio de temas visuales
-        //   * Responsividad en diferentes tamaños de pantalla
-        //   * Persistencia de datos al recargar página
+        // 🎯 DEBUG: Verificar que ShortcutSystem está definido
+        console.log('🎯 SHORTCUT SYSTEM STATUS:', typeof ShortcutSystem !== 'undefined' ? '✅ DEFINIDO' : '❌ NO DEFINIDO');
 
         // ===============================================
         // 🚀 INICIALIZACIÓN MEJORADA PARA LIVE SERVER
@@ -2119,13 +1904,28 @@
                 
                 // Renderizar aplicación
                 renderApp();
-                
-                // Configurar dock
+                  // Configurar dock
                 setTimeout(() => {
                     if (typeof updateDockGlider === 'function') {
                         updateDockGlider();
                     }
                 }, 200);
+                
+                // Mostrar mensaje de bienvenida si es la primera vez
+                const isFirstVisit = NebulaSecurityUtils ? 
+                    !NebulaSecurityUtils.secureGetItem('nebula_visited') :
+                    !localStorage.getItem('nebula_visited');
+                if (isFirstVisit) {
+                    if (NebulaSecurityUtils) {
+                        NebulaSecurityUtils.secureSetItem('nebula_visited', true);
+                    } else {
+                        localStorage.setItem('nebula_visited', 'true');
+                    }
+                    setTimeout(() => {
+                        NotificationSystem.info('¡Bienvenido!', 
+                            'Presiona H para ver los atajos de teclado disponibles', 6000);
+                    }, 2000);
+                }
                 
                 console.log('✅ Nebula iniciada correctamente');
                 
@@ -2145,7 +1945,7 @@
                             <button onclick="location.reload()" style="background: linear-gradient(45deg, #22c55e, #16a34a); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: transform 0.2s; margin-right: 10px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                 🔄 Recargar App
                             </button>
-                            <button onclick="localStorage.clear(); location.reload()" style="background: linear-gradient(45deg, #f59e0b, #d97706); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <button onclick="if(NebulaSecurityUtils) { NebulaSecurityUtils.clearSecurityData(); } else { localStorage.clear(); } location.reload()" style="background: linear-gradient(45deg, #f59e0b, #d97706); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">>
                                 🗑️ Limpiar Datos
                             </button>
                         </div>
@@ -2153,20 +1953,202 @@
                 `;
             }
         }
-        
-        // Función de espera para DOM
+          // Función de espera para DOM con verificación robusta
         function waitForDOM() {
-            if (document.readyState === 'complete') {
+            console.log('📋 Verificando estado DOM:', document.readyState);
+            
+            // Verificar que los elementos críticos existan
+            const criticalElements = ['app-container', 'content-root', 'dock-root', 'parallax-bg', 'modal-root'];
+            const allElementsExist = criticalElements.every(id => {
+                const element = document.getElementById(id);
+                console.log(`📋 Elemento ${id}:`, element ? '✅ Encontrado' : '❌ No encontrado');
+                return element !== null;
+            });
+            
+            if (document.readyState === 'complete' && allElementsExist) {
+                console.log('✅ DOM completamente cargado y elementos verificados');
                 startNebula();
-            } else if (document.readyState === 'interactive') {
-                setTimeout(startNebula, 100);
+            } else if (document.readyState === 'interactive' && allElementsExist) {
+                console.log('⏳ DOM interactivo, esperando 200ms...');
+                setTimeout(() => {
+                    const stillExist = criticalElements.every(id => document.getElementById(id));
+                    if (stillExist) {
+                        startNebula();
+                    } else {
+                        console.log('🔄 Elementos no listos, esperando evento DOMContentLoaded...');
+                        document.addEventListener('DOMContentLoaded', startNebula);
+                    }
+                }, 200);
             } else {
-                document.addEventListener('DOMContentLoaded', startNebula);
+                console.log('🔄 Esperando carga completa del DOM...');
+                document.addEventListener('DOMContentLoaded', () => {
+                    console.log('📋 DOMContentLoaded disparado, reintentando...');
+                    setTimeout(waitForDOM, 50);
+                });
             }
+        }// Iniciar aplicación
+        waitForDOM();
+
+        // 🧪 SISTEMA DE VALIDACIÓN AUTOMÁTICA
+        function validateNebula() {
+            setTimeout(() => {
+                try {
+                    console.log('🧪 Iniciando validación automática de Nebula...');                    const validationResults = {
+                        shortcuts: false,
+                        notifications: false,
+                        appState: false,
+                        dom: false,
+                        themes: false,
+                        security: false,
+                        inputValidation: false
+                    };
+                    
+                    // Test ShortcutSystem
+                    if (typeof ShortcutSystem !== 'undefined' && ShortcutSystem.init) {
+                        console.log('✅ ShortcutSystem: Definido y funcional');
+                        validationResults.shortcuts = true;
+                    } else {
+                        console.error('❌ ShortcutSystem: No definido o no funcional');
+                    }
+                    
+                    // Test NotificationSystem
+                    if (typeof NotificationSystem !== 'undefined' && NotificationSystem.success) {
+                        console.log('✅ NotificationSystem: Definido y funcional');
+                        validationResults.notifications = true;
+                    } else {
+                        console.error('❌ NotificationSystem: No definido o no funcional');
+                    }
+                      // Test appState
+                    if (typeof appState !== 'undefined' && appState.currentView && appState.data) {
+                        console.log('✅ appState: Definido y funcional');
+                        validationResults.appState = true;
+                    } else {
+                        console.error('❌ appState: No definido o no funcional', {
+                            defined: typeof appState !== 'undefined',
+                            hasCurrentView: typeof appState !== 'undefined' && typeof appState.currentView !== 'undefined',
+                            hasData: typeof appState !== 'undefined' && appState.data
+                        });
+                    }
+                    
+                    // Test DOM elements
+                    const criticalIds = ['content-root', 'dock-root', 'parallax-bg', 'modal-root'];
+                    const domOk = criticalIds.every(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            console.log(`✅ DOM ${id}: Encontrado`);
+                            return true;
+                        } else {
+                            console.error(`❌ DOM ${id}: No encontrado`);
+                            return false;
+                        }
+                    });
+                    validationResults.dom = domOk;                    // Test THEMES
+                    if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer && THEMES.nocheEstelar) {
+                        console.log('✅ THEMES: Definido y funcional');
+                        validationResults.themes = true;
+                    } else {
+                        console.error('❌ THEMES: No definido o no funcional', {
+                            defined: typeof THEMES !== 'undefined',
+                            hasAureoAmanecer: typeof THEMES !== 'undefined' && THEMES.aureoAmanecer,
+                            hasNocheEstelar: typeof THEMES !== 'undefined' && THEMES.crisonVespertino
+                        });
+                    }
+                    
+                    // Test Security System
+                    if (typeof NebulaSecurityUtils !== 'undefined' && NebulaSecurityUtils.encrypt) {
+                        console.log('✅ NebulaSecurityUtils: Sistema de seguridad activo');
+                        validationResults.security = true;
+                        
+                        // Test de cifrado básico
+                        try {
+                            const testData = 'test-encryption';
+                            const encrypted = NebulaSecurityUtils.encrypt(testData);
+                            const decrypted = NebulaSecurityUtils.decrypt(encrypted);
+                            if (decrypted === testData) {
+                                console.log('✅ Cifrado/Descifrado: Funcionando correctamente');
+                            } else {
+                                console.warn('⚠️ Cifrado/Descifrado: Inconsistencia detectada');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error en test de cifrado:', error);
+                        }                    } else {
+                        console.error('❌ NebulaSecurityUtils: No definido o no funcional');
+                    }
+                    
+                    // Test Input Validation System
+                    if (typeof NebulaInputValidator !== 'undefined' && NebulaInputValidator.validateAmount) {
+                        console.log('✅ NebulaInputValidator: Sistema de validación activo');
+                        validationResults.inputValidation = true;
+                        
+                        // Test de validación básico
+                        try {
+                            const testResult = NebulaInputValidator.validateAmount('123.45');
+                            if (testResult.isValid && testResult.value === 123.45) {
+                                console.log('✅ Validación de entrada: Funcionando correctamente');
+                            } else {
+                                console.warn('⚠️ Validación de entrada: Comportamiento inesperado');
+                            }
+                        } catch (error) {
+                            console.error('❌ Error en test de validación:', error);
+                        }
+                    } else {
+                        console.error('❌ NebulaInputValidator: No definido o no funcional');
+                    }
+                    
+                    // Calcular resultados
+                    const totalTests = Object.keys(validationResults).length;
+                    const passedTests = Object.values(validationResults).filter(Boolean).length;
+                    const successRate = (passedTests / totalTests * 100).toFixed(1);
+                    
+                    console.log(`🧪 Validación completada: ${passedTests}/${totalTests} tests pasados (${successRate}%)`);
+                    
+                    if (passedTests === totalTests) {
+                        console.log('🎉 ¡Nebula Financial está funcionando perfectamente!');
+                        // Mostrar notificación de éxito
+                        if (NotificationSystem && NotificationSystem.success) {
+                            NotificationSystem.success('Sistema Validado', 
+                                `Todos los componentes funcionan correctamente (${successRate}%)`, 4000);
+                        }
+                    } else {
+                        console.warn(`⚠️ Algunas validaciones fallaron. Revisa la consola para más detalles.`);
+                        if (NotificationSystem && NotificationSystem.warning) {
+                            NotificationSystem.warning('Validación Parcial', 
+                                `${passedTests}/${totalTests} componentes funcionando`, 6000);
+                        }
+                    }
+                    
+                    // 🔧 Test rápido de atajos si todo está bien
+                    if (validationResults.shortcuts && validationResults.notifications) {
+                        console.log('🎮 Para probar atajos: D=Dashboard, I=Ingresos, G=Gastos, H=Ayuda');
+                    }
+                      } catch (error) {
+                    console.error('❌ Error durante la validación:', error);
+                }
+            }, 5000); // ⏰ CAMBIADO: 5 segundos para asegurar inicialización completa
         }
         
-        // Iniciar aplicación
-        waitForDOM();
+        // Ejecutar validación automáticamente
+        if (typeof window !== 'undefined') {
+            validateNebula();
+        }
+
+        // 🚀 Registro del Service Worker para performance
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registrado:', registration.scope);
+                        
+                        // Verificar actualizaciones
+                        registration.addEventListener('updatefound', () => {
+                            console.log('🔄 Nueva versión del SW disponible');
+                        });
+                    })
+                    .catch(error => {
+                        console.log('❌ Error registrando SW:', error);
+                    });
+            });
+        }
 
     </script>
 </body>
