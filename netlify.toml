@@ -26,23 +26,17 @@
     # Información del servidor
     X-Powered-By = "Nebula Financial v2.1 - Fase 4 Security Enhanced"
 
-# Redirect all traffic to index-v2.html (main app)
+# Redirect all traffic to index.html (main app)
 [[redirects]]
   from = "/"
-  to = "/index-v2.html"
+  to = "/index.html"
   status = 200
-
-[[redirects]]
-  from = "/index.html"
-  to = "/index-v2.html"
-  status = 301
 
 # Handle SPA routing (if needed in the future)
 [[redirects]]
   from = "/*"
-  to = "/index-v2.html"
+  to = "/index.html"
   status = 200
-  conditions = {Role = ["admin"]}
 
 # Cache static assets
 [[headers]]
