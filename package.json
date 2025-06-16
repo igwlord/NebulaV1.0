@@ -25,26 +25,25 @@
     "firebase",
     "pwa"
   ],
-  "author": {
-    "name": "Tu Nombre",
-    "email": "tu@email.com",
-    "url": "https://github.com/tu-usuario"
-  },
+  "author": "Tu Nombre <tu@email.com> (https://github.com/tu-usuario)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tu-usuario/nebula-financial.git"
+    "url": "git+https://github.com/tu-usuario/nebula-financial.git"
   },
   "bugs": {
     "url": "https://github.com/tu-usuario/nebula-financial/issues"
   },
   "homepage": "https://nebula-financial.web.app",
   "devDependencies": {
-    "live-server": "^1.2.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
     "clean-css-cli": "^5.6.1",
-    "terser": "^5.19.2",
     "eslint": "^8.45.0",
-    "prettier": "^3.0.0"
+    "live-server": "^1.2.2",
+    "prettier": "^3.0.0",
+    "tailwindcss": "^4.1.10",
+    "terser": "^5.19.2"
   },
   "dependencies": {
     "firebase": "^10.1.0"

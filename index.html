@@ -1160,6 +1160,9 @@
             `;
         }
         
+        // 🌐 Exponer función globalmente para módulos
+        window.renderTransactionsView = renderTransactionsView;
+        
         function renderInvestmentsView() {
             const { totalInvestments } = calculateSummary();
             const totalInitial = appState.data.investments.reduce((sum, i) => sum + i.initialAmount, 0);

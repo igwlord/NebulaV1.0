@@ -239,18 +239,18 @@ class NebulaGoalsModule {
                             <textarea id="goal-description" rows="2"
                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200 resize-none"
                                       placeholder="Describe tu meta financiera...">${goal?.description || ''}</textarea>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
+                        </div>                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto actual</label>
-                                <input type="number" id="goal-current" value="${goal?.currentAmount || 0}" min="0" step="0.01" required
-                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200">
+                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto actual</label>                                <input type="text" id="goal-current" value="${goal?.currentAmount ? window.formatThousands(goal.currentAmount) : '0'}" required
+                                       class="numeric-input w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
+                                       placeholder="Ej: 15.000 o 500.000"
+                                       title="Monto que ya tienes ahorrado para esta meta">
                             </div>
                             <div>
-                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto objetivo</label>
-                                <input type="number" id="goal-target" value="${goal?.targetAmount || ''}" min="0" step="0.01" required
-                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200">
+                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto objetivo</label>                                <input type="text" id="goal-target" value="${goal?.targetAmount ? window.formatThousands(goal.targetAmount) : ''}" required
+                                       class="numeric-input w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
+                                       placeholder="Ej: 100.000 o 2.500.000"
+                                       title="Monto total que necesitas para alcanzar tu meta">
                             </div>
                         </div>
 
@@ -273,13 +273,16 @@ class NebulaGoalsModule {
                     </form>
                 </div>
             </div>
-        `;
-
-        // Mostrar modal
+        `;        // Mostrar modal
         const modalRoot = document.getElementById('modal-root');
         if (modalRoot) {
             modalRoot.innerHTML = modalHTML;
             modalRoot.style.pointerEvents = 'auto';
+            
+            // Aplicar autoformato a campos numéricos
+            if (window.applyNumericFormatting) {
+                window.applyNumericFormatting();
+            }
             
             // Focus en el primer input
             setTimeout(() => {
@@ -290,14 +293,13 @@ class NebulaGoalsModule {
     }
 
     // 🎯 Guardar meta
-    saveGoal() {
-        const form = document.getElementById('goal-form');
+    saveGoal() {        const form = document.getElementById('goal-form');
         if (!form) return;
 
         const name = document.getElementById('goal-name').value.trim();
         const description = document.getElementById('goal-description').value.trim();
-        const currentAmount = parseFloat(document.getElementById('goal-current').value) || 0;
-        const targetAmount = parseFloat(document.getElementById('goal-target').value) || 0;
+        const currentAmount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('goal-current').value) : parseFloat(document.getElementById('goal-current').value.replace(/\./g, '')) || 0;
+        const targetAmount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('goal-target').value) : parseFloat(document.getElementById('goal-target').value.replace(/\./g, '')) || 0;
         const targetDate = document.getElementById('goal-date').value;
 
         // Validaciones
@@ -340,7 +342,7 @@ class NebulaGoalsModule {
             window.appState.addGoal(goalData);
         }
 
-        window.appState.saveData();
+        window.appState.saveState();
         this.cancelGoalEdit();
         
         // Actualizar vista si estamos en la sección de metas

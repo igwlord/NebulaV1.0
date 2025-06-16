@@ -57,10 +57,9 @@ class TransactionsComponent {
                     </div>
                 </div>
                 
-                <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-${isExpense ? '4' : '2'} gap-4 mb-8 items-end">
-                    <div class="${isExpense ? 'md:col-span-2' : ''}">
+                <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-${isExpense ? '4' : '2'} gap-4 mb-8 items-end">                    <div class="${isExpense ? 'md:col-span-2' : ''}">
                         <label class="block text-sm font-medium ${window.appState?.theme?.textSecondary || 'text-gray-300'} mb-1">Descripción</label>
-                        <input type="text" name="description" placeholder="Ej: Salario, Supermercado..." class="w-full bg-black/20 ${window.appState?.theme?.textPrimary || 'text-white'} rounded-md p-2 border border-white/20 focus:ring-2 ${window.appState?.theme?.accentRing || 'focus:ring-blue-500'} focus:outline-none backdrop-blur-md" required />
+                        <input type="text" name="description" placeholder="${type === 'income' ? 'Ej: Sueldo de presidente' : 'Ej: Comida para la expedición'}" class="w-full bg-black/20 ${window.appState?.theme?.textPrimary || 'text-white'} rounded-md p-2 border border-white/20 focus:ring-2 ${window.appState?.theme?.accentRing || 'focus:ring-blue-500'} focus:outline-none backdrop-blur-md" required />
                     </div>
                     
                     ${categoryFieldHTML}

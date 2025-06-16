@@ -55,14 +55,18 @@ export const appState = {
         debts: JSON.parse(localStorage.getItem('nebulaDebts')) || [],
         goals: JSON.parse(localStorage.getItem('nebulaGoals')) || []
     },
-    
-    // 🎯 Propiedades computadas
+      // 🎯 Propiedades computadas
     get theme() {
         return THEMES[this.themeKey] || THEMES.aureoAmanecer;
     },
     
     get currentMonthKey() {
         return `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, '0')}`;
+    },
+    
+    // 🎨 Método para obtener tema actual (compatibilidad con módulos)
+    getCurrentTheme() {
+        return this.theme;
     },
     
     // 💾 Métodos de persistencia

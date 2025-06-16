@@ -290,10 +290,9 @@ class NebulaInvestmentsModule {
 
                     <form id="investment-form" class="space-y-4">
                         <div>
-                            <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Nombre de la inversión</label>
-                            <input type="text" id="investment-name" value="${investment?.name || ''}" required
+                            <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Nombre de la inversión</label>                            <input type="text" id="investment-name" value="${investment?.name || ''}" required
                                    class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
-                                   placeholder="Ej: Apple Inc., Bitcoin, Fondo S&P 500">
+                                   placeholder="Ej: Acciones de Adamantium">
                         </div>
 
                         <div>
@@ -312,18 +311,18 @@ class NebulaInvestmentsModule {
                             <textarea id="investment-description" rows="2"
                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200 resize-none"
                                       placeholder="Detalles adicionales sobre la inversión...">${investment?.description || ''}</textarea>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
+                        </div>                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto invertido</label>
-                                <input type="number" id="investment-amount" value="${investment?.amount || ''}" min="0" step="0.01" required
-                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200">
+                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto invertido</label>                                <input type="text" id="investment-amount" value="${investment?.amount ? window.formatThousands(investment.amount) : ''}" required
+                                       class="numeric-input w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
+                                       placeholder="Ej: 75.000 o 2.500.000"
+                                       title="Monto original invertido">
                             </div>
                             <div>
-                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Valor actual</label>
-                                <input type="number" id="investment-current" value="${investment?.currentValue || ''}" min="0" step="0.01" required
-                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200">
+                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Valor actual</label>                                <input type="text" id="investment-current" value="${investment?.currentValue ? window.formatThousands(investment.currentValue) : ''}" required
+                                       class="numeric-input w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
+                                       placeholder="Ej: 85.000 o 3.200.000"
+                                       title="Valor actual de la inversión">
                             </div>
                         </div>
 
@@ -346,13 +345,15 @@ class NebulaInvestmentsModule {
                     </form>
                 </div>
             </div>
-        `;
-
-        // Mostrar modal
+        `;        // Mostrar modal
         const modalRoot = document.getElementById('modal-root');
         if (modalRoot) {
             modalRoot.innerHTML = modalHTML;
             modalRoot.style.pointerEvents = 'auto';
+              // Aplicar autoformato a campos numéricos
+            if (window.applyNumericFormatting) {
+                window.applyNumericFormatting();
+            }
             
             // Focus en el primer input
             setTimeout(() => {
@@ -370,8 +371,8 @@ class NebulaInvestmentsModule {
         const name = document.getElementById('investment-name').value.trim();
         const type = document.getElementById('investment-type').value;
         const description = document.getElementById('investment-description').value.trim();
-        const amount = parseFloat(document.getElementById('investment-amount').value) || 0;
-        const currentValue = parseFloat(document.getElementById('investment-current').value) || 0;
+        const amount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('investment-amount').value) : parseFloat(document.getElementById('investment-amount').value.replace(/\./g, '')) || 0;
+        const currentValue = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('investment-current').value) : parseFloat(document.getElementById('investment-current').value.replace(/\./g, '')) || 0;
         const date = document.getElementById('investment-date').value;
 
         // Validaciones
@@ -425,7 +426,7 @@ class NebulaInvestmentsModule {
             window.appState.addInvestment(investmentData);
         }
 
-        window.appState.saveData();
+        window.appState.saveState();
         this.cancelInvestmentEdit();
         
         // Actualizar vista si estamos en la sección de inversiones

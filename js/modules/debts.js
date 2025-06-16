@@ -328,10 +328,9 @@ class NebulaDebtsModule {
 
                     <form id="debt-form" class="space-y-4">
                         <div>
-                            <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Acreedor/Institución</label>
-                            <input type="text" id="debt-creditor" value="${debt?.creditor || ''}" required
+                            <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Acreedor/Institución</label>                            <input type="text" id="debt-creditor" value="${debt?.creditor || ''}" required
                                    class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
-                                   placeholder="Ej: Banco Nacional, Tienda XYZ">
+                                   placeholder="Ej: Préstamo de Mercado Plasma">
                         </div>
 
                         <div>
@@ -350,18 +349,18 @@ class NebulaDebtsModule {
                             <textarea id="debt-description" rows="2"
                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200 resize-none"
                                       placeholder="Detalles adicionales sobre la deuda...">${debt?.description || ''}</textarea>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
+                        </div>                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto total</label>
-                                <input type="number" id="debt-amount" value="${debt?.amount || ''}" min="0" step="0.01" required
-                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200">
+                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto total</label>                                <input type="text" id="debt-amount" value="${debt?.amount ? window.formatThousands(debt.amount) : ''}" required
+                                       class="numeric-input w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
+                                       placeholder="Ej: 50.000 o 1.500.000"
+                                       title="Ingresa el monto total de la deuda. Puedes usar separadores de miles como 50.000 o 1.500.000">
                             </div>
                             <div>
-                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto pagado</label>
-                                <input type="number" id="debt-paid" value="${debt?.paidAmount || 0}" min="0" step="0.01"
-                                       class="w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200">
+                                <label class="${currentTheme.textPrimary} block text-sm font-medium mb-2">Monto pagado</label>                                <input type="text" id="debt-paid" value="${debt?.paidAmount ? window.formatThousands(debt.paidAmount) : '0'}"
+                                       class="numeric-input w-full px-4 py-3 ${currentTheme.surface} border ${currentTheme.accentBorder} rounded-lg ${currentTheme.textPrimary} focus:${currentTheme.accentRing} focus:border-transparent transition-all duration-200"
+                                       placeholder="Ej: 10.000 o 250.000"
+                                       title="Monto ya pagado de la deuda. Se calcula automáticamente el saldo restante">
                             </div>
                         </div>
 
@@ -392,13 +391,16 @@ class NebulaDebtsModule {
                     </form>
                 </div>
             </div>
-        `;
-
-        // Mostrar modal
+        `;        // Mostrar modal
         const modalRoot = document.getElementById('modal-root');
         if (modalRoot) {
             modalRoot.innerHTML = modalHTML;
             modalRoot.style.pointerEvents = 'auto';
+            
+            // Aplicar autoformato a campos numéricos
+            if (window.applyNumericFormatting) {
+                window.applyNumericFormatting();
+            }
             
             // Focus en el primer input
             setTimeout(() => {
@@ -409,15 +411,14 @@ class NebulaDebtsModule {
     }
 
     // 💳 Guardar deuda
-    saveDebt() {
-        const form = document.getElementById('debt-form');
+    saveDebt() {        const form = document.getElementById('debt-form');
         if (!form) return;
 
         const creditor = document.getElementById('debt-creditor').value.trim();
         const type = document.getElementById('debt-type').value;
         const description = document.getElementById('debt-description').value.trim();
-        const amount = parseFloat(document.getElementById('debt-amount').value) || 0;
-        const paidAmount = parseFloat(document.getElementById('debt-paid').value) || 0;
+        const amount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('debt-amount').value) : parseFloat(document.getElementById('debt-amount').value.replace(/\./g, '')) || 0;
+        const paidAmount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('debt-paid').value) : parseFloat(document.getElementById('debt-paid').value.replace(/\./g, '')) || 0;
         const interestRate = parseFloat(document.getElementById('debt-interest').value) || null;
         const dueDate = document.getElementById('debt-due').value;
 
@@ -468,7 +469,7 @@ class NebulaDebtsModule {
             window.appState.addDebt(debtData);
         }
 
-        window.appState.saveData();
+        window.appState.saveState();
         this.cancelDebtEdit();
         
         // Actualizar vista si estamos en la sección de deudas

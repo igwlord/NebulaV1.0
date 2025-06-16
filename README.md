@@ -1,11 +1,11 @@
-# 🌌 Nebula Financial
+# 🌌 Nebula Financial - Tu Universo Financiero
 
-> **Tu Universo Financiero Personal**  
-> Aplicación web moderna para gestión financiera personal con autenticación segura y sincronización en la nube.
+[![Estado](https://img.shields.io/badge/Estado-Producción_Ready-brightgreen)](https://github.com/usuario/nebula-financial)
+[![Versión](https://img.shields.io/badge/Versión-8.8_Final-blue)](https://github.com/usuario/nebula-financial/releases)
+[![Licencia](https://img.shields.io/badge/Licencia-MIT-green)](LICENSE)
+[![Demo](https://img.shields.io/badge/Demo-Live-orange)](https://nebula-financial.netlify.app)
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
-![Status](https://img.shields.io/badge/status-in%20development-yellow.svg)
-![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-orange.svg)
+**Aplicación de finanzas personales moderna con IA, temas dinámicos y navegación por teclado.**
 
 ## ✨ Características
 

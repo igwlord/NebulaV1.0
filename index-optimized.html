@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Nebula - Tu Universo Financiero</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌌</text></svg>">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#FCD34D">
+    
+    <!-- 🚀 PERFORMANCE OPTIMIZED - Recursos críticos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" media="print" onload="this.media='all'">
+    
+    <!-- CSS Crítico optimizado -->
+    <link rel="stylesheet" href="css/optimized.css">
+    
+    <!-- CSS No crítico - Carga diferida -->
+    <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/styles.css"></noscript>
+    
+    <!-- 🎯 TAILWIND OPTIMIZADO - CDN con configuración específica -->
+    <script>
+        // Configuración mínima de Tailwind para reducir bundle
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nebula': {
+                            'primary': '#1e40af',
+                            'secondary': '#7c3aed',
+                            'accent': '#f59e0b'
+                        }
+                    }
+                }
+            },
+            // Solo cargar utilities esenciales
+            corePlugins: {
+                aspectRatio: false,
+                container: false,
+                columns: false,
+                breakAfter: false,
+                breakBefore: false,
+                breakInside: false
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 📊 CHART.JS - Carga diferida -->
+    <script>
+        // Cargar Chart.js solo cuando sea necesario
+        window.loadChartJS = function() {
+            if (!window.Chart) {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js';
+                script.async = true;
+                document.head.appendChild(script);
+                return script;
+            }
+            return Promise.resolve();
+        };
+    </script>
+</head>
+<body>
+    <div id="app-container">
+        <div id="parallax-bg" class="fixed inset-0 z-0 perspective-[1000px]"></div>
+        <div id="content-root" class="relative z-10 pb-24" role="main" aria-label="Contenido principal de la aplicación"></div>
+        <div id="dock-root" class="fixed bottom-0 left-0 right-0 z-20"></div>
+        <div id="modal-root" class="fixed inset-0 z-50 pointer-events-none"></div>
+        <div id="notification-container" class="notification-container"></div>
+    </div>
+
+    <!-- 🔧 SCRIPTS ESENCIALES - Carga prioritaria -->
+    <script src="js/utils/security.js"></script>
+    <script src="js/utils/input-validation.js"></script>
+    
+    <!-- 🚀 MÓDULOS - Carga diferida para mejor performance -->
+    <script>
+        // Cargar módulos de forma asíncrona
+        const loadModules = async () => {
+            const modules = [
+                'js/modules/dashboard.js',
+                'js/modules/settings.js', 
+                'js/modules/calendar.js',
+                'js/modules/dock-navigation.js',
+                'js/modules/grid-cards.js',
+                'js/modules/income.js',
+                'js/modules/expenses.js',
+                'js/modules/goals.js',
+                'js/modules/investments.js',
+                'js/modules/debts.js'
+            ];
+            
+            // Cargar módulos en paralelo
+            const promises = modules.map(src => {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            });
+            
+            try {
+                await Promise.all(promises);
+                console.log('✅ Todos los módulos cargados');
+                window.modulesLoaded = true;
+            } catch (error) {
+                console.error('❌ Error cargando módulos:', error);
+            }
+        };
+        
+        // Cargar módulos después de que el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadModules);
+        } else {
+            loadModules();
+        }
+    </script>
+    
+    <!-- 🌌 APLICACIÓN PRINCIPAL -->
+    <script type="module">
+        // Esperar a que los módulos estén cargados
+        const waitForModules = () => {
+            return new Promise((resolve) => {
+                if (window.modulesLoaded) {
+                    resolve();
+                } else {
+                    const check = () => {
+                        if (window.modulesLoaded) {
+                            resolve();
+                        } else {
+                            setTimeout(check, 100);
+                        }
+                    };
+                    check();
+                }
+            });
+        };
+          // Inicializar aplicación
+        const initApp = async () => {
+            console.log('🚀 Iniciando Nebula Financial v2.5 - OPTIMIZED');
+              try {
+                // Esperar módulos
+                await waitForModules();
+                
+                // 🔒 INICIALIZAR SISTEMA DE SEGURIDAD
+                if (typeof NebulaSecurityUtils !== 'undefined') {
+                    NebulaSecurityUtils.init();
+                    console.log('🔒 Sistema de seguridad Nebula inicializado');
+                }
+                
+                // 🔒 INICIALIZAR VALIDADOR DE ENTRADA
+                if (typeof NebulaInputValidator !== 'undefined') {
+                    console.log('🔒 Sistema de validación de entrada inicializado');
+                }
+                
+                // Importar y exponer THEMES globalmente ANTES de los módulos
+                const { THEMES } = await import('./js/utils/helpers.js');
+                window.THEMES = THEMES;
+                
+                // Importar funciones y objetos necesarios desde app.js
+                const { initializeApp } = await import('./js/app.js');
+                
+                // Inicializar la aplicación principal
+                await initializeApp();
+                
+                console.log('✅ Aplicación inicializada con éxito');
+                
+            } catch (error) {
+                console.error('❌ Error inicializando aplicación:', error);
+                
+                // Fallback: cargar versión original si hay problemas
+                console.log('🔄 Intentando fallback a versión original...');
+                window.location.href = '/index.html';
+            }
+        };
+        
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>
