@@ -1820,14 +1820,13 @@
                         ${navButtonsHTML}
                     </div>
                 </nav>`;
-        }
-          function renderParallaxBackground() {
+        }        function renderParallaxBackground() {
             if (parallaxBg.children.length > 0 && parallaxBg.dataset.theme === appState.themeKey) return '';
             parallaxBg.dataset.theme = appState.themeKey;
 
             switch(appState.theme.particleType) {
                 case 'goldenDust': {
-                    // Polvo dorado flotante para Áureo Amanecer
+                    // Polvo dorado flotante para Áureo Amanecer - EFECTO DUAL
                     const particles = Array.from({ length: 120 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
@@ -1847,48 +1846,61 @@
                 }
 
                 case 'crimsonMist': {
-                    // Niebla carmesí para Crisón Vespertino
-                    return Array.from({ length: 20 }).map(() => {
+                    // Niebla carmesí para Crisón Vespertino - EFECTO DUAL MEJORADO
+                    const mist = Array.from({ length: 25 }).map(() => {
                         const duration = Math.random() * 30 + 15;
                         const size = Math.random() * 300 + 150;
                         const startX = Math.random() * 100;
                         const startY = Math.random() * 100;
                         return `<div class="particle absolute rounded-full" style="left: ${startX}%; top: ${startY}%; width: ${size}px; height: ${size}px; background: radial-gradient(circle, ${appState.theme.sunColor}08, transparent 70%); animation: drift ${duration}s linear infinite alternate; transform: translateZ(0);"></div>`;
-                    }).join('') + Array.from({ length: 180 }).map(() => {
+                    }).join('');
+                    
+                    const sparkles = Array.from({ length: 100 }).map(() => {
+                        const leftPos = Math.random() * 100;
+                        const topPos = Math.random() * 100;
+                        const size = Math.random() * 2 + 1;
+                        const duration = Math.random() * 6 + 3;
+                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*3}px ${appState.theme.sunColor}80; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.5 + 0.2};"></div>`;
+                    }).join('');
+
+                    const backgroundStars = Array.from({ length: 180 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
                         const pulse = Math.random() * 4 + 3;
                         return `<div class="absolute w-px h-px bg-rose-300 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: pulse ${pulse}s ease-in-out infinite;"></div>`;
                     }).join('');
+
+                    return mist + sparkles + backgroundStars;
                 }
 
                 case 'aquaFlow': {
-                    // Flujo acuático para Aguamarina Celeste
+                    // Flujo acuático para Aguamarina Celeste - EFECTO DUAL MEJORADO
                     const waves = Array.from({ length: 8 }).map((_, i) => {
                         const delay = i * 0.5;
                         return `<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at ${20 + i*10}% ${30 + i*8}%, ${appState.theme.sunColor}15, transparent 60%); animation: wave ${8 + i}s ease-in-out infinite; animation-delay: ${delay}s;"></div>`;
                     }).join('');
 
-                    const bubbles = Array.from({ length: 25 }).map(() => {
+                    const bubbles = Array.from({ length: 80 }).map(() => {
                         const leftPos = Math.random() * 100;
-                        const size = Math.random() * 8 + 3;
-                        const duration = Math.random() * 6 + 4;
-                        return `<div class="particle absolute rounded-full border border-cyan-300/20" style="left: ${leftPos}%; bottom: -10px; width: ${size}px; height: ${size}px; background: radial-gradient(circle at 30% 30%, ${appState.theme.sunColor}20, transparent 70%); animation: bubble ${duration}s linear infinite;"></div>`;
+                        const topPos = Math.random() * 100;
+                        const size = Math.random() * 4 + 2;
+                        const duration = Math.random() * 8 + 4;
+                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}70; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.3 + 0.1};"></div>`;
                     }).join('');
 
-                    const stars = Array.from({ length: 200 }).map(() => {
+                    const backgroundStars = Array.from({ length: 200 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
                         const shimmer = Math.random() * 3 + 2;
                         return `<div class="absolute w-px h-px bg-cyan-200 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: shimmer ${shimmer}s ease-in-out infinite alternate;"></div>`;
                     }).join('');
 
-                    return waves + bubbles + stars;
+                    return waves + bubbles + backgroundStars;
                 }
 
                 case 'royalAura': {
-                    // Aura real para Violeta Real
-                    const orbs = Array.from({ length: 12 }).map(() => {
+                    // Aura real para Violeta Real - EFECTO DUAL MEJORADO  
+                    const orbs = Array.from({ length: 15 }).map(() => {
                         const angle = Math.random() * 360;
                         const radius = Math.random() * 40 + 20;
                         const size = Math.random() * 20 + 10;
@@ -1896,12 +1908,12 @@
                         return `<div class="particle absolute rounded-full" style="left: 50%; top: 50%; width: ${size}px; height: ${size}px; background: radial-gradient(circle, ${appState.theme.sunColor}40, transparent 70%); transform-origin: 0 0; animation: orbit ${duration}s linear infinite; --angle: ${angle}deg; --radius: ${radius}vh;"></div>`;
                     }).join('');
 
-                    const sparkles = Array.from({ length: 80 }).map(() => {
+                    const sparkles = Array.from({ length: 120 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
-                        const sparkle = Math.random() * 2 + 1;
-                        const delay = Math.random() * 5;
-                        return `<div class="absolute" style="left:${leftPos}%; top:${topPos}%; animation: sparkle ${sparkle}s ease-in-out infinite; animation-delay: ${delay}s;"><div class="w-1 h-1 bg-purple-200 rounded-full"></div></div>`;
+                        const size = Math.random() * 2 + 1;
+                        const duration = Math.random() * 6 + 2;
+                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*3}px ${appState.theme.sunColor}90; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.2};"></div>`;
                     }).join('');
 
                     const starField = Array.from({ length: 300 }).map(() => {
@@ -1909,14 +1921,14 @@
                         const topPos = Math.random() * 100;
                         const glow = Math.random() * 4 + 2;
                         return `<div class="absolute w-px h-px bg-purple-100 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: glow ${glow}s ease-in-out infinite alternate;"></div>`;
-                    }).join('');
-
-                    return orbs + sparkles + starField;
+                    }).join('');                    return orbs + sparkles + starField;
                 }
 
                 default: return '';
             }
-        }        function updateDockGlider() {
+        }
+
+        function updateDockGlider() {
             // El nuevo efecto es puramente CSS, no requiere JavaScript
         }/**
          * 🎮 Gestor de Event Listeners Mejorado
@@ -2654,14 +2666,14 @@
                         }
                     });
                     validationResults.dom = domOk;                    // Test THEMES
-                    if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer && THEMES.nocheEstelar) {
+                    if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer && THEMES.crisonVespertino) {
                         console.log('✅ THEMES: Definido y funcional');
                         validationResults.themes = true;
                     } else {
                         console.error('❌ THEMES: No definido o no funcional', {
                             defined: typeof THEMES !== 'undefined',
                             hasAureoAmanecer: typeof THEMES !== 'undefined' && THEMES.aureoAmanecer,
-                            hasNocheEstelar: typeof THEMES !== 'undefined' && THEMES.crisonVespertino
+                            hasCrisonVespertino: typeof THEMES !== 'undefined' && THEMES.crisonVespertino
                         });
                     }
                     
