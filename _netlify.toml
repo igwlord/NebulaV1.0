@@ -1,0 +1,25 @@
+# Netlify Deploy Configuration - Nebula Financial v9.0.0
+[build]
+  publish = "."
+  command = "echo 'Static site - no build needed'"
+
+# Security Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Powered-By = "Nebula Financial v9.0.0"
+
+# Main app routing
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# Handle 404s
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

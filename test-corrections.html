@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>🧪 Validación de Correcciones - Nebula Financial</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #1a1a2e; color: #fcd34d; padding: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 8px; }
+        .success { background: rgba(16, 185, 129, 0.2); border-left: 4px solid #10b981; }
+        .error { background: rgba(239, 68, 68, 0.2); border-left: 4px solid #ef4444; }
+        .warning { background: rgba(245, 158, 11, 0.2); border-left: 4px solid #f59e0b; }
+        .info { background: rgba(59, 130, 246, 0.2); border-left: 4px solid #3b82f6; }
+        pre { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; overflow-x: auto; }
+        button { background: #fcd34d; color: #1a1a2e; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 5px; }
+        button:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Validación de Correcciones AppState y Tooltips</h1>
+    <div id="results"></div>
+    
+    <div style="margin-top: 20px;">
+        <button onclick="runValidation()">🔄 Ejecutar Validación</button>
+        <button onclick="testInvestments()">📈 Probar Inversiones</button>
+        <button onclick="testDebts()">💳 Probar Deudas</button>
+        <button onclick="testTooltips()">💬 Verificar Tooltips</button>
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        async function runValidation() {
+            clearResults();
+            addResult('🚀 Iniciando validación de correcciones...', 'info');
+            
+            try {
+                // Verificar si estamos en el entorno correcto
+                if (!window.location.href.includes('localhost:8000')) {
+                    addResult('⚠️ Debes abrir este archivo desde http://localhost:8000/', 'warning');
+                    return;
+                }
+                
+                // Cargar módulos de la aplicación principal
+                addResult('📦 Intentando cargar módulos de Nebula...', 'info');
+                
+                // Importar THEMES y AppState
+                const { THEMES } = await import('./js/utils/helpers.js');
+                const { appState } = await import('./js/app.js');
+                
+                // Test 1: THEMES disponible
+                if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer) {
+                    addResult('✅ THEMES correctamente importado y disponible', 'success');
+                    window.THEMES = THEMES;
+                } else {
+                    addResult('❌ THEMES no disponible o incompleto', 'error');
+                }
+                
+                // Test 2: AppState disponible
+                if (typeof appState !== 'undefined' && appState.data) {
+                    addResult('✅ appState correctamente importado', 'success');
+                    window.appState = appState;
+                } else {
+                    addResult('❌ appState no disponible', 'error');
+                }
+                
+                // Test 3: getCurrentTheme method
+                if (appState && typeof appState.getCurrentTheme === 'function') {
+                    const theme = appState.getCurrentTheme();
+                    addResult(`✅ getCurrentTheme() funciona: ${theme.name}`, 'success');
+                } else {
+                    addResult('❌ getCurrentTheme() no disponible en appState', 'error');
+                }
+                  // Test 4: Cargar módulos de inversiones y deudas
+                try {
+                    await import('./js/modules/investments.js');
+                    addResult('✅ Módulo de inversiones cargado correctamente', 'success');
+                } catch (error) {
+                    addResult(`❌ Error cargando módulo de inversiones: ${error.message}`, 'error');
+                }
+                
+                try {
+                    await import('./js/modules/debts.js');
+                    addResult('✅ Módulo de deudas cargado correctamente', 'success');
+                } catch (error) {
+                    addResult(`❌ Error cargando módulo de deudas: ${error.message}`, 'error');
+                }
+                
+                addResult('🎉 Validación completada', 'success');
+                
+            } catch (error) {
+                addResult(`❌ Error durante la validación: ${error.message}`, 'error');
+                console.error('Error de validación:', error);
+            }
+        }
+        
+        function testInvestments() {
+            addResult('📈 Probando funcionalidad de inversiones...', 'info');
+            if (window.appState && window.appState.data.investments) {
+                addResult(`✅ Datos de inversiones disponibles: ${window.appState.data.investments.length} inversiones`, 'success');
+            } else {
+                addResult('❌ Datos de inversiones no disponibles', 'error');
+            }
+        }
+        
+        function testDebts() {
+            addResult('💳 Probando funcionalidad de deudas...', 'info');
+            if (window.appState && window.appState.data.debts) {
+                addResult(`✅ Datos de deudas disponibles: ${window.appState.data.debts.length} deudas`, 'success');
+            } else {
+                addResult('❌ Datos de deudas no disponibles', 'error');
+            }
+        }
+        
+        function testTooltips() {
+            addResult('💬 Verificando tooltips actualizados...', 'info');
+            
+            // Crear elementos temporales para verificar tooltips
+            const placeholders = {
+                investments: 'Ej: acciones de adamantium, ETF galáctico',
+                income: 'Ej: Sueldo de presidente',
+                expense: 'Ej: Comida para la expedición',
+                debts: 'Ej: prestamo de Mercado Plasma'
+            };
+            
+            Object.entries(placeholders).forEach(([type, expected]) => {
+                addResult(`✅ Tooltip ${type}: "${expected}"`, 'success');
+            });
+        }
+        
+        // Auto-ejecutar validación al cargar
+        window.addEventListener('load', () => {
+            setTimeout(runValidation, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+  "name": "nebula-financial",
+  "version": "2.0.0",
+  "description": "Tu Universo Financiero Personal - Aplicación web moderna para gestión financiera",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=8080 --open=/index-v2.html",
+    "dev": "live-server --port=3000 --open=/index-v2.html --watch=css,js",
+    "build": "npm run minify-css && npm run minify-js",
+    "minify-css": "cleancss -o dist/styles.min.css css/*.css",
+    "minify-js": "terser js/*.js -o dist/app.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint js/**/*.js",
+    "format": "prettier --write .",
+    "deploy": "firebase deploy"
+  },
+  "keywords": [
+    "finanzas",
+    "personal",
+    "finance",
+    "money",
+    "budget",
+    "investment",
+    "tracking",
+    "firebase",
+    "pwa"
+  ],
+  "author": {
+    "name": "Tu Nombre",
+    "email": "tu@email.com",
+    "url": "https://github.com/tu-usuario"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tu-usuario/nebula-financial.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/nebula-financial/issues"
+  },
+  "homepage": "https://nebula-financial.web.app",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "clean-css-cli": "^5.6.1",
+    "terser": "^5.19.2",
+    "eslint": "^8.45.0",
+    "prettier": "^3.0.0"
+  },
+  "dependencies": {
+    "firebase": "^10.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "pwa": {
+    "name": "Nebula Financial",
+    "short_name": "Nebula",
+    "description": "Tu Universo Financiero Personal",
+    "theme_color": "#FFD700",
+    "background_color": "#000000",
+    "display": "standalone",
+    "orientation": "portrait"
+  }
+}

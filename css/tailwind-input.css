@@ -1,0 +1,39 @@
+/* Tailwind CSS - Input file for custom build */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom utilities específicos para Nebula Financial */
+@layer utilities {
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .backdrop-blur-strong {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+}
+
+/* Components layer para componentes reutilizables */
+@layer components {
+  .nebula-card {
+    @apply backdrop-blur-md rounded-2xl shadow-lg p-6 bg-white/5 border border-white/10;
+  }
+  
+  .nebula-button {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105;
+  }
+  
+  .nebula-input {
+    @apply w-full bg-black/20 rounded-md p-2 border border-white/20 focus:ring-2 focus:outline-none backdrop-blur-md;
+  }
+}

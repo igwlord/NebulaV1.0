@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Diagnóstico de Botón Calendario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .debug-panel {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .status-ok { color: #10b981; }
+        .status-error { color: #ef4444; }
+        .status-warning { color: #f59e0b; }
+        .status-info { color: #3b82f6; }
+        
+        .test-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">
+            🔍 Diagnóstico de Botón Calendario
+        </h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h2 class="text-2xl font-bold mb-4">🎯 Herramientas de Diagnóstico</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="test-button" onclick="scanForCalendarButton()">
+                    🔍 Buscar Botón Calendario
+                </button>
+                <button class="test-button" onclick="listAllElements()">
+                    📋 Listar Todos los IDs
+                </button>
+                <button class="test-button" onclick="injectCalendarButton()">
+                    🛠️ Inyectar Botón Test
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <button class="test-button" onclick="monitorDOM()">
+                    👁️ Monitorear DOM
+                </button>
+                <button class="test-button" onclick="clearDebug()">
+                    🧹 Limpiar Debug
+                </button>
+            </div>
+        </div>
+        
+        <div class="debug-panel" id="debug-output">
+            <div class="status-info">🔍 Sistema de Diagnóstico de Calendario Iniciado</div>
+            <div class="status-warning">⚠️ Use las herramientas para diagnosticar el problema del botón calendario</div>
+        </div>
+        
+        <!-- Área para inyectar botón de prueba -->
+        <div id="test-injection-area" class="bg-white p-4 rounded-lg shadow-lg mt-6 hidden">
+            <h3 class="text-xl font-bold mb-2">🛠️ Área de Prueba</h3>
+            <div id="injected-content"></div>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const debugOutput = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const statusClass = 'status-' + type;
+            
+            const logLine = document.createElement('div');
+            logLine.className = statusClass;
+            logLine.textContent = `[${timestamp}] ${message}`;
+            
+            debugOutput.appendChild(logLine);
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        function clearDebug() {
+            document.getElementById('debug-output').innerHTML = '';
+            log('🧹 Debug limpiado', 'info');
+        }
+        
+        function scanForCalendarButton() {
+            log('🔍 INICIANDO BÚSQUEDA DE BOTÓN CALENDARIO...', 'info');
+            
+            // Búsqueda por ID específico
+            const calendarButtonById = document.getElementById('calendar-button');
+            log(`📝 Búsqueda por ID 'calendar-button': ${calendarButtonById ? 'ENCONTRADO' : 'NO ENCONTRADO'}`, 
+                calendarButtonById ? 'ok' : 'error');
+            
+            if (calendarButtonById) {
+                log(`   - Elemento: ${calendarButtonById.tagName}`, 'info');
+                log(`   - Clases: ${calendarButtonById.className}`, 'info');
+                log(`   - Texto: "${calendarButtonById.textContent.trim()}"`, 'info');
+                log(`   - Atributos: ${Array.from(calendarButtonById.attributes).map(a => `${a.name}="${a.value}"`).join(', ')}`, 'info');
+            }
+            
+            // Búsqueda por clase
+            const calendarButtonsByClass = document.querySelectorAll('.header-calendar-button');
+            log(`📝 Búsqueda por clase 'header-calendar-button': ${calendarButtonsByClass.length} encontrados`, 
+                calendarButtonsByClass.length > 0 ? 'ok' : 'warning');
+            
+            calendarButtonsByClass.forEach((btn, index) => {
+                log(`   - Botón ${index + 1}: ID="${btn.id}", texto="${btn.textContent.trim()}"`, 'info');
+            });
+            
+            // Búsqueda por texto
+            const allButtons = Array.from(document.querySelectorAll('button'));
+            const calendarButtonsByText = allButtons.filter(btn => 
+                btn.textContent.toLowerCase().includes('calendario') ||
+                btn.title && btn.title.toLowerCase().includes('calendario') ||
+                btn.getAttribute('aria-label') && btn.getAttribute('aria-label').toLowerCase().includes('calendario')
+            );
+            
+            log(`📝 Búsqueda por contenido 'calendario': ${calendarButtonsByText.length} encontrados`, 
+                calendarButtonsByText.length > 0 ? 'ok' : 'warning');
+            
+            calendarButtonsByText.forEach((btn, index) => {
+                log(`   - Botón ${index + 1}: ID="${btn.id}", texto="${btn.textContent.trim()}", title="${btn.title}"`, 'info');
+            });
+            
+            log('🏁 Búsqueda completada', 'info');
+        }
+        
+        function listAllElements() {
+            log('📋 LISTANDO TODOS LOS ELEMENTOS CON ID...', 'info');
+            
+            const elementsWithId = Array.from(document.querySelectorAll('[id]'));
+            log(`📊 Total de elementos con ID: ${elementsWithId.length}`, 'info');
+            
+            const relevantIds = elementsWithId
+                .map(el => el.id)
+                .filter(id => id.toLowerCase().includes('calendar') || 
+                             id.toLowerCase().includes('button') ||
+                             id.toLowerCase().includes('nav') ||
+                             id.toLowerCase().includes('header'))
+                .sort();
+            
+            log('🎯 IDs relevantes encontrados:', 'ok');
+            relevantIds.forEach(id => {
+                const element = document.getElementById(id);
+                log(`   - ${id}: ${element.tagName} (${element.className.split(' ').slice(0,3).join(' ')})`, 'info');
+            });
+            
+            if (relevantIds.length === 0) {
+                log('⚠️ No se encontraron IDs relevantes', 'warning');
+                log('📋 Primeros 20 IDs encontrados:', 'info');
+                elementsWithId.slice(0, 20).forEach(el => {
+                    log(`   - ${el.id}: ${el.tagName}`, 'info');
+                });
+            }
+        }
+        
+        function injectCalendarButton() {
+            log('🛠️ INYECTANDO BOTÓN DE CALENDARIO DE PRUEBA...', 'info');
+            
+            const testArea = document.getElementById('test-injection-area');
+            const injectedContent = document.getElementById('injected-content');
+            
+            testArea.classList.remove('hidden');
+            
+            injectedContent.innerHTML = `
+                <button 
+                    id="calendar-button-test" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    onclick="testCalendarButtonClick()"
+                >
+                    📅 Calendario de Prueba
+                </button>
+            `;
+            
+            log('✅ Botón de prueba inyectado con ID: calendar-button-test', 'ok');
+            
+            // Verificar que se puede encontrar
+            setTimeout(() => {
+                const testButton = document.getElementById('calendar-button-test');
+                log(`🔍 Verificación: Botón de prueba ${testButton ? 'ENCONTRADO' : 'NO ENCONTRADO'}`, 
+                    testButton ? 'ok' : 'error');
+            }, 100);
+        }
+        
+        function testCalendarButtonClick() {
+            log('🖱️ CLICK EN BOTÓN DE PRUEBA DETECTADO!', 'ok');
+            log('✅ El mecanismo de click funciona correctamente', 'ok');
+        }
+        
+        function monitorDOM() {
+            log('👁️ INICIANDO MONITOREO DEL DOM...', 'info');
+            
+            // Observer para cambios en el DOM
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach((node) => {
+                            if (node.nodeType === 1) { // Element node
+                                if (node.id && node.id.includes('calendar')) {
+                                    log(`🆕 Elemento de calendario añadido: ${node.id} (${node.tagName})`, 'ok');
+                                }
+                                
+                                // Buscar dentro del nodo añadido
+                                const calendarElements = node.querySelectorAll ? node.querySelectorAll('[id*="calendar"]') : [];
+                                calendarElements.forEach(el => {
+                                    log(`🆕 Sub-elemento de calendario añadido: ${el.id} (${el.tagName})`, 'ok');
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: false
+            });
+            
+            log('✅ Observer configurado para monitorear cambios en DOM', 'ok');
+            log('🕐 Monitoreando por 30 segundos...', 'warning');
+            
+            // Detener el observer después de 30 segundos
+            setTimeout(() => {
+                observer.disconnect();
+                log('⏰ Monitoreo de DOM detenido', 'warning');
+            }, 30000);
+        }
+        
+        // Auto-scan al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Página cargada, realizando scan automático...', 'info');
+            setTimeout(scanForCalendarButton, 1000);
+        });
+    </script>
+</body>
+</html>
