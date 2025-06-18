@@ -1,11 +1,11 @@
 // ===============================================
 // 🌌 NEBULA FINANCIAL - SERVICE WORKER
-// Versión: 1.5 - Performance Optimizada
+// Versión: 1.6 - CSS Local Sin CDN
 // ===============================================
 
-const CACHE_NAME = 'nebula-financial-v1.5';
-const STATIC_CACHE = 'nebula-static-v1.5';
-const DYNAMIC_CACHE = 'nebula-dynamic-v1.5';
+const CACHE_NAME = 'nebula-financial-v1.6';
+const STATIC_CACHE = 'nebula-static-v1.6';
+const DYNAMIC_CACHE = 'nebula-dynamic-v1.6';
 
 // Recursos críticos para cachear inmediatamente
 const CRITICAL_ASSETS = [
@@ -13,14 +13,14 @@ const CRITICAL_ASSETS = [
     '/index.html',
     '/css/critical.css',
     '/css/styles.css',
+    '/css/production-tailwind.css',
     '/manifest.json'
 ];
 
 // Recursos de terceros que cambiar rara vez
-const THIRD_PARTY_CACHE = 'nebula-third-party-v1.5';
+const THIRD_PARTY_CACHE = 'nebula-third-party-v1.6';
 
 const THIRD_PARTY_ASSETS = [
-    'https://cdn.tailwindcss.com',
     'https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js',
     'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap'
 ];
