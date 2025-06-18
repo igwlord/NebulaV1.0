@@ -15,10 +15,8 @@
     <meta name="keywords" content="finanzas personales, gestión financiera, presupuesto, inversiones, nebula">
     <meta name="author" content="Nebula Financial Team">
     
-    <!-- 🎯 PERFORMANCE CRITICAL - Recursos Prioritarios -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <!-- 🎯 PERFORMANCE CRITICAL - Recursos Prioritarios -->    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
       <!-- 🚀 FUENTES - Carga Optimizada -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
@@ -418,31 +416,7 @@
         const CACHE_BUSTER = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         console.log('🔥 Cache-Buster activo:', CACHE_BUSTER);
         
-        // 🎯 CARGA INTELIGENTE DE TAILWIND
-        const loadTailwind = () => {
-            if (!document.getElementById('tailwind-css')) {
-                const script = document.createElement('script');
-                script.id = 'tailwind-css';
-                script.src = 'https://cdn.tailwindcss.com';
-                script.async = true;
-                script.onload = () => {
-                    console.log('✅ Tailwind CSS cargado exitosamente');
-                };
-                script.onerror = () => {
-                    console.error('❌ Error cargando Tailwind CSS');
-                };
-                document.head.appendChild(script);
-                console.log('🎨 Tailwind CSS cargado dinámicamente');
-            }
-        };
-        
-        // Cargar Tailwind cuando el DOM esté listo
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadTailwind);
-        } else {
-            loadTailwind();
-        }
-    </script>
+        // 🎯 CARGA INTELIGENTE DE TAILWIND    </script>
     
     <!-- 📊 CHART.JS - Carga Súper Diferida -->
     <script>
