@@ -17,13 +17,33 @@
     
     <!-- 🎯 PERFORMANCE CRITICAL - Recursos Prioritarios -->    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
       <!-- 🚀 FUENTES - Carga Optimizada -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>    <!-- 🎨 CSS HÍBRIDO PARA NETLIFY -->
-    <link rel="stylesheet" href="css/production-tailwind.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>    <!-- 🎨 TAILWIND CSS - CRÍTICO PARA PRODUCCIÓN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configuración de Tailwind para producción
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        nebula: {
+                            primary: '#1e40af',
+                            secondary: '#7c3aed',
+                            accent: '#fcd34d',
+                            gold: '#ffd700',
+                            dark: '#0f0f23',
+                            darker: '#0a0a1a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     
     <!-- 🎨 ICONOS Y MANIFEST -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌌</text></svg>">
@@ -416,8 +436,31 @@
         // 🔥 SUPER CACHE-BUSTING PARA DEPURACIÓN
         const CACHE_BUSTER = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         console.log('🔥 Cache-Buster activo:', CACHE_BUSTER);
+          // 🎯 CARGA INTELIGENTE DE TAILWIND
+        const loadTailwind = () => {
+            if (!document.getElementById('tailwind-css')) {
+                const script = document.createElement('script');
+                script.id = 'tailwind-css';
+                script.src = 'https://cdn.tailwindcss.com';
+                script.async = true;
+                script.onload = () => {
+                    console.log('✅ Tailwind CSS cargado exitosamente');
+                };
+                script.onerror = () => {
+                    console.error('❌ Error cargando Tailwind CSS');
+                };
+                document.head.appendChild(script);
+                console.log('🎨 Tailwind CSS cargado dinámicamente');
+            }
+        };
         
-        // 🎯 CARGA INTELIGENTE DE TAILWIND    </script>
+        // Cargar Tailwind cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadTailwind);
+        } else {
+            loadTailwind();
+        }
+    </script>
     
     <!-- 📊 CHART.JS - Carga Súper Diferida -->
     <script>
@@ -527,9 +570,15 @@
         <div id="notification-container" class="notification-container"></div>
     </div>
 
-    <!-- 🔒 SEGURIDAD CRÍTICA - Carga Prioritaria -->
-    <script src="js/utils/security.js"></script>
+    <!-- � FIREBASE - Autenticación con Google -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+    <script src="config/firebase-config.js"></script>
+    
+    <!-- �🔒 SEGURIDAD CRÍTICA - Carga Prioritaria -->    <script src="js/utils/security.js"></script>
     <script src="js/utils/input-validation.js"></script>
+    <script src="js/auth.js"></script>
     
     <!-- 🚀 SISTEMA DE CARGA MODULAR ÉPICO -->
     <script>
@@ -1087,18 +1136,50 @@
                     localStorage.setItem('financialData', JSON.stringify(this.data));
                     localStorage.setItem('isPrivateMode', JSON.stringify(this.isPrivate));
                 }
-            },
-            
+            },            
             // --- Autenticación ---
-            login(method) {
+            async login(method) {
                 this.isLoading = true; 
                 renderApp(); 
-                setTimeout(() => {
-                    this.user = { name: method === 'google' ? 'Usuario de Correo' : 'Invitado'};
+                
+                try {
+                    if (method === 'google') {
+                        // Intentar login con Firebase
+                        if (window.NebulaAuth) {
+                            const user = await window.NebulaAuth.signInWithGoogle();
+                            this.user = { 
+                                name: user.displayName || user.email || 'Usuario Google',
+                                email: user.email,
+                                photo: user.photoURL 
+                            };
+                        } else {
+                            console.warn('⚠️ Firebase no disponible, usando modo simulado');
+                            this.user = { name: 'Usuario de Google', email: 'user@gmail.com' };
+                        }
+                    } else {
+                        // Modo invitado
+                        this.user = { name: 'Invitado' };
+                    }
+                    
                     sessionStorage.setItem('financialUser', JSON.stringify(this.user));
                     this.isLoading = false;
                     renderApp(); 
-                }, 1500);
+                } catch (error) {
+                    console.error('❌ Error en login:', error);
+                    // Fallback en caso de error
+                    this.user = { name: method === 'google' ? 'Usuario de Google' : 'Invitado' };
+                    sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                    this.isLoading = false;
+                    renderApp();
+                }            },
+            
+            logout() {
+                this.user = null;
+                sessionStorage.removeItem('financialUser');
+                if (window.NebulaAuth) {
+                    window.NebulaAuth.signOut();
+                }
+                renderApp();
             },
             
             // --- Configuración Visual ---
@@ -1614,9 +1695,26 @@
                 dockRoot.innerHTML = '';
             } else if (!appState.user) {
                 contentRoot.innerHTML = renderLoginView();
-                dockRoot.innerHTML = '';
-            } else {
+                dockRoot.innerHTML = '';            } else {
                 let viewHTML = '';
+                
+                // Header con información del usuario
+                viewHTML += `
+                    <div class="mb-6 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                ${appState.user.photo ? `<img src="${appState.user.photo}" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-white/20"/>` : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">${appState.user.name.charAt(0).toUpperCase()}</div>`}
+                                <div>
+                                    <h2 class="text-lg font-semibold ${appState.theme.textPrimary}">¡Hola, ${appState.user.name}!</h2>
+                                    ${appState.user.email ? `<p class="text-sm ${appState.theme.textSecondary}">${appState.user.email}</p>` : ''}
+                                </div>
+                            </div>
+                            <button onclick="appState.logout()" class="px-4 py-2 bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white rounded-lg transition-all duration-200 text-sm font-medium">
+                                Cerrar Sesión
+                            </button>
+                        </div>
+                    </div>
+                `;
                 
                 // Agregar selector de mes para vistas que lo requieren
                 if(!['settings', 'achievements', 'goals', 'investments', 'debts'].includes(appState.activeView)) {
@@ -1757,46 +1855,8 @@
                             ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
                         </button>
                         
-                        <div class="relative">
-                            <button id="calendar-dropdown-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Seleccionar mes (C)" aria-label="Abrir selector de mes" role="button" aria-haspopup="true" aria-expanded="false">
-                                ${createIcon(ICONS.calendar, "w-6 h-6")}
-                            </button>
-                            
-                            <div id="calendar-dropdown" class="hidden absolute left-1/2 transform -translate-x-1/2 top-14 z-50 backdrop-blur-md rounded-xl shadow-lg p-4 ${appState.theme.surface} w-64">
-                                <div class="grid grid-cols-3 gap-2">
-                                    ${Array.from({length: 12}, (_, i) => {
-                                        const monthKey = `${year}-${String(i + 1).padStart(2, '0')}`;
-                                        const hasData = appState.data.transactions[monthKey] && 
-                                                       Object.values(appState.data.transactions[monthKey]).length > 0;
-                                        const isCurrentMonth = i === currentDate.getMonth();
-                                        const isToday = i === today.getMonth() && year === today.getFullYear();
-                                        
-                                        let classes = 'month-dropdown-item p-2 rounded-lg text-sm font-medium transition-all hover:bg-black/10 cursor-pointer text-center backdrop-blur-sm';
-                                        
-                                        if (isCurrentMonth) {
-                                            classes += ` ring-2 ${appState.theme.accentRing} ${appState.theme.accent} ${appState.theme.accentGlow}`;
-                                        } else if (isToday) {
-                                            classes += ` ${appState.theme.accentBg} text-slate-900`;
-                                        } else if (hasData) {
-                                            classes += ` bg-black/20 ${appState.theme.textPrimary} backdrop-blur-md`;
-                                        } else {
-                                            classes += ` ${appState.theme.textSecondary}`;
-                                        }
-                                        
-                                        return `<div class="${classes}" data-month="${i}">${new Date(year, i).toLocaleString('es-ES', {month: 'short'})}</div>`;
-                                    }).join('')}
-                                </div>
-                                
-                                <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-center">
-                                    <button id="today-shortcut" class="text-xs ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-2 py-1 rounded">
-                                        🏠 Ir a hoy
-                                    </button>
-                                    <div class="flex items-center gap-2 text-xs ${appState.theme.textSecondary}">
-                                        <span class="w-2 h-2 rounded-full ${appState.theme.accentBg}"></span>Hoy
-                                        <span class="w-2 h-2 rounded-full bg-white/20"></span>Con datos
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="relative">                            <button id="calendar-dropdown-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Abrir calendario (C)" aria-label="Abrir calendario" role="button">
+                                ${createIcon(ICONS.calendar, "w-6 h-6")}                            </button>
                         </div>
                         
                         <button id="month-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes siguiente (→)">
@@ -2643,44 +2703,15 @@
             
             const monthNext = document.getElementById('month-next');
             if (monthNext) monthNext.addEventListener('click', () => appState.changeMonth(1));
-            
-            // Calendario desplegable
+              // Calendario - unificado para usar modal
             const calendarDropdownButton = document.getElementById('calendar-dropdown-button');
-            const calendarDropdown = document.getElementById('calendar-dropdown');
             
-            if (calendarDropdownButton && calendarDropdown) {
+            if (calendarDropdownButton) {
                 calendarDropdownButton.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    calendarDropdown.classList.toggle('hidden');
+                    // Usar el mismo modal que el shortcut "C"
+                    appState.openModal('calendar');
                 });
-                
-                // Cerrar dropdown al hacer click fuera
-                document.addEventListener('click', (e) => {
-                    if (!calendarDropdown.contains(e.target) && !calendarDropdownButton.contains(e.target)) {
-                        calendarDropdown.classList.add('hidden');
-                    }
-                });
-                
-                // Selección de mes
-                document.querySelectorAll('.month-dropdown-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        const monthIndex = parseInt(e.target.dataset.month);
-                        appState.currentDate = new Date(appState.currentDate.getFullYear(), monthIndex, 1);
-                        calendarDropdown.classList.add('hidden');
-                        renderApp();
-                    });
-                });
-                
-                // Botón "ir a hoy"
-                const todayShortcut = document.getElementById('today-shortcut');
-                if (todayShortcut) {
-                    todayShortcut.addEventListener('click', () => {
-                        appState.currentDate = new Date();
-                        calendarDropdown.classList.add('hidden');
-                        renderApp();
-                        NotificationSystem.info('Navegación', 'Has regresado al mes actual');
-                    });
-                }
             }
               // Modal calendar (mantenido para compatibilidad)
             const openCalendarButton = document.getElementById('open-calendar-button');
