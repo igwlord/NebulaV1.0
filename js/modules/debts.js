@@ -420,26 +420,36 @@ class NebulaDebtsModule {
         const amount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('debt-amount').value) : parseFloat(document.getElementById('debt-amount').value.replace(/\./g, '')) || 0;
         const paidAmount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('debt-paid').value) : parseFloat(document.getElementById('debt-paid').value.replace(/\./g, '')) || 0;
         const interestRate = parseFloat(document.getElementById('debt-interest').value) || null;
-        const dueDate = document.getElementById('debt-due').value;
-
-        // Validaciones
+        const dueDate = document.getElementById('debt-due').value;        // CloudSonnet4: Validaciones con sistema visual elegante
         if (!creditor) {
-            alert('Por favor ingresa el nombre del acreedor');
+            const creditorField = document.getElementById('debt-creditor');
+            if (creditorField && window.showFieldError) {
+                window.showFieldError(creditorField, 'Por favor ingresa el nombre del acreedor');
+            }
             return;
         }
 
         if (amount <= 0) {
-            alert('El monto de la deuda debe ser mayor a 0');
+            const amountField = document.getElementById('debt-amount');
+            if (amountField && window.showFieldError) {
+                window.showFieldError(amountField, 'El monto de la deuda debe ser mayor a 0');
+            }
             return;
         }
 
         if (paidAmount < 0) {
-            alert('El monto pagado no puede ser negativo');
+            const paidField = document.getElementById('debt-paid');
+            if (paidField && window.showFieldError) {
+                window.showFieldError(paidField, 'El monto pagado no puede ser negativo');
+            }
             return;
         }
 
         if (paidAmount > amount) {
-            alert('El monto pagado no puede ser mayor al monto total');
+            const paidField = document.getElementById('debt-paid');
+            if (paidField && window.showFieldError) {
+                window.showFieldError(paidField, 'El monto pagado no puede ser mayor al monto total');
+            }
             return;
         }
 
@@ -496,14 +506,22 @@ class NebulaDebtsModule {
             modalRoot.innerHTML = '';
             modalRoot.style.pointerEvents = 'none';
         }
-    }
-
-    // 💳 Eliminar deuda
-    deleteDebt(debtId) {
+    }    // 💳 Eliminar deuda con modal elegante
+    async deleteDebt(debtId) {
         const debt = window.appState.data.debts.find(d => d.id === debtId);
         if (!debt) return;
 
-        if (confirm(`¿Estás seguro de que quieres eliminar la deuda con "${debt.creditor}"?`)) {
+        // CloudSonnet4: Modal elegante para confirmación
+        const confirmed = await window.showDangerModal(
+            '🗑️ Eliminar deuda',
+            `¿Estás seguro de que quieres eliminar la deuda con <strong>"${debt.creditor}"</strong>?<br><br>Esta acción no se puede deshacer.`,
+            { 
+                confirmText: 'Sí, eliminar',
+                cancelText: 'Cancelar' 
+            }
+        );
+
+        if (confirmed) {
             window.appState.deleteDebt(debtId);
             
             // Actualizar vista si estamos en la sección de deudas

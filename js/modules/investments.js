@@ -373,31 +373,44 @@ class NebulaInvestmentsModule {
         const description = document.getElementById('investment-description').value.trim();
         const amount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('investment-amount').value) : parseFloat(document.getElementById('investment-amount').value.replace(/\./g, '')) || 0;
         const currentValue = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('investment-current').value) : parseFloat(document.getElementById('investment-current').value.replace(/\./g, '')) || 0;
-        const date = document.getElementById('investment-date').value;
-
-        // Validaciones
+        const date = document.getElementById('investment-date').value;        // CloudSonnet4: Validaciones con sistema visual elegante
         if (!name) {
-            alert('Por favor ingresa un nombre para la inversión');
+            const nameField = document.getElementById('investment-name');
+            if (nameField && window.showFieldError) {
+                window.showFieldError(nameField, 'Por favor ingresa un nombre para la inversión');
+            }
             return;
         }
 
         if (!type) {
-            alert('Por favor selecciona un tipo de inversión');
+            const typeField = document.getElementById('investment-type');
+            if (typeField && window.showFieldError) {
+                window.showFieldError(typeField, 'Por favor selecciona un tipo de inversión');
+            }
             return;
         }
 
         if (amount <= 0) {
-            alert('El monto invertido debe ser mayor a 0');
+            const amountField = document.getElementById('investment-amount');
+            if (amountField && window.showFieldError) {
+                window.showFieldError(amountField, 'El monto invertido debe ser mayor a 0');
+            }
             return;
         }
 
         if (currentValue < 0) {
-            alert('El valor actual no puede ser negativo');
+            const currentField = document.getElementById('investment-current');
+            if (currentField && window.showFieldError) {
+                window.showFieldError(currentField, 'El valor actual no puede ser negativo');
+            }
             return;
         }
 
         if (!date) {
-            alert('Por favor selecciona la fecha de inversión');
+            const dateField = document.getElementById('investment-date');
+            if (dateField && window.showFieldError) {
+                window.showFieldError(dateField, 'Por favor selecciona la fecha de inversión');
+            }
             return;
         }
 
@@ -453,14 +466,22 @@ class NebulaInvestmentsModule {
             modalRoot.innerHTML = '';
             modalRoot.style.pointerEvents = 'none';
         }
-    }
-
-    // 📈 Eliminar inversión
-    deleteInvestment(investmentId) {
+    }    // 📈 Eliminar inversión con modal elegante
+    async deleteInvestment(investmentId) {
         const investment = window.appState.data.investments.find(i => i.id === investmentId);
         if (!investment) return;
 
-        if (confirm(`¿Estás seguro de que quieres eliminar la inversión "${investment.name}"?`)) {
+        // CloudSonnet4: Modal elegante para confirmación
+        const confirmed = await window.showDangerModal(
+            '🗑️ Eliminar inversión',
+            `¿Estás seguro de que quieres eliminar la inversión <strong>"${investment.name}"</strong>?<br><br>Esta acción no se puede deshacer.`,
+            { 
+                confirmText: 'Sí, eliminar',
+                cancelText: 'Cancelar' 
+            }
+        );
+
+        if (confirmed) {
             window.appState.deleteInvestment(investmentId);
             
             // Actualizar vista si estamos en la sección de inversiones

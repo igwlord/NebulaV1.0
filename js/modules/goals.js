@@ -300,21 +300,28 @@ class NebulaGoalsModule {
         const description = document.getElementById('goal-description').value.trim();
         const currentAmount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('goal-current').value) : parseFloat(document.getElementById('goal-current').value.replace(/\./g, '')) || 0;
         const targetAmount = window.parseFormattedNumber ? window.parseFormattedNumber(document.getElementById('goal-target').value) : parseFloat(document.getElementById('goal-target').value.replace(/\./g, '')) || 0;
-        const targetDate = document.getElementById('goal-date').value;
-
-        // Validaciones
+        const targetDate = document.getElementById('goal-date').value;        // CloudSonnet4: Validaciones con sistema visual elegante
         if (!name) {
-            alert('Por favor ingresa un nombre para la meta');
+            const nameField = document.getElementById('goal-name');
+            if (nameField && window.showFieldError) {
+                window.showFieldError(nameField, 'Por favor ingresa un nombre para la meta');
+            }
             return;
         }
 
         if (targetAmount <= 0) {
-            alert('El monto objetivo debe ser mayor a 0');
+            const targetField = document.getElementById('goal-target');
+            if (targetField && window.showFieldError) {
+                window.showFieldError(targetField, 'El monto objetivo debe ser mayor a 0');
+            }
             return;
         }
 
         if (currentAmount < 0) {
-            alert('El monto actual no puede ser negativo');
+            const currentField = document.getElementById('goal-current');
+            if (currentField && window.showFieldError) {
+                window.showFieldError(currentField, 'El monto actual no puede ser negativo');
+            }
             return;
         }
 
@@ -369,14 +376,22 @@ class NebulaGoalsModule {
             modalRoot.innerHTML = '';
             modalRoot.style.pointerEvents = 'none';
         }
-    }
-
-    // 🎯 Eliminar meta
-    deleteGoal(goalId) {
+    }    // 🎯 Eliminar meta con modal elegante
+    async deleteGoal(goalId) {
         const goal = window.appState.data.goals.find(g => g.id === goalId);
         if (!goal) return;
 
-        if (confirm(`¿Estás seguro de que quieres eliminar la meta "${goal.name}"?`)) {
+        // CloudSonnet4: Modal elegante para confirmación
+        const confirmed = await window.showDangerModal(
+            '🗑️ Eliminar meta',
+            `¿Estás seguro de que quieres eliminar la meta <strong>"${goal.name}"</strong>?<br><br>Esta acción no se puede deshacer.`,
+            { 
+                confirmText: 'Sí, eliminar',
+                cancelText: 'Cancelar' 
+            }
+        );
+
+        if (confirmed) {
             window.appState.deleteGoal(goalId);
             
             // Actualizar vista si estamos en la sección de metas

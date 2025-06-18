@@ -278,12 +278,21 @@ const SettingsModule = {
             });
         }
     },
-    
-    /**
-     * CloudSonnet4: Maneja el cierre de sesión
+      /**
+     * CloudSonnet4: Maneja el cierre de sesión con modal elegante
      */
-    handleLogout() {
-        if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+    async handleLogout() {
+        // CloudSonnet4: Modal elegante para cerrar sesión
+        const confirmed = await window.showWarningModal(
+            '¿Cerrar sesión?',
+            'Tus datos se mantendrán guardados localmente de forma segura.',
+            { 
+                confirmText: 'Cerrar sesión',
+                cancelText: 'Permanecer' 
+            }
+        );
+
+        if (confirmed) {
             // Limpiar datos de sesión pero mantener datos guardados
             appState.user = null;
             appState.isLoggedIn = false;
@@ -337,17 +346,26 @@ const SettingsModule = {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json';
-        
-        input.addEventListener('change', (e) => {
+          input.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
             
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 try {
                     const importData = JSON.parse(e.target.result);
                     
-                    if (confirm('¿Estás seguro de que quieres importar estos datos? Esto sobrescribirá todos los datos actuales.')) {
+                    // CloudSonnet4: Modal elegante para importar datos
+                    const confirmed = await window.showDangerModal(
+                        '⚠️ Importar datos',
+                        '¿Estás seguro de que quieres importar estos datos?<br><br><strong>Esto sobrescribirá todos los datos actuales.</strong><br><br>Esta acción no se puede deshacer.',
+                        { 
+                            confirmText: 'Sí, importar',
+                            cancelText: 'Cancelar' 
+                        }
+                    );
+
+                    if (confirmed) {
                         appState.data = importData.data || appState.data;
                         
                         if (importData.settings) {

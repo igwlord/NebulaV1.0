@@ -1086,13 +1086,23 @@ function addFormEventListeners() {
         });
     }
     
-    // Borrar todos los datos
-    const clearAllDataButton = document.getElementById('clear-all-data-button');
+    // Borrar todos los datos    const clearAllDataButton = document.getElementById('clear-all-data-button');
     if (clearAllDataButton) {
-        clearAllDataButton.addEventListener('click', () => {
-            if (confirm('¿Seguro que deseas eliminar todos los datos? Esto no se puede deshacer.')) {
+        clearAllDataButton.addEventListener('click', async () => {
+            // CloudSonnet4: Modal elegante para eliminar datos
+            const confirmed = await window.showDangerModal(
+                '🚨 Eliminar todos los datos',
+                '¿Seguro que deseas eliminar <strong>TODOS</strong> los datos?<br><br><span style="color: #ef4444; font-weight: bold;">Esta acción NO se puede deshacer.</span>',
+                { 
+                    confirmText: 'SÍ, ELIMINAR TODO',
+                    cancelText: 'Cancelar' 
+                }
+            );
+
+            if (confirmed) {
                 appState.clearData();
-            }        });
+            }
+        });
     }
 
     // CloudSonnet4: Aplicar formateo automático de miles a todos los inputs numéricos

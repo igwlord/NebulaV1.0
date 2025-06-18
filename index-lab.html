@@ -53,9 +53,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-        }
-        
-        body {
+        }        body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--nebula-dark);
             color: var(--nebula-accent);
@@ -187,12 +185,231 @@
             transform: translateY(-2px);
             box-shadow: var(--nebula-glow);
         }
-        
-        /* 📱 RESPONSIVE ÉPICO */
+          /* 📱 RESPONSIVE ÉPICO */
         @media (max-width: 768px) {
             .nebula-logo { font-size: 3rem; }
             #content-root { padding-bottom: 5rem; }
-        }    </style>
+        }
+        
+        /* 🎨 CSS EXTENDIDO - Animaciones para efectos de partículas */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.4); }
+        }
+        
+        @keyframes drift {
+            0% { transform: translateX(0px) translateY(0px); opacity: 0.1; }
+            50% { transform: translateX(100px) translateY(-50px); opacity: 0.3; }
+            100% { transform: translateX(200px) translateY(0px); opacity: 0.1; }
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.1; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 0.3; }
+        }
+          @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(var(--radius)) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(var(--radius)) rotate(-360deg); }
+        }
+        
+        /* 🎨 SISTEMA DE VALIDACIÓN VISUAL */
+        .input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 1px #ef4444 !important;
+        }
+        
+        .field-error-message {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+            color: #ef4444;
+            font-size: 0.75rem;
+            font-weight: 500;
+            animation: slideInError 0.3s ease-out;
+        }
+        
+        @keyframes slideInError {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .field-error-message svg {
+            width: 0.875rem;
+            height: 0.875rem;
+            flex-shrink: 0;
+        }
+          .input-success {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 1px #10b981 !important;
+        }
+
+        /* 🎭 SISTEMA DE MODALES ELEGANTE */
+        .nebula-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nebula-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nebula-modal {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 2rem;
+            min-width: 320px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .nebula-modal-overlay.active .nebula-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .nebula-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .nebula-modal-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .nebula-modal-icon.warning {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .nebula-modal-icon.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .nebula-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+
+        .nebula-modal-content {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .nebula-modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .nebula-modal-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nebula-modal-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nebula-modal-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nebula-modal-button.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .nebula-modal-button.primary:hover {
+            background: #2563eb;
+        }
+
+        .nebula-modal-button.danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .nebula-modal-button.danger:hover {
+            background: #dc2626;
+        }
+
+        @media (max-width: 640px) {
+            .nebula-modal {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .nebula-modal-actions {
+                flex-direction: column-reverse;
+            }
+            
+            .nebula-modal-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
     
     <!-- 🎯 TAILWIND - Sin configuración problemática -->
       <!-- 🚀 TAILWIND CDN - Carga Diferida Inteligente -->
@@ -301,6 +518,37 @@
         <main id="content-root" class="relative z-10 pb-24 nebula-fade-in" aria-label="Contenido principal de la aplicación"></main>
         <div id="dock-root" class="fixed bottom-0 left-0 right-0 z-20"></div>
         <div id="modal-root" class="fixed inset-0 z-50 pointer-events-none"></div>
+
+        <!-- 🎭 SISTEMA DE MODALES ELEGANTE -->
+        <div id="nebula-modal-overlay" class="nebula-modal-overlay">
+            <div class="nebula-modal">
+                <div class="nebula-modal-header">
+                    <div id="nebula-modal-icon" class="nebula-modal-icon">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                    </div>
+                    <h3 id="nebula-modal-title" class="nebula-modal-title">Confirmación</h3>
+                </div>
+                <div id="nebula-modal-content" class="nebula-modal-content">
+                    ¿Estás seguro de que deseas realizar esta acción?
+                </div>
+                <div class="nebula-modal-actions">
+                    <button id="nebula-modal-cancel" class="nebula-modal-button secondary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Cancelar
+                    </button>
+                    <button id="nebula-modal-confirm" class="nebula-modal-button primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
         <div id="notification-container" class="notification-container"></div>
     </div>
 
@@ -687,7 +935,9 @@
             info: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/>`,
             alertTriangle: `<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17"/>`,
             repeat: `<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>`,
-            copy: `<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>`
+            copy: `<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>`,
+            logOut: `<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>`,
+            download: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`
         };
         
         /**
@@ -929,23 +1179,69 @@
                      if (shouldRenderAppAfter) renderApp();
                 }
             },
-            
-            // --- Navegación de Calendario ---
+              // --- Navegación de Calendario Mejorada ---
             changeCalendarYear(direction) { 
-                this.calendarViewYear += direction; 
-                renderModal(); 
+                const newYear = this.calendarViewYear + direction;
+                
+                // Validar rango de años
+                if (newYear >= 1900 && newYear <= 2100) {
+                    this.calendarViewYear = newYear;
+                    renderModal();
+                    
+                    // Feedback visual suave
+                    const yearInput = document.getElementById('calendar-year-input');
+                    if (yearInput) {
+                        yearInput.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            yearInput.style.transform = 'scale(1)';
+                        }, 150);
+                    }
+                } else {
+                    // Feedback para límites alcanzados
+                    if (window.NotificationSystem) {
+                        const limitMessage = newYear < 1900 ? 
+                            'Has alcanzado el año mínimo (1900)' : 
+                            'Has alcanzado el año máximo (2100)';
+                        window.NotificationSystem.warning('Límite de navegación', limitMessage);
+                    }
+                }
             },
             
             setCalendarYear(year) { 
-                if(year > 1900 && year < 2200) this.calendarViewYear = year; 
-                renderModal();
+                if (year >= 1900 && year <= 2100) {
+                    this.calendarViewYear = year;
+                    renderModal();
+                    
+                    // Feedback positivo
+                    if (window.NotificationSystem) {
+                        window.NotificationSystem.info('Calendario', `Navegando a ${year}`);
+                    }
+                } else {
+                    // Feedback de error para años fuera de rango
+                    if (window.NotificationSystem) {
+                        window.NotificationSystem.error('Año inválido', 'Por favor ingresa un año entre 1900 y 2100');
+                    }
+                    
+                    // Restaurar el valor válido en el input
+                    const yearInput = document.getElementById('calendar-year-input');
+                    if (yearInput) {
+                        yearInput.value = this.calendarViewYear;
+                    }
+                }
             },
             
             goToday() { 
                 this.currentDate = new Date(); 
                 this.calendarViewYear = this.currentDate.getFullYear(); 
                 this.closeModal(true);
-            },            // --- Gestión de Transacciones ---
+                
+                // Feedback de navegación
+                if (window.NotificationSystem) {
+                    const today = new Date();
+                    const monthName = today.toLocaleString('es-ES', { month: 'long' });
+                    window.NotificationSystem.success('Calendario', `Navegando a ${monthName} ${today.getFullYear()}`);
+                }
+            },// --- Gestión de Transacciones ---
             addTransaction(t) {
                 const key = this.currentMonthKey;
                 if (!this.data.transactions[key]) this.data.transactions[key] = [];
@@ -1104,9 +1400,215 @@
          * @returns {number} Número sin formato
          */
         const parseFormattedNumber = (value) => parseFloat(String(value).replace(/\./g, '')) || 0;
-        
-        // Exponer funciones adicionales globalmente
+          // Exponer funciones adicionales globalmente
         window.parseFormattedNumber = parseFormattedNumber;
+        
+        /**
+         * 🎨 SISTEMA DE VALIDACIÓN VISUAL
+         * CloudSonnet4: Sistema modular para mensajes de error elegantes
+         */
+        
+        // Función para mostrar error en campo específico
+        function showFieldError(inputElement, message) {
+            if (!inputElement) return;
+            
+            // Remover error previo
+            clearFieldError(inputElement);
+            
+            // Agregar clase de error al input
+            inputElement.classList.add('input-error');
+            inputElement.setAttribute('aria-invalid', 'true');
+            
+            // Crear mensaje de error
+            const errorElement = document.createElement('div');
+            errorElement.className = 'field-error-message';
+            errorElement.id = `${inputElement.id || inputElement.name}-error`;
+            errorElement.setAttribute('role', 'alert');
+            errorElement.innerHTML = `
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+                ${message}
+            `;
+            
+            // Insertar después del input
+            inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+            
+            // Configurar aria-describedby
+            inputElement.setAttribute('aria-describedby', errorElement.id);
+            
+            // Auto-clear cuando el usuario escriba
+            const clearOnInput = () => {
+                clearFieldError(inputElement);
+                inputElement.removeEventListener('input', clearOnInput);
+            };
+            inputElement.addEventListener('input', clearOnInput);
+        }
+        
+        // Función para limpiar error de campo
+        function clearFieldError(inputElement) {
+            if (!inputElement) return;
+            
+            inputElement.classList.remove('input-error');
+            inputElement.classList.add('input-success');
+            inputElement.removeAttribute('aria-invalid');
+            
+            // Remover mensaje de error
+            const errorId = `${inputElement.id || inputElement.name}-error`;
+            const errorElement = document.getElementById(errorId);
+            if (errorElement) {
+                errorElement.remove();
+            }
+            
+            // Limpiar aria-describedby
+            inputElement.removeAttribute('aria-describedby');
+            
+            // Remover clase success después de un tiempo
+            setTimeout(() => {
+                inputElement.classList.remove('input-success');
+            }, 2000);
+        }
+        
+        // Función para validar campo obligatorio
+        function validateField(inputElement, fieldName) {
+            const value = inputElement.value.trim();
+            if (!value) {
+                showFieldError(inputElement, `Por favor ingresa ${fieldName}`);
+                return false;
+            }
+            clearFieldError(inputElement);
+            return true;
+        }
+        
+        // Función para validar formulario completo
+        function validateForm(formElement) {
+            const requiredFields = formElement.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                const fieldName = field.getAttribute('data-field-name') || 
+                                 field.previousElementSibling?.textContent || 
+                                 'este campo';
+                
+                if (!validateField(field, fieldName)) {
+                    isValid = false;
+                }
+            });
+            
+            return isValid;
+        }
+          // CloudSonnet4: Exponer funciones globalmente para uso en módulos
+        window.showFieldError = showFieldError;
+        window.clearFieldError = clearFieldError;
+        window.validateField = validateField;
+        window.validateForm = validateForm;
+
+        /**
+         * 🎭 SISTEMA DE MODALES ELEGANTE
+         * CloudSonnet4: Reemplazo profesional para alert() y confirm()
+         */
+        
+        // Función para mostrar modal de confirmación
+        function showConfirmModal(title, content, type = 'warning', options = {}) {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('nebula-modal-overlay');
+                const modalTitle = document.getElementById('nebula-modal-title');
+                const modalContent = document.getElementById('nebula-modal-content');
+                const modalIcon = document.getElementById('nebula-modal-icon');
+                const cancelButton = document.getElementById('nebula-modal-cancel');
+                const confirmButton = document.getElementById('nebula-modal-confirm');
+                
+                // Configurar contenido
+                modalTitle.textContent = title;
+                modalContent.innerHTML = content;
+                
+                // Configurar icono según tipo
+                modalIcon.className = `nebula-modal-icon ${type}`;
+                if (type === 'danger') {
+                    modalIcon.innerHTML = `
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                    `;
+                } else {
+                    modalIcon.innerHTML = `
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    `;
+                }
+                
+                // Configurar botones
+                cancelButton.textContent = options.cancelText || 'Cancelar';
+                confirmButton.textContent = options.confirmText || 'Confirmar';
+                
+                // Configurar estilo del botón de confirmar
+                confirmButton.className = `nebula-modal-button ${type === 'danger' ? 'danger' : 'primary'}`;
+                
+                // Función para cerrar modal
+                const closeModal = () => {
+                    overlay.classList.remove('active');
+                    document.removeEventListener('keydown', handleKeydown);
+                };
+                
+                // Manejar teclas
+                const handleKeydown = (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                        resolve(false);
+                    } else if (e.key === 'Enter') {
+                        closeModal();
+                        resolve(true);
+                    }
+                };
+                
+                // Event listeners
+                const handleCancel = () => {
+                    closeModal();
+                    resolve(false);
+                };
+                
+                const handleConfirm = () => {
+                    closeModal();
+                    resolve(true);
+                };
+                
+                // Limpiar listeners previos
+                cancelButton.removeEventListener('click', handleCancel);
+                confirmButton.removeEventListener('click', handleConfirm);
+                
+                // Añadir listeners
+                cancelButton.addEventListener('click', handleCancel);
+                confirmButton.addEventListener('click', handleConfirm);
+                document.addEventListener('keydown', handleKeydown);
+                
+                // Cerrar al hacer clic fuera del modal
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeModal();
+                        resolve(false);
+                    }
+                });
+                
+                // Mostrar modal
+                overlay.classList.add('active');
+                
+                // Focus en el botón de cancelar para accesibilidad
+                setTimeout(() => cancelButton.focus(), 100);
+            });
+        }
+        
+        // Funciones de conveniencia para diferentes tipos de modales
+        const showWarningModal = (title, content, options = {}) => 
+            showConfirmModal(title, content, 'warning', options);
+            
+        const showDangerModal = (title, content, options = {}) => 
+            showConfirmModal(title, content, 'danger', options);
+        
+        // CloudSonnet4: Exponer funciones globalmente
+        window.showConfirmModal = showConfirmModal;
+        window.showWarningModal = showWarningModal;
+        window.showDangerModal = showDangerModal;
         
         /**
          * 🎨 Crea elemento SVG de icono
@@ -1128,10 +1630,8 @@
           /**
          * 🎯 RENDERIZADOR PRINCIPAL DE LA APLICACIÓN
          * Controla el flujo de renderizado según el estado actual
-         */
-        function renderApp() {
-            // Aplicar tema visual
-            document.body.style.setProperty('--bg-gradient', appState.theme.gradient);
+         */        function renderApp() {
+            // Las partículas de fondo se manejan directamente en parallax-bg
             parallaxBg.innerHTML = renderParallaxBackground();
             
             if (appState.isLoading) {
@@ -1389,23 +1889,38 @@
                     <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-md mx-4">
                         <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full">
                             ${createIcon(ICONS.x, 'w-6 h-6')}
-                        </button>
-                        
-                        <div class="flex items-center justify-between mb-6">
-                            <button id="calendar-year-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full">
+                        </button>                        <div class="flex items-center justify-between mb-6">
+                            <button id="calendar-year-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110" title="Año anterior (←)">
                                 ${createIcon(ICONS.chevronLeft, "w-8 h-8")}
                             </button>
-                            <input type="number" id="calendar-year-input" value="${appState.calendarViewYear}" class="text-2xl font-bold ${appState.theme.textPrimary} bg-transparent w-24 text-center focus:outline-none focus:bg-black/20 rounded-lg backdrop-blur-md" aria-label="Año del calendario" min="1900" max="2100">
-                            <button id="calendar-year-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full">
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm ${appState.theme.textSecondary}">Año:</span>
+                                    <input type="number" id="calendar-year-input" value="${appState.calendarViewYear}" class="text-2xl font-bold ${appState.theme.textPrimary} bg-white/10 w-24 text-center focus:outline-none focus:bg-white/20 rounded-lg backdrop-blur-md border border-white/20 focus:border-white/40 transition-all px-2 py-1" aria-label="Año del calendario" min="1900" max="2100" title="Escribe un año o usa las flechas">
+                                </div>
+                                <div class="text-xs ${appState.theme.textSecondary}">
+                                    ${(() => {
+                                        // Contar meses con datos en el año actual
+                                        let monthsWithData = 0;
+                                        for (let i = 1; i <= 12; i++) {
+                                            const monthKey = `${appState.calendarViewYear}-${String(i).padStart(2, '0')}`;
+                                            if (appState.data.transactions[monthKey] && Object.values(appState.data.transactions[monthKey]).length > 0) {
+                                                monthsWithData++;
+                                            }
+                                        }
+                                        return monthsWithData > 0 ? `📊 ${monthsWithData} meses con datos` : '📭 Sin datos registrados';
+                                    })()}
+                                </div>
+                            </div>
+                            <button id="calendar-year-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110" title="Año siguiente (→)">
                                 ${createIcon(ICONS.chevronRight, "w-8 h-8")}
                             </button>
                         </div>
                         
                         <div class="grid grid-cols-4 gap-4 text-center">${monthsHTML}</div>
-                        
-                        <div class="flex items-center justify-between mt-6">
-                            <button id="today-button" class="py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm">
-                                Volver a Hoy
+                          <div class="flex items-center justify-between mt-6">
+                            <button id="today-button" class="py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm transition-all hover:scale-105">
+                                📅 Volver a Hoy
                             </button>
                             <div class="flex items-center gap-4 text-xs ${appState.theme.textSecondary}">
                                <div class="flex items-center gap-1">
@@ -1415,6 +1930,12 @@
                                    <span class="w-3 h-3 rounded-full bg-white/20"></span>Con Datos
                                </div>
                             </div>
+                       </div>
+                       
+                       <!-- Indicadores de navegación -->
+                       <div class="mt-4 text-center text-xs ${appState.theme.textSecondary} border-t border-white/10 pt-3">
+                           <p>💡 <strong>Navegación:</strong> ← → para cambiar año • Click en mes para seleccionar</p>
+                           <p class="mt-1">📅 Rango disponible: 1900 - 2100</p>
                        </div>
                     </div>
                 </div>
@@ -1471,10 +1992,8 @@
                 const monthsDiff = Math.max(1, (new Date().getFullYear() - firstDate.getFullYear()) * 12 + (new Date().getMonth() - firstDate.getMonth()) + 1);
                 const monthlySavings = (globalIncome-globalExpenses)/monthsDiff;
                 monthsToGoal = monthlySavings > 0 ? `${Math.ceil((firstGoal.target - firstGoal.saved)/monthlySavings)} meses` : '∞';
-            }
-
-            const infoHTML = appState.isPrivate ? `
-                <div class="flex flex-col items-center justify-center text-slate-900/70 backdrop-blur-sm p-10 rounded-full cursor-pointer" id="privacy-toggle">
+            }            const infoHTML = appState.isPrivate ? `
+                <div class="flex flex-col items-center justify-center ${appState.theme.textPrimary} p-10 rounded-full cursor-pointer" id="privacy-toggle">
                     ${createIcon(ICONS.eyeOff, "w-20 h-20")}
                     <p class="font-semibold mt-2">Información Oculta</p>
                 </div>
@@ -1532,13 +2051,12 @@
         function renderTransactionsView(type) {
             const title = type === 'income' ? 'Ingresos' : 'Gastos';
             const isExpense = type === 'expense';
-            const currentMonthTransactions = appState.data.transactions[appState.currentMonthKey] || [];
-              // Renderizar lista de transacciones del mes actual
+            const currentMonthTransactions = appState.data.transactions[appState.currentMonthKey] || [];              // Renderizar lista de transacciones del mes actual
             const transactionsHTML = currentMonthTransactions
                 .filter(t => t.type === type)
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .map(t => `
-                    <li class="${appState.theme.surface} p-4 rounded-lg flex justify-between items-center transition-all hover:bg-black/10 backdrop-blur-sm">
+                    <li class="border border-white/10 p-4 rounded-lg flex justify-between items-center transition-all hover:bg-white/5">
                         <div>
                             <p class="font-semibold ${appState.theme.textPrimary}">${t.description}</p>
                             <div class="flex items-center gap-2 mt-1">
@@ -1560,25 +2078,24 @@
             // Opciones de categorías para gastos
             const categoryOptionsHTML = CATEGORIES.map(cat => 
                 `<option class="bg-slate-800" value="${cat}">${cat}</option>`
-            ).join('');
-              // Campo de categoría (solo para gastos)
+            ).join('');            // Campo de categoría (solo para gastos)
             const categoryFieldHTML = isExpense ? `
                 <div>
                     <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Categoría</label>
-                    <select name="category" class="w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" required>
+                    <select name="category" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required>
                         ${categoryOptionsHTML}
                     </select>
                 </div>
             ` : '';return `
-                <div class="${appState.theme.surface} rounded-2xl shadow-lg p-6">
+                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
                         <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">💰 Gestión de ${title}</h2>
                         
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <button id="repeat-month-button" data-type="${type}" class="flex items-center gap-2 text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-3 py-2 rounded-lg hover:bg-black/10 backdrop-blur-sm" title="Copia las transacciones del mes anterior">
+                            <button id="repeat-month-button" data-type="${type}" class="flex items-center gap-2 text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-3 py-2 rounded-lg hover:bg-white/5" title="Copia las transacciones del mes anterior">
                                ${createIcon(ICONS.history, 'w-4 h-4')} Repetir Mes Anterior
                             </button>
-                            <button id="repeat-yearly-button" data-type="${type}" class="flex items-center gap-2 text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-3 py-2 rounded-lg hover:bg-black/10 backdrop-blur-sm" title="Copia estas transacciones hasta fin de año">
+                            <button id="repeat-yearly-button" data-type="${type}" class="flex items-center gap-2 text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-3 py-2 rounded-lg hover:bg-white/5" title="Copia estas transacciones hasta fin de año">
                                ${createIcon(ICONS.repeat, 'w-4 h-4')} Repetir Anualmente
                             </button>
                         </div>
@@ -1586,14 +2103,12 @@
                     
                     <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-${isExpense ? '4' : '2'} gap-4 mb-8 items-end">                        <div class="${isExpense ? 'md:col-span-2' : ''}">
                             <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Descripción</label>
-                            <input type="text" name="description" placeholder="Ej: Salario, Supermercado..." class="w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" required />
+                            <input type="text" name="description" placeholder="${type === 'income' ? 'Ej: Sueldo de presidente' : 'Ej: Comida para la expedición'}" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="la descripción" />
                         </div>
                         
-                        ${categoryFieldHTML}
-
-                        <div>
+                        ${categoryFieldHTML}                        <div>
                             <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Monto</label>
-                            <input type="text" inputmode="numeric" name="amount" placeholder="0" class="numeric-input w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" required />
+                            <input type="text" inputmode="numeric" name="amount" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el monto" />
                         </div>
 
                         <div class="md:col-span-full">
@@ -1619,20 +2134,14 @@
             const { totalInvestments } = calculateSummary();
             const totalInitial = appState.data.investments.reduce((sum, i) => sum + i.initialAmount, 0);
             const portfolioPerformance = totalInitial === 0 ? 0 : ((totalInvestments - totalInitial) / totalInitial) * 100;
-            const performanceClass = portfolioPerformance >= 0 ? appState.theme.positive : appState.theme.negative;
-
-            const investmentsHTML = appState.data.investments.map(inv => {
+            const performanceClass = portfolioPerformance >= 0 ? appState.theme.positive : appState.theme.negative;            const investmentsHTML = appState.data.investments.map(inv => {
                 const performance = inv.initialAmount === 0 ? 0 : ((inv.currentAmount - inv.initialAmount) / inv.initialAmount) * 100;
                 return `
-                    <div class="bg-black/20 p-4 rounded-lg flex flex-col justify-between backdrop-blur-md">
+                    <div class="border border-white/10 p-4 rounded-lg flex flex-col justify-between">
                         <div class="flex justify-between items-start">                           <div>
                                 <p class="font-bold text-lg ${appState.theme.textPrimary}">${inv.name}</p>
                                 <p class="text-sm ${appState.theme.textSecondary}">${inv.type}</p>
-                           </div>
-                           <div class="flex space-x-2">
-                               <button data-action="edit-investment" data-investment-id="${inv.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar inversión">
-                                   ${createIcon(ICONS.edit, 'w-4 h-4')}
-                               </button>
+                           </div>                           <div class="flex space-x-2">
                                <button data-action="delete-investment" data-investment-id="${inv.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar inversión">
                                    ${createIcon(ICONS.trash, 'w-4 h-4')}
                                </button>
@@ -1640,21 +2149,19 @@
                         </div>
                         <div class="mt-4">
                             <label class="text-xs ${appState.theme.textSecondary}">Valor Actual</label>
-                            <input type="text" inputmode="numeric" data-investment-id="${inv.id}" value="${formatNumberWithDots(inv.currentAmount)}" placeholder="0" class="numeric-input investment-update-input w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" />
+                            <input type="text" inputmode="numeric" data-investment-id="${inv.id}" value="${formatNumberWithDots(inv.currentAmount)}" placeholder="0" class="numeric-input investment-update-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" />
                             <p class="mt-2 text-right text-sm font-semibold ${performance >= 0 ? appState.theme.positive : appState.theme.negative}">${performance.toFixed(2)}%</p>
                         </div>
                     </div>
                 `;
-            }).join('');
-
-            return `
-                <div class="backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} mb-6">
+            }).join('');            return `
+                <div class="border border-white/10 rounded-2xl shadow-lg p-6 mb-6">
                     <h2 class="text-2xl font-bold ${appState.theme.textPrimary} mb-4">Resumen de Cartera</h2>
                     <div class="flex justify-between items-center">
                         <div><p class="text-sm ${appState.theme.textSecondary}">Valor Total</p><p class="text-3xl font-bold ${appState.theme.textPrimary}">${formatCurrency(totalInvestments)}</p></div>
                         <div class="text-right"><p class="text-sm ${appState.theme.textSecondary}">Rendimiento</p><div class="text-3xl font-bold flex items-center gap-2 ${performanceClass}"><span>${portfolioPerformance > 0 ? '+':''}${portfolioPerformance.toFixed(2)}%</span></div></div>
                     </div>                </div>
-                <div class="backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface}">
+                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">Inversiones</h2>
                         <button data-action="add-investment" class="px-4 py-2 ${appState.theme.accentBg} text-white rounded-lg hover:opacity-90 transition-all duration-200 ${appState.theme.accentGlow} font-medium">
@@ -1662,9 +2169,9 @@
                         </button>
                     </div>
                     <form id="investment-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 items-end">
-                        <div class="md:col-span-2"><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Activo</label><input name="name" type="text" placeholder="Ej: Fondo Mutuo Planeta X" class="w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" required /></div>
-                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Tipo</label><select name="type" class="w-full bg-black/20 text-white rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md"><option class="bg-slate-800">Acciones</option><option class="bg-slate-800">Cripto</option><option class="bg-slate-800">Fondos</option><option class="bg-slate-800">Otro</option></select></div>
-                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Inversión Inicial</label><input name="initialAmount" type="text" inputmode="numeric" placeholder="0" class="numeric-input w-full bg-white/10 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none" required /></div>
+                        <div class="md:col-span-2"><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Activo</label><input name="name" type="text" placeholder="Ej: Acciones de Adamantium..." class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el nombre del activo" /></div>
+                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Tipo</label><select name="type" class="w-full border border-white/20 text-white rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent"><option class="bg-slate-800">Acciones</option><option class="bg-slate-800">Cripto</option><option class="bg-slate-800">Fondos</option><option class="bg-slate-800">Otro</option></select></div>
+                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Inversión Inicial</label><input name="initialAmount" type="text" inputmode="numeric" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="la inversión inicial" /></div>
                         <div class="md:col-span-4"><button type="submit" class="w-full mt-2 ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-opacity ${appState.theme.accentGlow} flex items-center justify-center gap-2">${createIcon(ICONS.plus)}Añadir Inversión</button></div>
                     </form>
                     <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mt-8 mb-4">Mis Activos</h3>
@@ -1672,18 +2179,13 @@
                 </div>
             `;
         }
-        
-        function renderGoalsView() {
+          function renderGoalsView() {
              const goalsHTML = appState.data.goals.map(goal => `
-                <div class="bg-white/5 p-4 rounded-lg">                    <div class="flex justify-between items-start">
+                <div class="border border-white/10 p-4 rounded-lg">                    <div class="flex justify-between items-start">
                         <div>
                             <p class="font-bold ${appState.theme.textPrimary}">${goal.name}</p>
                             <p class="text-sm ${appState.theme.textSecondary} mt-1">${formatCurrency(goal.saved)} / ${formatCurrency(goal.target)}</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button data-action="edit-goal" data-goal-id="${goal.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar meta">
-                                ${createIcon(ICONS.edit, 'w-4 h-4')}
-                            </button>
+                        </div>                        <div class="flex space-x-2">
                             <button data-action="delete-goal" data-goal-id="${goal.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar meta">
                                 ${createIcon(ICONS.trash, 'w-4 h-4')}
                             </button>
@@ -1694,16 +2196,15 @@
                     </div>
                 </div>
             `).join('');            return `
-                <div class="${appState.theme.surface} rounded-2xl shadow-lg p-6">
+                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">Metas de Ahorro</h2>
                         <button data-action="add-goal" class="px-4 py-2 ${appState.theme.accentBg} text-white rounded-lg hover:opacity-90 transition-all duration-200 ${appState.theme.accentGlow} font-medium">
                             + Nueva Meta
                         </button>
                     </div>
-                    <form id="goal-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-end">
-                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Nombre de la Meta</label><input type="text" name="name" placeholder="Ej: Viaje a Marte" class="w-full bg-white/10 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none" required /></div>
-                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Monto Objetivo</label><input type="text" inputmode="numeric" name="target" placeholder="0" class="numeric-input w-full bg-white/10 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none" required /></div>
+                    <form id="goal-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-end">                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Nombre de la Meta</label><input type="text" name="name" placeholder="Ej: Viaje a Marte" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el nombre de la meta" /></div>
+                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Monto Objetivo</label><input type="text" inputmode="numeric" name="target" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el monto objetivo" /></div>
                         <div class="self-end"><button type="submit" class="w-full ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-colors ${appState.theme.accentGlow} flex items-center justify-center gap-2">${createIcon(ICONS.plus)}Crear Meta</button></div>
                     </form>
                     <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mt-8 mb-4">Mis Metas</h3>
@@ -1712,13 +2213,9 @@
             `;
         }        function renderDebtsView() {
             const debtsHTML = appState.data.debts.map(debt => `
-                <li class="backdrop-blur-sm rounded-lg flex justify-between items-center p-4 ${appState.theme.surface}">
+                <li class="border border-white/10 rounded-lg flex justify-between items-center p-4">
                     <div><p class="font-semibold ${appState.theme.textPrimary}">${debt.description}</p></div>                    <div class="flex items-center gap-4">
-                        <p class="font-bold text-lg ${appState.theme.negative}">${formatCurrency(debt.amount)}</p>
-                        <div class="flex space-x-2">
-                            <button data-action="edit-debt" data-debt-id="${debt.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar deuda">
-                                ${createIcon(ICONS.edit, 'w-4 h-4')}
-                            </button>
+                        <p class="font-bold text-lg ${appState.theme.negative}">${formatCurrency(debt.amount)}</p>                        <div class="flex space-x-2">
                             <button data-action="delete-debt" data-debt-id="${debt.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar deuda">
                                 ${createIcon(ICONS.trash, 'w-4 h-4')}
                             </button>
@@ -1726,21 +2223,19 @@
                     </div>
                 </li>
             `).join('');            return `
-                <div class="${appState.theme.surface} rounded-2xl shadow-lg p-6">
+                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">💳 Gestión de Deudas</h2>
                         <button data-action="add-debt" class="px-4 py-2 ${appState.theme.accentBg} text-white rounded-lg hover:opacity-90 transition-all duration-200 ${appState.theme.accentGlow} font-medium">
                             + Nueva Deuda
                         </button>
                     </div>
-                    <form id="debt-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-end">
-                        <div>
+                    <form id="debt-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-end">                        <div>
                             <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Descripción</label>
-                            <input type="text" name="description" placeholder="Ej: Préstamo estudiantil" class="w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" required />
-                        </div>
-                        <div>
+                            <input type="text" name="description" placeholder="Ej: Préstamo de Mercado Plasma" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="la descripción de la deuda" />
+                        </div>                        <div>
                             <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Monto Total</label>
-                            <input type="text" inputmode="numeric" name="amount" placeholder="0" class="numeric-input w-full bg-black/20 ${appState.theme.textPrimary} rounded-md p-2 border border-white/20 focus:ring-2 ${appState.theme.accentRing} focus:outline-none backdrop-blur-md" required />
+                            <input type="text" inputmode="numeric" name="amount" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el monto total" />
                         </div>
                         <div class="self-end">
                             <button type="submit" class="w-full ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-all ${appState.theme.accentGlow} flex items-center justify-center gap-2 transform hover:scale-105">
@@ -1771,14 +2266,37 @@
                         <div>
                             <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🎨 Tema Visual</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">${themesHTML}</div>
-                        </div>
-                        <div>
+                        </div>                        <div>
                             <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🛠️ Herramientas</h3>
-                             <button id="open-shortcuts-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md">
+                             <button id="open-shortcuts-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md mb-3">
                                 ${createIcon(ICONS.zap, `w-6 h-6 ${appState.theme.accent}`)}
                                 <div>
                                     <p class="font-bold ${appState.theme.textPrimary}">⚡ Atajos de Teclado</p>
                                     <p class="text-sm ${appState.theme.textSecondary}">Navega más rápido por la aplicación.</p>
+                                </div>
+                            </button>
+                            
+                            <button id="logout-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md mb-3">
+                                ${createIcon(ICONS.logOut, `w-6 h-6 ${appState.theme.accent}`)}
+                                <div>
+                                    <p class="font-bold ${appState.theme.textPrimary}">🚪 Cerrar Sesión</p>
+                                    <p class="text-sm ${appState.theme.textSecondary}">Salir de tu cuenta de Nebula Financial.</p>
+                                </div>
+                            </button>
+                            
+                            <button id="export-excel-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md mb-3">
+                                ${createIcon(ICONS.download, `w-6 h-6 ${appState.theme.accent}`)}
+                                <div>
+                                    <p class="font-bold ${appState.theme.textPrimary}">📊 Exportar a Excel</p>
+                                    <p class="text-sm ${appState.theme.textSecondary}">Descarga todos tus datos financieros.</p>
+                                </div>
+                            </button>
+                            
+                            <button id="clear-all-data-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-red-500/20 p-4 rounded-lg transition-colors backdrop-blur-md border border-red-500/30">
+                                ${createIcon(ICONS.trash, `w-6 h-6 text-red-400`)}
+                                <div>
+                                    <p class="font-bold text-red-400">🗑️ Borrar Todos los Datos</p>
+                                    <p class="text-sm text-red-300">⚠️ Esta acción no se puede deshacer.</p>
                                 </div>
                             </button>
                         </div>
@@ -1820,14 +2338,16 @@
                         ${navButtonsHTML}
                     </div>
                 </nav>`;
-        }
-          function renderParallaxBackground() {
+        }        function renderParallaxBackground() {
             if (parallaxBg.children.length > 0 && parallaxBg.dataset.theme === appState.themeKey) return '';
             parallaxBg.dataset.theme = appState.themeKey;
 
+            // 🎨 EFECTOS DE PARTÍCULAS OPTIMIZADOS
+            // Todos los temas ahora usan el mismo patrón eficiente de "Aureo Amancer"
+            // para mejorar el rendimiento y reducir los tiempos de carga
             switch(appState.theme.particleType) {
                 case 'goldenDust': {
-                    // Polvo dorado flotante para Áureo Amanecer
+                    // Polvo dorado flotante para Áureo Amanecer - EFECTO DUAL
                     const particles = Array.from({ length: 120 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
@@ -1847,76 +2367,74 @@
                 }
 
                 case 'crimsonMist': {
-                    // Niebla carmesí para Crisón Vespertino
-                    return Array.from({ length: 20 }).map(() => {
+                    // Niebla carmesí para Crisón Vespertino - EFECTO DUAL MEJORADO
+                    const mist = Array.from({ length: 25 }).map(() => {
                         const duration = Math.random() * 30 + 15;
                         const size = Math.random() * 300 + 150;
                         const startX = Math.random() * 100;
                         const startY = Math.random() * 100;
                         return `<div class="particle absolute rounded-full" style="left: ${startX}%; top: ${startY}%; width: ${size}px; height: ${size}px; background: radial-gradient(circle, ${appState.theme.sunColor}08, transparent 70%); animation: drift ${duration}s linear infinite alternate; transform: translateZ(0);"></div>`;
-                    }).join('') + Array.from({ length: 180 }).map(() => {
+                    }).join('');
+                    
+                    const sparkles = Array.from({ length: 100 }).map(() => {
+                        const leftPos = Math.random() * 100;
+                        const topPos = Math.random() * 100;
+                        const size = Math.random() * 2 + 1;
+                        const duration = Math.random() * 6 + 3;
+                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*3}px ${appState.theme.sunColor}80; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.5 + 0.2};"></div>`;
+                    }).join('');
+
+                    const backgroundStars = Array.from({ length: 180 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
                         const pulse = Math.random() * 4 + 3;
                         return `<div class="absolute w-px h-px bg-rose-300 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: pulse ${pulse}s ease-in-out infinite;"></div>`;
                     }).join('');
-                }
 
-                case 'aquaFlow': {
-                    // Flujo acuático para Aguamarina Celeste
-                    const waves = Array.from({ length: 8 }).map((_, i) => {
-                        const delay = i * 0.5;
-                        return `<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at ${20 + i*10}% ${30 + i*8}%, ${appState.theme.sunColor}15, transparent 60%); animation: wave ${8 + i}s ease-in-out infinite; animation-delay: ${delay}s;"></div>`;
-                    }).join('');
-
-                    const bubbles = Array.from({ length: 25 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const size = Math.random() * 8 + 3;
-                        const duration = Math.random() * 6 + 4;
-                        return `<div class="particle absolute rounded-full border border-cyan-300/20" style="left: ${leftPos}%; bottom: -10px; width: ${size}px; height: ${size}px; background: radial-gradient(circle at 30% 30%, ${appState.theme.sunColor}20, transparent 70%); animation: bubble ${duration}s linear infinite;"></div>`;
-                    }).join('');
-
-                    const stars = Array.from({ length: 200 }).map(() => {
+                    return mist + sparkles + backgroundStars;
+                }                case 'aquaFlow': {
+                    // Flujo acuático para Aguamarina Celeste - EFECTO OPTIMIZADO (mismo patrón que Aureo)
+                    const particles = Array.from({ length: 120 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
-                        const shimmer = Math.random() * 3 + 2;
-                        return `<div class="absolute w-px h-px bg-cyan-200 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: shimmer ${shimmer}s ease-in-out infinite alternate;"></div>`;
+                        const size = Math.random() * 3 + 1;
+                        const duration = Math.random() * 8 + 4;
+                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
                     }).join('');
 
-                    return waves + bubbles + stars;
-                }
-
-                case 'royalAura': {
-                    // Aura real para Violeta Real
-                    const orbs = Array.from({ length: 12 }).map(() => {
-                        const angle = Math.random() * 360;
-                        const radius = Math.random() * 40 + 20;
-                        const size = Math.random() * 20 + 10;
-                        const duration = Math.random() * 15 + 10;
-                        return `<div class="particle absolute rounded-full" style="left: 50%; top: 50%; width: ${size}px; height: ${size}px; background: radial-gradient(circle, ${appState.theme.sunColor}40, transparent 70%); transform-origin: 0 0; animation: orbit ${duration}s linear infinite; --angle: ${angle}deg; --radius: ${radius}vh;"></div>`;
-                    }).join('');
-
-                    const sparkles = Array.from({ length: 80 }).map(() => {
+                    const backgroundStars = Array.from({ length: 150 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
-                        const sparkle = Math.random() * 2 + 1;
-                        const delay = Math.random() * 5;
-                        return `<div class="absolute" style="left:${leftPos}%; top:${topPos}%; animation: sparkle ${sparkle}s ease-in-out infinite; animation-delay: ${delay}s;"><div class="w-1 h-1 bg-purple-200 rounded-full"></div></div>`;
+                        const twinkle = Math.random() * 3 + 2;
+                        return `<div class="absolute w-px h-px bg-cyan-200 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
                     }).join('');
 
-                    const starField = Array.from({ length: 300 }).map(() => {
+                    return particles + backgroundStars;
+                }                case 'royalAura': {
+                    // Aura real para Violeta Real - EFECTO OPTIMIZADO (mismo patrón que Aureo)
+                    const particles = Array.from({ length: 120 }).map(() => {
                         const leftPos = Math.random() * 100;
                         const topPos = Math.random() * 100;
-                        const glow = Math.random() * 4 + 2;
-                        return `<div class="absolute w-px h-px bg-purple-100 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: glow ${glow}s ease-in-out infinite alternate;"></div>`;
+                        const size = Math.random() * 3 + 1;
+                        const duration = Math.random() * 8 + 4;
+                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
                     }).join('');
 
-                    return orbs + sparkles + starField;
+                    const backgroundStars = Array.from({ length: 150 }).map(() => {
+                        const leftPos = Math.random() * 100;
+                        const topPos = Math.random() * 100;
+                        const twinkle = Math.random() * 3 + 2;
+                        return `<div class="absolute w-px h-px bg-purple-100 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
+                    }).join('');
+
+                    return particles + backgroundStars;
                 }
 
                 default: return '';
             }
-        }        function updateDockGlider() {
+        }
+
+        function updateDockGlider() {
             // El nuevo efecto es puramente CSS, no requiere JavaScript
         }/**
          * 🎮 Gestor de Event Listeners Mejorado
@@ -1947,11 +2465,17 @@
                     const newLength = e.target.value.length;
                     e.target.setSelectionRange(cursorPosition + (newLength - originalLength), cursorPosition + (newLength - originalLength));
                 });
-            });            // 🔒 Formularios con protección XSS
+            });            // 🔒 Formularios con protección XSS y validación visual
             const transactionForm = document.getElementById('transaction-form');
             if (transactionForm) {
                 transactionForm.addEventListener('submit', e => {
                     e.preventDefault();
+                    
+                    // CloudSonnet4: validación visual campo obligatorio
+                    if (!validateForm(transactionForm)) {
+                        return; // No proceder si hay errores
+                    }
+                    
                     const transactionData = {
                         type: appState.activeView === 'income' ? 'income' : 'expense',
                         description: sanitizeHTML(e.target.elements.description.value),
@@ -1971,6 +2495,12 @@
             if(investmentForm) {
                 investmentForm.addEventListener('submit', e => {
                     e.preventDefault();
+                    
+                    // CloudSonnet4: validación visual campo obligatorio
+                    if (!validateForm(investmentForm)) {
+                        return; // No proceder si hay errores
+                    }
+                    
                     const initial = parseFormattedNumber(e.target.elements.initialAmount.value);
                     appState.addInvestment({ 
                         name: sanitizeHTML(e.target.elements.name.value), 
@@ -1987,6 +2517,12 @@
             if (goalForm) {
                 goalForm.addEventListener('submit', e => {
                     e.preventDefault();
+                    
+                    // CloudSonnet4: validación visual campo obligatorio
+                    if (!validateForm(goalForm)) {
+                        return; // No proceder si hay errores
+                    }
+                    
                     appState.addGoal({ 
                         name: sanitizeHTML(e.target.elements.name.value), 
                         target: parseFormattedNumber(e.target.elements.target.value) 
@@ -2000,6 +2536,12 @@
             if(debtForm) {
                 debtForm.addEventListener('submit', e => {
                     e.preventDefault();
+                    
+                    // CloudSonnet4: validación visual campo obligatorio
+                    if (!validateForm(debtForm)) {
+                        return; // No proceder si hay errores
+                    }
+                    
                     appState.addDebt({ 
                         description: sanitizeHTML(e.target.elements.description.value), 
                         amount: parseFormattedNumber(e.target.elements.amount.value)
@@ -2028,14 +2570,7 @@
                 const target = e.target.closest('[data-action]');
                 
                 if (!action || !target) return;
-                
-                switch(action) {
-                    case 'edit-investment':
-                        const investmentId = parseInt(target.dataset.investmentId);
-                        if (window.NebulaInvestmentsModule) {
-                            window.NebulaInvestmentsModule.editInvestment(investmentId);
-                        }
-                        break;
+                  switch(action) {
                     case 'delete-investment':
                         const delInvestmentId = parseInt(target.dataset.investmentId);
                         if (window.NebulaInvestmentsModule) {
@@ -2050,14 +2585,7 @@
                     case 'add-investment':
                         if (window.NebulaInvestmentsModule) {
                             window.NebulaInvestmentsModule.showAddInvestmentForm();
-                        }
-                        break;
-                    case 'edit-goal':
-                        const goalId = parseInt(target.dataset.goalId);
-                        if (window.NebulaGoalsModule) {
-                            window.NebulaGoalsModule.editGoal(goalId);
-                        }
-                        break;
+                        }                        break;
                     case 'delete-goal':
                         const delGoalId = parseInt(target.dataset.goalId);
                         if (window.NebulaGoalsModule) {
@@ -2071,14 +2599,7 @@
                     case 'add-goal':
                         if (window.NebulaGoalsModule) {
                             window.NebulaGoalsModule.showAddGoalForm();
-                        }
-                        break;
-                    case 'edit-debt':
-                        const debtId = parseInt(target.dataset.debtId);
-                        if (window.NebulaDebtsModule) {
-                            window.NebulaDebtsModule.editDebt(debtId);
-                        }
-                        break;
+                        }                        break;
                     case 'delete-debt':
                         const delDebtId = parseInt(target.dataset.debtId);
                         if (window.NebulaDebtsModule) {
@@ -2189,9 +2710,188 @@
               // Modal calendar (mantenido para compatibilidad)
             const openCalendarButton = document.getElementById('open-calendar-button');
             if(openCalendarButton) openCalendarButton.addEventListener('click', () => appState.openModal('calendar'));
+              const openShortcutsButton = document.getElementById('open-shortcuts-button');
+            if (openShortcutsButton) openShortcutsButton.addEventListener('click', () => appState.openModal('shortcuts'));
             
-            const openShortcutsButton = document.getElementById('open-shortcuts-button');
-            if (openShortcutsButton) openShortcutsButton.addEventListener('click', () => appState.openModal('shortcuts'));            // Actualizar glider al cargar eventos
+            // 🔧 NUEVOS BOTONES DE CONFIGURACIÓN
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {                logoutButton.addEventListener('click', async () => {
+                    try {
+                        // CloudSonnet4: Modal elegante para cerrar sesión
+                        const confirmed = await showWarningModal(
+                            '¿Cerrar sesión?',
+                            'Tus datos se mantendrán guardados localmente de forma segura.',
+                            { 
+                                confirmText: 'Cerrar sesión',
+                                cancelText: 'Permanecer' 
+                            }
+                        );
+                        if (!confirmed) return;
+                        
+                        // Limpiar datos de sesión (pero no los datos financieros)
+                        if (NebulaSecurityUtils) {
+                            NebulaSecurityUtils.secureRemoveItem('user_session');
+                            NebulaSecurityUtils.secureRemoveItem('auth_token');
+                        }
+                        
+                        NotificationSystem.success('Sesión cerrada', 'Has cerrado sesión exitosamente');
+                        
+                        // Opcional: recargar la app para reinicializar
+                        setTimeout(() => location.reload(), 1500);
+                        
+                    } catch (error) {
+                        console.error('Error cerrando sesión:', error);
+                        NotificationSystem.error('Error', 'No se pudo cerrar la sesión');
+                    }
+                });
+            }
+            
+            const exportExcelButton = document.getElementById('export-excel-button');
+            if (exportExcelButton) {
+                exportExcelButton.addEventListener('click', async () => {
+                    try {
+                        NotificationSystem.info('Exportando...', 'Preparando tus datos financieros');
+                        
+                        // Crear array con todas las transacciones del estado actual
+                        const allTransactions = [];
+                        
+                        // Obtener transacciones de todos los meses
+                        Object.entries(appState.data.transactions).forEach(([monthKey, transactions]) => {
+                            transactions.forEach(transaction => {
+                                allTransactions.push({
+                                    tipo: transaction.type === 'income' ? 'Ingreso' : 'Gasto',
+                                    descripcion: transaction.description,
+                                    monto: transaction.amount,
+                                    fecha: transaction.date,
+                                    categoria: transaction.category || '',
+                                    mes: monthKey
+                                });
+                            });
+                        });
+                        
+                        // Agregar inversiones
+                        appState.data.investments.forEach(investment => {
+                            allTransactions.push({
+                                tipo: 'Inversión',
+                                descripcion: investment.name,
+                                monto: investment.currentValue || investment.initialAmount,
+                                fecha: investment.date || new Date().toISOString().split('T')[0],
+                                categoria: investment.type || '',
+                                mes: ''
+                            });
+                        });
+                        
+                        // Agregar metas
+                        appState.data.goals.forEach(goal => {
+                            allTransactions.push({
+                                tipo: 'Meta',
+                                descripcion: goal.name,
+                                monto: goal.targetAmount,
+                                fecha: goal.targetDate || '',
+                                categoria: '',
+                                mes: ''
+                            });
+                        });
+                        
+                        // Agregar deudas
+                        appState.data.debts.forEach(debt => {
+                            allTransactions.push({
+                                tipo: 'Deuda',
+                                descripcion: debt.description,
+                                monto: debt.amount,
+                                fecha: debt.date || new Date().toISOString().split('T')[0],
+                                categoria: debt.type || '',
+                                mes: ''
+                            });
+                        });
+                        
+                        // Crear CSV
+                        let csvContent = "data:text/csv;charset=utf-8,";
+                        csvContent += "Tipo,Descripción,Monto,Fecha,Categoría,Mes\\n";
+                        
+                        allTransactions.forEach(item => {
+                            csvContent += `"${item.tipo}","${item.descripcion}",${item.monto},"${item.fecha}","${item.categoria}","${item.mes}"\\n`;
+                        });
+                        
+                        // Descargar archivo
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", `nebula_financial_${new Date().toISOString().split('T')[0]}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        NotificationSystem.success('¡Exportado!', 'Tus datos se han descargado exitosamente');
+                        
+                    } catch (error) {
+                        console.error('Error exportando datos:', error);
+                        NotificationSystem.error('Error', 'No se pudieron exportar los datos');
+                    }
+                });
+            }
+            
+            const clearAllDataButton = document.getElementById('clear-all-data-button');            if (clearAllDataButton) {
+                clearAllDataButton.addEventListener('click', async () => {
+                    try {
+                        // CloudSonnet4: Primera confirmación con modal elegante
+                        const confirmed1 = await showDangerModal(
+                            '⚠️ Eliminar todos los datos',
+                            'Esta acción eliminará <strong>TODOS</strong> tus datos financieros.<br><br>¿Estás absolutamente seguro?',
+                            { 
+                                confirmText: 'Continuar',
+                                cancelText: 'Cancelar' 
+                            }
+                        );
+                        if (!confirmed1) return;
+                        
+                        // CloudSonnet4: Segunda confirmación crítica
+                        const confirmed2 = await showDangerModal(
+                            '🚨 ÚLTIMA CONFIRMACIÓN',
+                            `Se borrarán permanentemente:<br><br>
+                            • <strong>Todos los ingresos</strong><br>
+                            • <strong>Todos los gastos</strong><br>
+                            • <strong>Todas las inversiones</strong><br>
+                            • <strong>Todas las metas</strong><br>
+                            • <strong>Todas las deudas</strong><br><br>
+                            <span style="color: #ef4444; font-weight: bold;">Esta acción NO SE PUEDE DESHACER.</span><br><br>
+                            ¿Continuar con la eliminación?`,
+                            { 
+                                confirmText: 'SÍ, BORRAR TODO',
+                                cancelText: 'No, mantener datos' 
+                            }
+                        );
+                        if (!confirmed2) return;
+                        
+                        // Limpiar todos los datos del estado
+                        appState.data = {
+                            transactions: {},
+                            investments: [],
+                            goals: [],
+                            debts: []
+                        };
+                        
+                        // Limpiar localStorage
+                        if (NebulaSecurityUtils) {
+                            NebulaSecurityUtils.secureRemoveItem('financialData');
+                        } else {
+                            localStorage.removeItem('financialData');
+                        }
+                        
+                        // Guardar el estado vacío
+                        appState.saveState();
+                        
+                        NotificationSystem.success('Datos eliminados', 'Todos los datos financieros han sido borrados');
+                        
+                        // Recargar la app para mostrar estado limpio
+                        setTimeout(() => renderApp(), 1000);
+                        
+                    } catch (error) {
+                        console.error('Error borrando datos:', error);
+                        NotificationSystem.error('Error', 'No se pudieron borrar los datos');
+                    }
+                });
+            }// Actualizar glider al cargar eventos
             updateDockGlider();
             
             // Observer simple para cambios de tamaño
@@ -2209,14 +2909,42 @@
                     if(e.target === modalContainer) appState.closeModal();
                 });
                 modalContainer.querySelector('.modal-close-button')?.addEventListener('click', () => appState.closeModal());
-            }
-
-            if (appState.activeModal === 'calendar') {
+            }            if (appState.activeModal === 'calendar') {
                 document.getElementById('calendar-year-prev')?.addEventListener('click', () => appState.changeCalendarYear(-1));
                 document.getElementById('calendar-year-next')?.addEventListener('click', () => appState.changeCalendarYear(1));
                 document.getElementById('today-button')?.addEventListener('click', () => appState.goToday());
+                
                 const yearInput = document.getElementById('calendar-year-input');
-                if (yearInput) yearInput.addEventListener('change', e => appState.setCalendarYear(parseInt(e.target.value)));
+                if (yearInput) {
+                    yearInput.addEventListener('change', e => appState.setCalendarYear(parseInt(e.target.value)));
+                    
+                    // Navegación con teclado para el año
+                    yearInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+                            e.preventDefault();
+                            appState.changeCalendarYear(1);
+                        } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+                            e.preventDefault();
+                            appState.changeCalendarYear(-1);
+                        }
+                    });
+                }
+                
+                // Navegación global del modal con teclado
+                document.addEventListener('keydown', function calendarKeyHandler(e) {
+                    if (appState.activeModal === 'calendar') {
+                        if (e.key === 'ArrowLeft' && !yearInput?.contains(e.target)) {
+                            e.preventDefault();
+                            appState.changeCalendarYear(-1);
+                        } else if (e.key === 'ArrowRight' && !yearInput?.contains(e.target)) {
+                            e.preventDefault();
+                            appState.changeCalendarYear(1);
+                        }
+                    } else {
+                        document.removeEventListener('keydown', calendarKeyHandler);
+                    }
+                });
+                
                 document.querySelectorAll('.month-button').forEach(btn => btn.addEventListener('click', e => appState.setCalendarDate(parseInt(e.currentTarget.dataset.monthIndex))));
             }
         }
@@ -2628,15 +3356,14 @@
                         validationResults.notifications = true;
                     } else {
                         console.error('❌ NotificationSystem: No definido o no funcional');
-                    }
-                      // Test appState
-                    if (typeof appState !== 'undefined' && appState.currentView && appState.data) {
+                    }                      // Test appState
+                    if (typeof appState !== 'undefined' && appState.activeView && appState.data) {
                         console.log('✅ appState: Definido y funcional');
                         validationResults.appState = true;
                     } else {
                         console.error('❌ appState: No definido o no funcional', {
                             defined: typeof appState !== 'undefined',
-                            hasCurrentView: typeof appState !== 'undefined' && typeof appState.currentView !== 'undefined',
+                            hasActiveView: typeof appState !== 'undefined' && typeof appState.activeView !== 'undefined',
                             hasData: typeof appState !== 'undefined' && appState.data
                         });
                     }
@@ -2654,14 +3381,14 @@
                         }
                     });
                     validationResults.dom = domOk;                    // Test THEMES
-                    if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer && THEMES.nocheEstelar) {
+                    if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer && THEMES.crisonVespertino) {
                         console.log('✅ THEMES: Definido y funcional');
                         validationResults.themes = true;
                     } else {
                         console.error('❌ THEMES: No definido o no funcional', {
                             defined: typeof THEMES !== 'undefined',
                             hasAureoAmanecer: typeof THEMES !== 'undefined' && THEMES.aureoAmanecer,
-                            hasNocheEstelar: typeof THEMES !== 'undefined' && THEMES.crisonVespertino
+                            hasCrisonVespertino: typeof THEMES !== 'undefined' && THEMES.crisonVespertino
                         });
                     }
                     
