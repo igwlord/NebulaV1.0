@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Suite - Calendario Optimizado Nebula</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .test-pass { background-color: #10b981 !important; }
+        .test-fail { background-color: #ef4444 !important; }
+        .test-pending { background-color: #f59e0b !important; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">🧪 Test Suite - Calendario Optimizado</h1>
+        
+        <!-- Panel de Control -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4">🎮 Panel de Control</h2>
+            <div class="flex gap-4 flex-wrap">
+                <button id="run-all-tests" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">
+                    🚀 Ejecutar Todos los Tests
+                </button>
+                <button id="open-app" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg">
+                    📱 Abrir App en Nueva Pestaña
+                </button>
+                <button id="clear-results" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg">
+                    🧹 Limpiar Resultados
+                </button>
+            </div>
+            
+            <!-- Estadísticas -->
+            <div class="mt-4 grid grid-cols-3 gap-4 text-center">
+                <div class="bg-gray-700 p-3 rounded">
+                    <div class="text-2xl font-bold text-green-400" id="tests-passed">0</div>
+                    <div class="text-sm">Pasados</div>
+                </div>
+                <div class="bg-gray-700 p-3 rounded">
+                    <div class="text-2xl font-bold text-red-400" id="tests-failed">0</div>
+                    <div class="text-sm">Fallados</div>
+                </div>
+                <div class="bg-gray-700 p-3 rounded">
+                    <div class="text-2xl font-bold text-blue-400" id="tests-total">0</div>
+                    <div class="text-sm">Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados de Tests -->
+        <div id="test-results" class="space-y-4">
+            <!-- Los resultados se cargarán aquí -->
+        </div>
+    </div>
+
+    <script>
+        // 🧪 SISTEMA DE TESTING PARA CALENDARIO OPTIMIZADO
+        // ===============================================
+        
+        class CalendarTestSuite {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+                this.appWindow = null;
+                this.setupTests();
+                this.setupUI();
+            }
+
+            setupTests() {                // Test 1: Verificar que el modal se abre correctamente
+                this.addTest(
+                    'Modal se abre correctamente',
+                    'Verifica que al hacer clic en el botón calendario se abre el modal',
+                    async () => {
+                        const calendarButton = this.appWindow.document.querySelector('.header-calendar-button') || 
+                                             this.appWindow.document.getElementById('calendar-button');
+                        if (!calendarButton) throw new Error('Botón calendario no encontrado');
+                        
+                        calendarButton.click();
+                        await this.wait(300);
+                        
+                        const modal = this.appWindow.document.querySelector('#modal-root .modal-container');
+                        if (!modal) throw new Error('Modal no se abrió');
+                        
+                        return true;
+                    }
+                );
+
+                // Test 2: Verificar que existe el input de año editable
+                this.addTest(
+                    'Input de año editable existe',
+                    'Verifica que el campo de año es un input text editable',
+                    async () => {
+                        const yearInput = this.appWindow.document.getElementById('calendar-year-input');
+                        if (!yearInput) throw new Error('Input de año no encontrado');
+                        if (yearInput.type !== 'text') throw new Error('Input no es de tipo text');
+                        if (yearInput.readOnly) throw new Error('Input es de solo lectura');
+                        
+                        return true;
+                    }
+                );                // Test 3: Verificar que NO hay botones de año
+                this.addTest(
+                    'NO existen botones de año',
+                    'Verifica que no hay botones para cambiar el año',
+                    async () => {
+                        const prevYearBtn = this.appWindow.document.getElementById('calendar-prev-year');
+                        const nextYearBtn = this.appWindow.document.getElementById('calendar-next-year');
+                        const yearBtns = this.appWindow.document.querySelectorAll('[id*="year-btn"], [class*="year-btn"]');
+                        
+                        if (prevYearBtn && prevYearBtn.style.display !== 'none') throw new Error('Encontrado botón año anterior visible');
+                        if (nextYearBtn && nextYearBtn.style.display !== 'none') throw new Error('Encontrado botón año siguiente visible');
+                        if (yearBtns.length > 0) throw new Error(`Encontrados ${yearBtns.length} botones de año`);
+                        
+                        return true;
+                    }
+                );
+
+                // Test 4: Verificar grid de meses
+                this.addTest(
+                    'Grid de meses completo',
+                    'Verifica que existen 12 botones de mes seleccionables',
+                    async () => {
+                        const monthButtons = this.appWindow.document.querySelectorAll('.calendar-month-btn');
+                        if (monthButtons.length !== 12) {
+                            throw new Error(`Esperados 12 meses, encontrados ${monthButtons.length}`);
+                        }
+                        
+                        // Verificar que todos son botones clicables
+                        monthButtons.forEach((btn, index) => {
+                            if (!btn.hasAttribute('data-month-index')) {
+                                throw new Error(`Mes ${index} sin atributo data-month-index`);
+                            }
+                        });
+                        
+                        return true;
+                    }
+                );
+
+                // Test 5: Escribir año válido
+                this.addTest(
+                    'Escribir año válido funciona',
+                    'Verifica que se puede escribir un año válido en el input',
+                    async () => {
+                        const yearInput = this.appWindow.document.getElementById('calendar-year-input');
+                        const testYear = '2025';
+                        
+                        yearInput.value = testYear;
+                        yearInput.dispatchEvent(new this.appWindow.Event('change'));
+                        await this.wait(200);
+                        
+                        if (yearInput.value !== testYear) {
+                            throw new Error('Año no se estableció correctamente');
+                        }
+                        
+                        return true;
+                    }
+                );
+
+                // Test 6: Validación de año inválido
+                this.addTest(
+                    'Validación de año inválido',
+                    'Verifica que años fuera del rango 1900-2100 se manejan correctamente',
+                    async () => {                        const yearInput = this.appWindow.document.getElementById('calendar-year-input');
+                        
+                        // Probar año muy bajo
+                        yearInput.value = '1800';
+                        yearInput.dispatchEvent(new this.appWindow.Event('change'));
+                        await this.wait(100);
+                        
+                        // Probar año muy alto
+                        yearInput.value = '2200';
+                        yearInput.dispatchEvent(new this.appWindow.Event('change'));
+                        await this.wait(100);
+                        
+                        // La app debería mantener un año válido
+                        const finalYear = parseInt(yearInput.value);
+                        if (finalYear < 1900 || finalYear > 2100) {
+                            throw new Error('Validación de año no funciona');
+                        }
+                        
+                        return true;
+                    }
+                );
+
+                // Test 7: Selección de mes
+                this.addTest(
+                    'Selección de mes funciona',
+                    'Verifica que al hacer clic en un mes se selecciona y cierra el modal',
+                    async () => {
+                        const monthButtons = this.appWindow.document.querySelectorAll('.calendar-month-btn');
+                        const randomMonth = monthButtons[Math.floor(Math.random() * monthButtons.length)];
+                        
+                        randomMonth.click();
+                        await this.wait(300);
+                        
+                        // El modal debería cerrarse
+                        const modal = this.appWindow.document.querySelector('#modal-root .modal-container');
+                        if (modal) throw new Error('Modal no se cerró después de seleccionar mes');
+                        
+                        return true;
+                    }
+                );
+
+                // Test 8: Botón "Ir a Hoy"
+                this.addTest(
+                    'Botón "Ir a Hoy" funciona',
+                    'Verifica que el botón "Ir a Hoy" funciona correctamente',
+                    async () => {
+                        // Abrir calendario de nuevo
+                        const calendarButton = this.appWindow.document.querySelector('.header-calendar-button');
+                        calendarButton.click();
+                        await this.wait(100);
+                        
+                        const todayBtn = this.appWindow.document.getElementById('calendar-today-btn');
+                        if (!todayBtn) throw new Error('Botón "Ir a Hoy" no encontrado');
+                        
+                        todayBtn.click();
+                        await this.wait(300);
+                        
+                        // El modal debería cerrarse
+                        const modal = this.appWindow.document.querySelector('#modal-root .modal-container');
+                        if (modal) throw new Error('Modal no se cerró después de "Ir a Hoy"');
+                        
+                        return true;
+                    }
+                );
+
+                // Test 9: Cerrar con X
+                this.addTest(
+                    'Cerrar modal con X funciona',
+                    'Verifica que el botón X cierra el modal',
+                    async () => {
+                        // Abrir calendario de nuevo
+                        const calendarButton = this.appWindow.document.querySelector('.header-calendar-button');
+                        calendarButton.click();
+                        await this.wait(100);
+                        
+                        const closeBtn = this.appWindow.document.getElementById('calendar-close-btn');
+                        if (!closeBtn) throw new Error('Botón cerrar no encontrado');
+                        
+                        closeBtn.click();
+                        await this.wait(200);
+                        
+                        // El modal debería cerrarse
+                        const modal = this.appWindow.document.querySelector('#modal-root .modal-container');
+                        if (modal) throw new Error('Modal no se cerró con botón X');
+                        
+                        return true;
+                    }
+                );
+
+                // Test 10: Navegación con teclado (Escape)
+                this.addTest(
+                    'Cerrar con Escape funciona',
+                    'Verifica que la tecla Escape cierra el modal',
+                    async () => {
+                        // Abrir calendario de nuevo
+                        const calendarButton = this.appWindow.document.querySelector('.header-calendar-button');
+                        calendarButton.click();
+                        await this.wait(100);
+                        
+                        // Simular Escape
+                        const escapeEvent = new this.appWindow.KeyboardEvent('keydown', {
+                            key: 'Escape',
+                            code: 'Escape',
+                            bubbles: true
+                        });
+                        this.appWindow.document.dispatchEvent(escapeEvent);
+                        await this.wait(200);
+                        
+                        // El modal debería cerrarse
+                        const modal = this.appWindow.document.querySelector('#modal-root .modal-container');
+                        if (modal) throw new Error('Modal no se cerró con Escape');
+                        
+                        return true;
+                    }
+                );
+
+                // Test 11: Indicadores visuales
+                this.addTest(
+                    'Indicadores visuales presentes',
+                    'Verifica que existen los indicadores visuales (mes actual, hoy, con datos)',
+                    async () => {
+                        // Abrir calendario
+                        const calendarButton = this.appWindow.document.querySelector('.header-calendar-button');
+                        calendarButton.click();
+                        await this.wait(100);
+                        
+                        // Buscar leyenda de indicadores
+                        const legend = this.appWindow.document.querySelector('.modal-content .border-t');
+                        if (!legend) throw new Error('Leyenda de indicadores no encontrada');
+                        
+                        const legendText = legend.textContent;
+                        if (!legendText.includes('Mes Actual')) throw new Error('Indicador "Mes Actual" no encontrado');
+                        if (!legendText.includes('Hoy')) throw new Error('Indicador "Hoy" no encontrado');
+                        if (!legendText.includes('Con Datos')) throw new Error('Indicador "Con Datos" no encontrado');
+                        
+                        return true;
+                    }
+                );
+
+                console.log(`🧪 ${this.tests.length} tests configurados`);
+            }
+
+            addTest(name, description, testFunction) {
+                this.tests.push({
+                    name,
+                    description,
+                    testFunction,
+                    status: 'pending'
+                });
+            }
+
+            async runAllTests() {
+                console.log('🚀 Iniciando suite de tests...');
+                this.results = [];
+                this.updateStats();
+
+                // Abrir app en nueva ventana
+                if (!this.appWindow || this.appWindow.closed) {
+                    await this.openApp();
+                }
+
+                for (let i = 0; i < this.tests.length; i++) {
+                    const test = this.tests[i];
+                    await this.runTest(test, i);
+                    await this.wait(500); // Pausa entre tests
+                }
+
+                this.showFinalResults();
+            }
+
+            async runTest(test, index) {
+                console.log(`🧪 Ejecutando: ${test.name}`);
+                this.updateTestStatus(index, 'running');
+
+                try {
+                    const result = await test.testFunction();
+                    test.status = 'passed';
+                    test.result = result;
+                    this.results.push({ ...test, passed: true });
+                    console.log(`✅ ${test.name} - PASADO`);
+                } catch (error) {
+                    test.status = 'failed';
+                    test.error = error.message;
+                    this.results.push({ ...test, passed: false, error: error.message });
+                    console.log(`❌ ${test.name} - FALLADO: ${error.message}`);
+                }
+
+                this.updateTestStatus(index, test.status);
+                this.updateStats();
+            }
+
+            async openApp() {
+                const appUrl = window.location.href.replace('test-calendar-optimized.html', 'index-lab.html');
+                this.appWindow = window.open(appUrl, '_blank');
+                
+                // Esperar a que la app cargue
+                await this.wait(2000);
+                
+                if (!this.appWindow || this.appWindow.closed) {
+                    throw new Error('No se pudo abrir la aplicación');
+                }
+            }
+
+            updateTestStatus(index, status) {
+                const testElement = document.getElementById(`test-${index}`);
+                if (testElement) {
+                    testElement.className = testElement.className.replace(/test-(pass|fail|pending)/, '');
+                    if (status === 'passed') testElement.classList.add('test-pass');
+                    else if (status === 'failed') testElement.classList.add('test-fail');
+                    else if (status === 'running') testElement.classList.add('test-pending');
+                }
+            }
+
+            updateStats() {
+                const passed = this.results.filter(r => r.passed).length;
+                const failed = this.results.filter(r => !r.passed).length;
+                const total = this.tests.length;
+
+                document.getElementById('tests-passed').textContent = passed;
+                document.getElementById('tests-failed').textContent = failed;
+                document.getElementById('tests-total').textContent = total;
+            }
+
+            showFinalResults() {
+                const passed = this.results.filter(r => r.passed).length;
+                const total = this.results.length;
+                
+                console.log(`🏁 Tests completados: ${passed}/${total} pasados`);
+                
+                if (passed === total) {
+                    alert(`🎉 ¡Excelente! Todos los tests pasaron (${passed}/${total})`);
+                } else {
+                    alert(`⚠️ Tests completados: ${passed}/${total} pasados. Revisa los fallos.`);
+                }
+            }
+
+            setupUI() {
+                // Renderizar lista de tests
+                this.renderTestList();
+
+                // Event listeners
+                document.getElementById('run-all-tests').addEventListener('click', () => {
+                    this.runAllTests();
+                });
+
+                document.getElementById('open-app').addEventListener('click', () => {
+                    this.openApp();
+                });
+
+                document.getElementById('clear-results').addEventListener('click', () => {
+                    this.clearResults();
+                });
+            }
+
+            renderTestList() {
+                const container = document.getElementById('test-results');
+                container.innerHTML = this.tests.map((test, index) => `
+                    <div id="test-${index}" class="bg-gray-800 rounded-lg p-4 border-l-4 border-gray-600">
+                        <h3 class="font-bold text-lg">${index + 1}. ${test.name}</h3>
+                        <p class="text-gray-300 text-sm mt-1">${test.description}</p>
+                        <div class="mt-2 text-xs text-gray-400">
+                            Estado: <span class="font-semibold">Pendiente</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            clearResults() {
+                this.results = [];
+                this.tests.forEach(test => test.status = 'pending');
+                this.renderTestList();
+                this.updateStats();
+            }
+
+            wait(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // Inicializar test suite
+        const testSuite = new CalendarTestSuite();
+        console.log('🧪 Test Suite del Calendario Optimizado iniciado');
+    </script>
+</body>
+</html>

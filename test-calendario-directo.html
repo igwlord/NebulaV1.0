@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Calendario - Solución Directa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">🔧 Test Calendario - Diagnóstico Directo</h1>
+        
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4">🎮 Tests Directos</h2>
+            <div class="flex gap-4 flex-wrap">
+                <button id="load-app-inline" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg">
+                    📱 Cargar App Aquí
+                </button>
+                <button id="test-basic-modal" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg">
+                    🧪 Test Modal Básico
+                </button>
+                <button id="create-calendar-test" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg">
+                    📅 Crear Calendario Test
+                </button>
+            </div>
+        </div>
+
+        <div id="log-results" class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 class="text-lg font-bold mb-4">📝 Log de Resultados</h3>
+            <div id="log-content" class="text-sm font-mono space-y-2 max-h-96 overflow-y-auto">
+                <!-- Los logs aparecerán aquí -->
+            </div>
+        </div>
+
+        <!-- Contenedor para cargar la app -->
+        <div id="app-container" class="bg-gray-800 rounded-lg p-6" style="display: none;">
+            <h3 class="text-lg font-bold mb-4">📱 Aplicación Cargada</h3>
+            <iframe id="app-frame" src="" width="100%" height="600" class="rounded border-2 border-gray-600"></iframe>
+        </div>
+
+        <!-- Test directo del calendario -->
+        <div id="calendar-test-container" class="bg-gray-800 rounded-lg p-6" style="display: none;">
+            <h3 class="text-lg font-bold mb-4">📅 Test Directo de Calendario</h3>
+            <div id="calendar-test-content">
+                <!-- El calendario de prueba aparecerá aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logContent = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = 'text-green-400';
+            div.textContent = `[${timestamp}] ${message}`;
+            logContent.appendChild(div);
+            logContent.scrollTop = logContent.scrollHeight;
+            console.log(message);
+        }
+
+        function error(message) {
+            const logContent = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = 'text-red-400';
+            div.textContent = `[${timestamp}] ERROR: ${message}`;
+            logContent.appendChild(div);
+            logContent.scrollTop = logContent.scrollHeight;
+            console.error(message);
+        }
+
+        function success(message) {
+            const logContent = document.getElementById('log-content');
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = 'text-blue-400';
+            div.textContent = `[${timestamp}] SUCCESS: ${message}`;
+            logContent.appendChild(div);
+            logContent.scrollTop = logContent.scrollHeight;
+            console.log(message);
+        }
+
+        // Cargar app en iframe
+        document.getElementById('load-app-inline').addEventListener('click', () => {
+            log('🚀 Cargando aplicación en iframe...');
+            const appFrame = document.getElementById('app-frame');
+            const appContainer = document.getElementById('app-container');
+            
+            appFrame.src = 'index-lab.html';
+            appContainer.style.display = 'block';
+            
+            appFrame.onload = () => {
+                log('✅ Aplicación cargada en iframe');
+                
+                // Intentar acceder al contenido después de un tiempo
+                setTimeout(() => {
+                    try {
+                        const appDoc = appFrame.contentDocument || appFrame.contentWindow.document;
+                        const calendarBtn = appDoc.getElementById('calendar-button');
+                        
+                        if (calendarBtn) {
+                            success('🎯 Botón del calendario encontrado en iframe');
+                            
+                            // Añadir evento de click
+                            calendarBtn.addEventListener('click', () => {
+                                log('🖱️ Click detectado en botón del calendario');
+                                
+                                setTimeout(() => {
+                                    const modal = appDoc.querySelector('#modal-root .modal-container');
+                                    if (modal) {
+                                        success('📋 Modal del calendario se abrió correctamente');
+                                        
+                                        // Verificar elementos del calendario
+                                        const yearInput = appDoc.getElementById('calendar-year-input');
+                                        const monthBtns = appDoc.querySelectorAll('.calendar-month-btn');
+                                        
+                                        log(`📋 Input de año: ${yearInput ? 'ENCONTRADO' : 'NO ENCONTRADO'}`);
+                                        log(`📋 Botones de mes: ${monthBtns.length} encontrados`);
+                                        
+                                        if (yearInput && monthBtns.length === 12) {
+                                            success('🎉 CALENDARIO FUNCIONAL - Todos los elementos encontrados');
+                                        } else {
+                                            error('❌ Calendario incompleto - Faltan elementos');
+                                        }
+                                    } else {
+                                        error('❌ Modal no se abrió después del click');
+                                    }
+                                }, 500);
+                            });
+                            
+                        } else {
+                            error('❌ Botón del calendario no encontrado en iframe');
+                        }
+                    } catch (err) {
+                        error(`No se puede acceder al contenido del iframe (CORS): ${err.message}`);
+                        log('💡 Esto es normal por políticas de seguridad del navegador');
+                        log('💡 Usa el test directo para verificar el calendario');
+                    }
+                }, 1000);
+            };
+
+            appFrame.onerror = () => {
+                error('Error al cargar la aplicación en iframe');
+            };
+        });
+
+        // Test modal básico
+        document.getElementById('test-basic-modal').addEventListener('click', () => {
+            log('🧪 Creando test de modal básico...');
+            
+            // Crear un modal simple para verificar funcionalidad
+            const modalHTML = `
+                <div id="test-modal-root"></div>
+                <button id="test-open-modal" class="px-4 py-2 bg-blue-600 text-white rounded mt-4">
+                    Abrir Modal Test
+                </button>
+            `;
+            
+            const testContainer = document.createElement('div');
+            testContainer.innerHTML = modalHTML;
+            document.body.appendChild(testContainer);
+            
+            // Función para renderizar modal test
+            function renderTestModal() {
+                const modalRoot = document.getElementById('test-modal-root');
+                modalRoot.innerHTML = `
+                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                        <div class="bg-white text-black p-8 rounded-lg">
+                            <h3 class="text-xl font-bold mb-4">📅 Modal Test</h3>
+                            <input type="text" id="test-year-input" value="2025" class="border p-2 rounded mb-4">
+                            <div class="grid grid-cols-3 gap-2">
+                                <button class="test-month-btn bg-blue-500 text-white p-2 rounded" data-month="0">Ene</button>
+                                <button class="test-month-btn bg-blue-500 text-white p-2 rounded" data-month="1">Feb</button>
+                                <button class="test-month-btn bg-blue-500 text-white p-2 rounded" data-month="2">Mar</button>
+                            </div>
+                            <button id="test-close-modal" class="mt-4 px-4 py-2 bg-red-500 text-white rounded">
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Añadir eventos
+                document.getElementById('test-close-modal').addEventListener('click', () => {
+                    modalRoot.innerHTML = '';
+                    log('🔧 Modal test cerrado');
+                });
+                
+                const yearInput = document.getElementById('test-year-input');
+                yearInput.addEventListener('change', (e) => {
+                    log(`📅 Año cambiado a: ${e.target.value}`);
+                });
+                
+                document.querySelectorAll('.test-month-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const month = btn.getAttribute('data-month');
+                        log(`📅 Mes seleccionado: ${month} (${btn.textContent})`);
+                    });
+                });
+                
+                success('✅ Modal test creado con eventos funcionales');
+            }
+            
+            document.getElementById('test-open-modal').addEventListener('click', () => {
+                log('🔧 Abriendo modal test...');
+                renderTestModal();
+            });
+            
+            success('🧪 Test de modal básico configurado');
+        });
+
+        // Crear calendario test directo
+        document.getElementById('create-calendar-test').addEventListener('click', () => {
+            log('📅 Creando calendario de prueba directo...');
+            
+            const calendarContainer = document.getElementById('calendar-test-container');
+            const calendarContent = document.getElementById('calendar-test-content');
+            
+            // Simular el HTML del calendario real
+            const calendarHTML = `
+                <div class="bg-slate-800 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-white mb-4">📅 Calendario Test Directo</h3>
+                    
+                    <div class="mb-4">
+                        <label class="text-white block mb-2">Año:</label>
+                        <input 
+                            type="text" 
+                            id="direct-calendar-year-input" 
+                            value="2025" 
+                            class="w-32 px-4 py-2 text-center text-xl font-bold bg-slate-700 border-2 border-slate-500 rounded text-white"
+                        >
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="0">
+                            <div class="font-bold">Ene</div>
+                            <div class="text-sm">Enero</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="1">
+                            <div class="font-bold">Feb</div>
+                            <div class="text-sm">Febrero</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="2">
+                            <div class="font-bold">Mar</div>
+                            <div class="text-sm">Marzo</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="3">
+                            <div class="font-bold">Abr</div>
+                            <div class="text-sm">Abril</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="4">
+                            <div class="font-bold">May</div>
+                            <div class="text-sm">Mayo</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-blue-500 text-white rounded hover:bg-blue-600" data-month-index="5">
+                            <div class="font-bold">Jun</div>
+                            <div class="text-sm">Junio</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="6">
+                            <div class="font-bold">Jul</div>
+                            <div class="text-sm">Julio</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="7">
+                            <div class="font-bold">Ago</div>
+                            <div class="text-sm">Agosto</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="8">
+                            <div class="font-bold">Sep</div>
+                            <div class="text-sm">Septiembre</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="9">
+                            <div class="font-bold">Oct</div>
+                            <div class="text-sm">Octubre</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="10">
+                            <div class="font-bold">Nov</div>
+                            <div class="text-sm">Noviembre</div>
+                        </button>
+                        <button class="direct-calendar-month-btn px-4 py-3 bg-slate-700 text-white rounded hover:bg-slate-600" data-month-index="11">
+                            <div class="font-bold">Dic</div>
+                            <div class="text-sm">Diciembre</div>
+                        </button>
+                    </div>
+                    
+                    <button id="direct-calendar-today-btn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        🏠 Ir a Hoy
+                    </button>
+                </div>
+            `;
+            
+            calendarContent.innerHTML = calendarHTML;
+            calendarContainer.style.display = 'block';
+            
+            // Configurar eventos como en el calendario real
+            const yearInput = document.getElementById('direct-calendar-year-input');
+            const monthButtons = document.querySelectorAll('.direct-calendar-month-btn');
+            const todayBtn = document.getElementById('direct-calendar-today-btn');
+            
+            log(`📋 Elementos encontrados: Input año (${yearInput ? 'SÍ' : 'NO'}), Botones mes (${monthButtons.length}), Botón hoy (${todayBtn ? 'SÍ' : 'NO'})`);
+            
+            if (yearInput) {
+                yearInput.addEventListener('change', (e) => {
+                    log(`📅 Año cambiado a: ${e.target.value}`);
+                    success('✅ Event listener del input de año funciona');
+                });
+                
+                yearInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        log(`📅 Enter presionado con año: ${e.target.value}`);
+                        success('✅ Event listener keydown funciona');
+                    }
+                });
+            }
+            
+            monthButtons.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    const monthIndex = btn.getAttribute('data-month-index');
+                    log(`📅 Mes seleccionado: ${monthIndex} (${btn.textContent.trim()})`);
+                    success('✅ Event listener de botón de mes funciona');
+                });
+            });
+            
+            if (todayBtn) {
+                todayBtn.addEventListener('click', () => {
+                    log('🏠 Botón "Ir a Hoy" presionado');
+                    success('✅ Event listener del botón "Ir a Hoy" funciona');
+                });
+            }
+            
+            success('🎉 CALENDARIO DIRECTO CREADO Y FUNCIONAL');
+            log('💡 Prueba cambiar el año y hacer clic en los meses');
+        });
+
+        log('🎯 Test directo iniciado. Prueba los botones de arriba.');
+    </script>
+</body>
+</html>

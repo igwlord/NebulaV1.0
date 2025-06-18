@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Específico - Elementos Problemáticos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .test-panel {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        .debug-panel {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .status-ok { color: #10b981; }
+        .status-error { color: #ef4444; }
+        .status-warning { color: #f59e0b; }
+        
+        /* Estilos específicos para el modal del calendario */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        
+        .calendar-month-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 12px;
+            margin: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-month-btn:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">
+            🔧 Test Específico - Elementos Problemáticos
+        </h1>
+        
+        <div class="test-panel">
+            <h2 class="text-2xl font-bold mb-4">🎯 Tests de Elementos Específicos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button class="test-button" onclick="testYearInputSpecific()">
+                    📝 Test Input AÑO
+                </button>
+                <button class="test-button" onclick="testTodayButtonSpecific()">
+                    🏠 Test IR A HOY
+                </button>
+                <button class="test-button" onclick="testCloseButtonSpecific()">
+                    ❌ Test CERRAR X
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <button class="test-button" onclick="openCalendarForTesting()">
+                    📅 Abrir Calendario
+                </button>
+                <button class="test-button" onclick="runSpecificTests()">
+                    🔬 Test Completo
+                </button>
+            </div>
+        </div>
+        
+        <div class="debug-panel" id="debug-output">
+            <div class="status-warning">🔧 Sistema de Test Específico Iniciado</div>
+            <div class="status-warning">⚠️ Este test se enfoca en los 3 elementos problemáticos</div>
+        </div>
+        
+        <!-- Modal para el calendario -->
+        <div id="modal-root"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // 🎯 SIMULACIÓN DEL APPSTATE Y FUNCIONES CORE
+        // ============================================
+        
+        const appState = {
+            activeModal: null,
+            currentDate: new Date(),
+            calendarViewYear: new Date().getFullYear(),
+            
+            openModal: function(modalType) {
+                this.activeModal = modalType;
+                log(`📅 Modal abierto: ${modalType}`, 'ok');
+                
+                const modalRoot = document.getElementById('modal-root');
+                if (modalRoot) {
+                    modalRoot.innerHTML = renderCalendarModal();
+                    addModalEventListeners();
+                }
+            },
+            
+            closeModal: function() {
+                log(`❌ Cerrando modal: ${this.activeModal}`, 'warning');
+                this.activeModal = null;
+                
+                const modalRoot = document.getElementById('modal-root');
+                if (modalRoot) {
+                    modalRoot.innerHTML = '';
+                }
+            }
+        };
+        
+        // ============================================
+        // 📅 RENDERIZADO DEL MODAL DEL CALENDARIO
+        // ============================================
+        
+        function renderCalendarModal() {
+            const currentYear = appState.calendarViewYear;
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            
+            const months = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            
+            const monthsGrid = months.map((month, index) => {
+                return `
+                    <button 
+                        class="calendar-month-btn"
+                        data-month-index="${index}"
+                        data-month-name="${month}"
+                    >
+                        ${month}
+                    </button>
+                `;
+            }).join('');
+            
+            return `
+                <div class="modal-overlay" id="calendar-modal-overlay">
+                    <div class="modal-content">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">📅 Seleccionar Fecha</h2>
+                            <button class="modal-close-button text-gray-500 hover:text-gray-700 text-2xl" id="calendar-close-btn">
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Año:</label>
+                            <input 
+                                type="number" 
+                                id="calendar-year-input" 
+                                value="${currentYear}" 
+                                min="1900" 
+                                max="2100"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-3">Selecciona un mes:</h3>
+                            <div class="grid grid-cols-3 gap-2">
+                                ${monthsGrid}
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <button id="calendar-today-btn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                🏠 Ir a Hoy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============================================
+        // 🔧 CONFIGURACIÓN DE EVENTOS CON CLONADO
+        // ============================================
+        
+        function addModalEventListeners() {
+            log('🎭 INICIO addModalEventListeners() ESPECÍFICO', 'ok');
+            
+            setTimeout(() => {
+                setupSpecificEvents();
+            }, 200);
+        }
+        
+        function setupSpecificEvents() {
+            log('🔧 CONFIGURANDO EVENTOS ESPECÍFICOS CON CLONADO...', 'ok');
+            
+            // 1. INPUT DE AÑO
+            const yearInput = document.getElementById('calendar-year-input');
+            if (yearInput) {
+                log('📝 Configurando INPUT DE AÑO con clonado...', 'ok');
+                
+                const newYearInput = yearInput.cloneNode(true);
+                yearInput.parentNode.replaceChild(newYearInput, yearInput);
+                
+                newYearInput.addEventListener('change', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    log('🎯 INPUT AÑO - FUNCIONANDO: ' + e.target.value, 'ok');
+                    
+                    const newYear = parseInt(e.target.value);
+                    if (!isNaN(newYear) && newYear >= 1900 && newYear <= 2100) {
+                        appState.calendarViewYear = newYear;
+                        log('✅ Año actualizado a: ' + newYear, 'ok');
+                    }
+                });
+                
+                newYearInput.addEventListener('focus', () => {
+                    log('👁️ INPUT AÑO - Focus recibido', 'ok');
+                });
+                
+                newYearInput.addEventListener('blur', () => {
+                    log('👁️ INPUT AÑO - Focus perdido', 'warning');
+                });
+                
+                // Forzar estilos
+                newYearInput.style.pointerEvents = 'auto';
+                newYearInput.style.cursor = 'text';
+                newYearInput.style.zIndex = '1001';
+                
+                log('✅ INPUT AÑO configurado correctamente', 'ok');
+            } else {
+                log('❌ INPUT AÑO NO ENCONTRADO', 'error');
+            }
+            
+            // 2. BOTÓN IR A HOY
+            const todayBtn = document.getElementById('calendar-today-btn');
+            if (todayBtn) {
+                log('🏠 Configurando BOTÓN IR A HOY con clonado...', 'ok');
+                
+                const newTodayBtn = todayBtn.cloneNode(true);
+                todayBtn.parentNode.replaceChild(newTodayBtn, todayBtn);
+                
+                newTodayBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    log('🎯 BOTÓN IR A HOY - FUNCIONANDO', 'ok');
+                    
+                    const today = new Date();
+                    appState.currentDate = today;
+                    appState.calendarViewYear = today.getFullYear();
+                    appState.closeModal();
+                    
+                    log('✅ Navegado a hoy correctamente', 'ok');
+                });
+                
+                newTodayBtn.addEventListener('mouseenter', () => {
+                    log('👆 BOTÓN HOY - Mouse enter', 'ok');
+                });
+                
+                // Forzar estilos
+                newTodayBtn.style.pointerEvents = 'auto';
+                newTodayBtn.style.cursor = 'pointer';
+                newTodayBtn.style.zIndex = '1001';
+                
+                log('✅ BOTÓN IR A HOY configurado correctamente', 'ok');
+            } else {
+                log('❌ BOTÓN IR A HOY NO ENCONTRADO', 'error');
+            }
+            
+            // 3. BOTÓN CERRAR
+            const closeBtn = document.getElementById('calendar-close-btn');
+            if (closeBtn) {
+                log('❌ Configurando BOTÓN CERRAR con clonado...', 'ok');
+                
+                const newCloseBtn = closeBtn.cloneNode(true);
+                closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+                
+                newCloseBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    log('🎯 BOTÓN CERRAR - FUNCIONANDO', 'ok');
+                    appState.closeModal();
+                });
+                
+                newCloseBtn.addEventListener('mouseenter', () => {
+                    log('👆 BOTÓN CERRAR - Mouse enter', 'ok');
+                });
+                
+                // Forzar estilos
+                newCloseBtn.style.pointerEvents = 'auto';
+                newCloseBtn.style.cursor = 'pointer';
+                newCloseBtn.style.zIndex = '1001';
+                
+                log('✅ BOTÓN CERRAR configurado correctamente', 'ok');
+            } else {
+                log('❌ BOTÓN CERRAR NO ENCONTRADO', 'error');
+            }
+            
+            log('🏁 CONFIGURACIÓN ESPECÍFICA COMPLETADA', 'ok');
+        }
+        
+        // ============================================
+        // 🔬 FUNCIONES DE TESTING ESPECÍFICAS
+        // ============================================
+        
+        function log(message, type = 'ok') {
+            const debugOutput = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const statusClass = 'status-' + type;
+            
+            const logLine = document.createElement('div');
+            logLine.className = statusClass;
+            logLine.textContent = `[${timestamp}] ${message}`;
+            
+            debugOutput.appendChild(logLine);
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        function clearDebug() {
+            document.getElementById('debug-output').innerHTML = '';
+        }
+        
+        function openCalendarForTesting() {
+            clearDebug();
+            log('📅 ABRIENDO CALENDARIO PARA TESTING...', 'ok');
+            appState.openModal('calendar');
+        }
+        
+        function testYearInputSpecific() {
+            log('📝 TEST ESPECÍFICO: INPUT AÑO', 'warning');
+            
+            const yearInput = document.getElementById('calendar-year-input');
+            if (!yearInput) {
+                log('❌ Input año no encontrado - abre el calendario primero', 'error');
+                return;
+            }
+            
+            log('📝 Input año encontrado - probando...', 'ok');
+            
+            // Test focus
+            yearInput.focus();
+            log('✅ Focus aplicado al input', 'ok');
+            
+            // Test cambio de valor
+            yearInput.value = '2030';
+            const changeEvent = new Event('change', { bubbles: true });
+            yearInput.dispatchEvent(changeEvent);
+            
+            log('✅ Valor cambiado a 2030 y evento disparado', 'ok');
+        }
+        
+        function testTodayButtonSpecific() {
+            log('🏠 TEST ESPECÍFICO: BOTÓN IR A HOY', 'warning');
+            
+            const todayBtn = document.getElementById('calendar-today-btn');
+            if (!todayBtn) {
+                log('❌ Botón "Ir a Hoy" no encontrado - abre el calendario primero', 'error');
+                return;
+            }
+            
+            log('🏠 Botón "Ir a Hoy" encontrado - probando click...', 'ok');
+            todayBtn.click();
+            
+            setTimeout(() => {
+                log('✅ Click en botón "Ir a Hoy" completado', 'ok');
+            }, 100);
+        }
+        
+        function testCloseButtonSpecific() {
+            log('❌ TEST ESPECÍFICO: BOTÓN CERRAR', 'warning');
+            
+            const closeBtn = document.getElementById('calendar-close-btn');
+            if (!closeBtn) {
+                log('❌ Botón cerrar no encontrado - abre el calendario primero', 'error');
+                return;
+            }
+            
+            log('❌ Botón cerrar encontrado - probando click...', 'ok');
+            closeBtn.click();
+            
+            setTimeout(() => {
+                log('✅ Click en botón cerrar completado', 'ok');
+            }, 100);
+        }
+        
+        function runSpecificTests() {
+            clearDebug();
+            log('🔬 INICIANDO TESTS ESPECÍFICOS COMPLETOS...', 'ok');
+            
+            // Abrir calendario
+            openCalendarForTesting();
+            
+            // Tests secuenciales
+            setTimeout(() => testYearInputSpecific(), 500);
+            setTimeout(() => testTodayButtonSpecific(), 1000);
+            setTimeout(() => {
+                // Reabrir para test de cerrar
+                openCalendarForTesting();
+                setTimeout(() => testCloseButtonSpecific(), 200);
+            }, 1500);
+            
+            setTimeout(() => {
+                log('🏁 TESTS ESPECÍFICOS COMPLETADOS', 'ok');
+            }, 2500);
+        }
+        
+        // ============================================
+        // 🎯 INICIALIZACIÓN
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🔧 Test Específico de Elementos Problemáticos - Iniciado', 'ok');
+            log('📋 Usa los botones para probar cada elemento individualmente', 'warning');
+        });
+    </script>
+</body>
+</html>
