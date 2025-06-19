@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diagnóstico Completo - Nebula Finance</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: monospace; background: #0a0a0a; color: #00ff00; padding: 20px; }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        .info { color: #00ffff; }
+        .section { margin: 20px 0; border: 1px solid #333; padding: 15px; }
+        pre { background: #1a1a1a; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🚀 DIAGNÓSTICO COMPLETO - NEBULA FINANCE</h1>
+    
+    <!-- Cargar CryptoJS primero -->
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+    
+    <!-- Cargar Security Utils -->
+    <script src="js/utils/security.js"></script>
+    
+    <div id="diagnostics"></div>
+    
+    <script>
+        const output = document.getElementById('diagnostics');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            output.appendChild(div);
+        }
+        
+        function runDiagnostics() {
+            log('<div class="section"><h2>🔍 DIAGNÓSTICO DE DEPENDENCIAS</h2>', 'info');
+            
+            // Test 1: CryptoJS
+            log('<h3>1️⃣ CryptoJS</h3>', 'info');
+            if (typeof window.CryptoJS !== 'undefined') {
+                log('✅ CryptoJS está disponible globalmente', 'success');
+                log(`📋 Versión detectada: ${window.CryptoJS.lib ? 'Biblioteca completa cargada' : 'Parcial'}`, 'info');
+                
+                // Test básico de cifrado
+                try {
+                    const testData = 'test-data-nebula';
+                    const testKey = 'test-key';
+                    const encrypted = window.CryptoJS.AES.encrypt(testData, testKey).toString();
+                    const decrypted = window.CryptoJS.AES.decrypt(encrypted, testKey).toString(window.CryptoJS.enc.Utf8);
+                    
+                    if (decrypted === testData) {
+                        log('✅ Cifrado/Descifrado AES funciona correctamente', 'success');
+                    } else {
+                        log('❌ Error en cifrado/descifrado AES', 'error');
+                    }
+                } catch (error) {
+                    log(`❌ Error en test de cifrado: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ CryptoJS NO está disponible', 'error');
+            }
+            
+            // Test 2: NebulaSecurityUtils
+            log('<h3>2️⃣ NebulaSecurityUtils</h3>', 'info');
+            if (typeof window.NebulaSecurityUtils !== 'undefined') {
+                log('✅ NebulaSecurityUtils está disponible globalmente', 'success');
+                
+                const utils = window.NebulaSecurityUtils;
+                const methods = Object.keys(utils);
+                log(`📋 Métodos disponibles: ${methods.join(', ')}`, 'info');
+                
+                // Test de métodos críticos
+                const criticalMethods = ['encryptData', 'decryptData', 'hashPassword', 'generateSecureToken'];
+                criticalMethods.forEach(method => {
+                    if (typeof utils[method] === 'function') {
+                        log(`✅ ${method}: Disponible`, 'success');
+                    } else {
+                        log(`❌ ${method}: No disponible`, 'error');
+                    }
+                });
+                
+                // Test funcional básico
+                try {
+                    const testData = 'test-security-nebula';
+                    const testPassword = 'test-password-123';
+                    
+                    // Test encriptación
+                    const encrypted = utils.encryptData(testData, testPassword);
+                    if (encrypted && encrypted !== testData) {
+                        log('✅ Encriptación funciona correctamente', 'success');
+                        
+                        // Test desencriptación
+                        const decrypted = utils.decryptData(encrypted, testPassword);
+                        if (decrypted === testData) {
+                            log('✅ Desencriptación funciona correctamente', 'success');
+                        } else {
+                            log('❌ Error en desencriptación', 'error');
+                        }
+                    } else {
+                        log('❌ Error en encriptación', 'error');
+                    }
+                    
+                    // Test hash de contraseña
+                    const hashedPassword = utils.hashPassword(testPassword);
+                    if (hashedPassword && hashedPassword !== testPassword) {
+                        log('✅ Hash de contraseña funciona correctamente', 'success');
+                    } else {
+                        log('❌ Error en hash de contraseña', 'error');
+                    }
+                    
+                    // Test token seguro
+                    const token = utils.generateSecureToken();
+                    if (token && token.length > 10) {
+                        log('✅ Generación de token seguro funciona correctamente', 'success');
+                    } else {
+                        log('❌ Error en generación de token', 'error');
+                    }
+                    
+                } catch (error) {
+                    log(`❌ Error en tests funcionales: ${error.message}`, 'error');
+                }
+                
+            } else {
+                log('❌ NebulaSecurityUtils NO está disponible', 'error');
+            }
+            
+            // Test 3: Orden de carga
+            log('<h3>3️⃣ Orden de Carga</h3>', 'info');
+            const scripts = Array.from(document.scripts);
+            const cryptoScript = scripts.find(s => s.src.includes('crypto-js'));
+            const securityScript = scripts.find(s => s.src.includes('security.js'));
+            
+            if (cryptoScript && securityScript) {
+                const cryptoIndex = scripts.indexOf(cryptoScript);
+                const securityIndex = scripts.indexOf(securityScript);
+                
+                if (cryptoIndex < securityIndex) {
+                    log('✅ CryptoJS se carga antes que security.js', 'success');
+                } else {
+                    log('❌ Orden de carga incorrecto', 'error');
+                }
+            } else {
+                log('⚠️ No se pudieron encontrar los scripts en el DOM', 'warning');
+            }
+            
+            // Test 4: Estado global del navegador
+            log('<h3>4️⃣ Estado Global</h3>', 'info');
+            const globalVars = ['CryptoJS', 'NebulaSecurityUtils'];
+            globalVars.forEach(varName => {
+                if (window[varName]) {
+                    log(`✅ window.${varName} está definido`, 'success');
+                } else {
+                    log(`❌ window.${varName} NO está definido`, 'error');
+                }
+            });
+            
+            log('</div>', 'info');
+            
+            // Resumen final
+            log('<div class="section"><h2>📊 RESUMEN FINAL</h2>', 'info');
+            const hasError = output.innerHTML.includes('❌');
+            const hasWarning = output.innerHTML.includes('⚠️');
+            
+            if (!hasError) {
+                log('<h3 class="success">🎉 TODOS LOS TESTS PASARON CORRECTAMENTE</h3>', 'success');
+                log('La aplicación está lista para funcionar sin errores de seguridad.', 'success');
+            } else if (hasWarning) {
+                log('<h3 class="warning">⚠️ HAY ADVERTENCIAS</h3>', 'warning');
+                log('La aplicación puede funcionar pero se recomienda revisar las advertencias.', 'warning');
+            } else {
+                log('<h3 class="error">❌ HAY ERRORES CRÍTICOS</h3>', 'error');
+                log('La aplicación NO funcionará correctamente hasta resolver estos errores.', 'error');
+            }
+            log('</div>', 'info');
+        }
+        
+        // Ejecutar diagnósticos después de que todo se cargue
+        window.addEventListener('load', () => {
+            setTimeout(runDiagnostics, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Test Completo de Inicialización</title>
+    <style>
+        body { 
+            font-family: 'Courier New', monospace; 
+            background: #0a0a1a; 
+            color: #00ff00; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .test-result { 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border-left: 4px solid;
+        }
+        .success { background: rgba(0,255,0,0.1); border-color: #00ff00; }
+        .error { background: rgba(255,0,0,0.1); border-color: #ff0000; color: #ff6b6b; }
+        .warning { background: rgba(255,255,0,0.1); border-color: #ffff00; color: #ffd93d; }
+        .info { background: rgba(0,150,255,0.1); border-color: #0096ff; color: #5dade2; }
+        pre { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 12px; }
+        h1, h2 { color: #fcd34d; text-align: center; }
+        .timestamp { opacity: 0.7; font-size: 0.9em; text-align: center; }
+        .section { margin: 30px 0; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .test-number { 
+            display: inline-block; 
+            background: #fcd34d; 
+            color: #0a0a1a; 
+            padding: 5px 10px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Test Completo de Inicialización Nebula</h1>
+        <p class="timestamp">Ejecutado: <span id="timestamp"></span></p>
+        
+        <div class="section">
+            <h2>📋 Tests de Inicialización</h2>
+            <div id="initialization-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🔒 Tests de Seguridad</h2>
+            <div id="security-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Tests de AppState</h2>
+            <div id="appstate-results"></div>
+        </div>
+        
+        <div class="section">
+            <h2>📝 Console Log Completo</h2>
+            <pre id="console-log"></pre>
+        </div>
+        
+        <div class="section">
+            <h2>❌ Errores Capturados</h2>
+            <pre id="error-log"></pre>
+        </div>
+    </div>
+
+    <!-- Load scripts in the same order as the main app -->
+    <!-- Step 1: CryptoJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <!-- Step 2: Security Utils -->
+    <script src="../js/utils/security.js"></script>
+
+    <script>
+        // Initialize timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Capture all console outputs and errors
+        const logs = [];
+        const errors = [];
+        
+        // Override console methods
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        const originalInfo = console.info;
+        
+        console.log = function(...args) {
+            logs.push({ type: 'log', message: args.join(' '), timestamp: new Date().toISOString() });
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            errors.push({ type: 'error', message: args.join(' '), timestamp: new Date().toISOString() });
+            logs.push({ type: 'error', message: args.join(' '), timestamp: new Date().toISOString() });
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            logs.push({ type: 'warn', message: args.join(' '), timestamp: new Date().toISOString() });
+            originalWarn.apply(console, args);
+        };
+        
+        console.info = function(...args) {
+            logs.push({ type: 'info', message: args.join(' '), timestamp: new Date().toISOString() });
+            originalInfo.apply(console, args);
+        };
+
+        // Capture global errors
+        window.addEventListener('error', function(e) {
+            errors.push({ 
+                type: 'runtime_error', 
+                message: `${e.message} at ${e.filename}:${e.lineno}:${e.colno}`, 
+                timestamp: new Date().toISOString(),
+                stack: e.error ? e.error.stack : 'No stack trace available'
+            });
+        });
+
+        // Capture unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            errors.push({ 
+                type: 'promise_rejection', 
+                message: e.reason ? e.reason.toString() : 'Unknown promise rejection', 
+                timestamp: new Date().toISOString()
+            });
+        });
+
+        function addResult(containerId, type, title, message, details = null) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `
+                <strong>${title}</strong><br>
+                ${message}
+                ${details ? `<pre>${details}</pre>` : ''}
+            `;
+            container.appendChild(div);
+        }
+
+        function runComprehensiveTests() {
+            console.log('🚀 Iniciando tests comprensivos...');
+            
+            let testNumber = 1;
+
+            // --- INITIALIZATION TESTS ---
+            
+            // Test 1: CryptoJS
+            try {
+                if (typeof window.CryptoJS !== 'undefined') {
+                    addResult('initialization-results', 'success', 
+                        `<span class="test-number">${testNumber++}</span>✅ CryptoJS Cargado`, 
+                        'CryptoJS está disponible globalmente');
+                    console.log('✅ Test CryptoJS: PASÓ');
+                } else {
+                    throw new Error('CryptoJS no está disponible');
+                }
+            } catch (e) {
+                addResult('initialization-results', 'error', 
+                    `<span class="test-number">${testNumber++}</span>❌ CryptoJS Fallo`, 
+                    e.message);
+                console.error('❌ Test CryptoJS: FALLÓ', e);
+            }
+
+            // Test 2: NebulaSecurityUtils availability
+            try {
+                if (typeof window.NebulaSecurityUtils !== 'undefined') {
+                    addResult('initialization-results', 'success', 
+                        `<span class="test-number">${testNumber++}</span>✅ NebulaSecurityUtils Disponible`, 
+                        'NebulaSecurityUtils está expuesto globalmente sin errores de referencia');
+                    console.log('✅ Test NebulaSecurityUtils disponibilidad: PASÓ');
+                } else {
+                    throw new Error('NebulaSecurityUtils no está disponible en window');
+                }
+            } catch (e) {
+                addResult('initialization-results', 'error', 
+                    `<span class="test-number">${testNumber++}</span>❌ NebulaSecurityUtils No Disponible`, 
+                    e.message);
+                console.error('❌ Test NebulaSecurityUtils disponibilidad: FALLÓ', e);
+            }
+
+            // Test 3: Direct reference error check
+            try {
+                // This should throw a ReferenceError if not globally accessible
+                if (NebulaSecurityUtils) {
+                    addResult('initialization-results', 'warning', 
+                        `<span class="test-number">${testNumber++}</span>⚠️ Referencia Global Directa`, 
+                        'NebulaSecurityUtils es accesible sin window. (puede causar problemas)');
+                } else {
+                    addResult('initialization-results', 'info', 
+                        `<span class="test-number">${testNumber++}</span>ℹ️ Sin Referencia Global Directa`, 
+                        'NebulaSecurityUtils no es accesible directamente');
+                }
+            } catch (refError) {
+                if (refError instanceof ReferenceError) {
+                    addResult('initialization-results', 'success', 
+                        `<span class="test-number">${testNumber++}</span>✅ Sin ReferenceError`, 
+                        'NebulaSecurityUtils solo accesible vía window (comportamiento esperado)',
+                        `Error capturado: ${refError.message}`);
+                    console.log('✅ Test ReferenceError: PASÓ - No hay referencias globales directas problemáticas');
+                } else {
+                    throw refError;
+                }
+            }
+
+            // --- SECURITY TESTS ---
+            
+            // Test 4: Security initialization
+            try {
+                window.NebulaSecurityUtils.init();
+                addResult('security-results', 'success', 
+                    `<span class="test-number">${testNumber++}</span>✅ Inicialización de Seguridad`, 
+                    'NebulaSecurityUtils.init() ejecutado exitosamente');
+                console.log('✅ Test inicialización seguridad: PASÓ');
+            } catch (e) {
+                addResult('security-results', 'error', 
+                    `<span class="test-number">${testNumber++}</span>❌ Error en Inicialización`, 
+                    e.message);
+                console.error('❌ Test inicialización seguridad: FALLÓ', e);
+            }
+
+            // Test 5: Encryption/Decryption
+            try {
+                const testData = { user: 'test', balance: 1000, array: [1,2,3] };
+                const encrypted = window.NebulaSecurityUtils.encryptData(JSON.stringify(testData));
+                const decrypted = JSON.parse(window.NebulaSecurityUtils.decryptData(encrypted));
+                
+                if (JSON.stringify(decrypted) === JSON.stringify(testData)) {
+                    addResult('security-results', 'success', 
+                        `<span class="test-number">${testNumber++}</span>✅ Cifrado/Descifrado`, 
+                        'Los datos se cifran y descifran correctamente',
+                        `Original: ${JSON.stringify(testData)}\nDescifrado: ${JSON.stringify(decrypted)}`);
+                    console.log('✅ Test cifrado/descifrado: PASÓ');
+                } else {
+                    throw new Error('Los datos descifrados no coinciden');
+                }
+            } catch (e) {
+                addResult('security-results', 'error', 
+                    `<span class="test-number">${testNumber++}</span>❌ Error en Cifrado`, 
+                    e.message);
+                console.error('❌ Test cifrado/descifrado: FALLÓ', e);
+            }
+
+            // Test 6: Secure storage
+            try {
+                const testKey = 'test_comprehensive_key';
+                const testValue = { type: 'comprehensive_test', timestamp: Date.now(), nested: { a: 1, b: 2 } };
+                
+                window.NebulaSecurityUtils.secureSetItem(testKey, testValue);
+                const retrieved = window.NebulaSecurityUtils.secureGetItem(testKey);
+                
+                if (JSON.stringify(retrieved) === JSON.stringify(testValue)) {
+                    addResult('security-results', 'success', 
+                        `<span class="test-number">${testNumber++}</span>✅ Almacenamiento Seguro`, 
+                        'Guardar y recuperar datos cifrados funciona correctamente');
+                    console.log('✅ Test almacenamiento seguro: PASÓ');
+                    
+                    // Cleanup
+                    window.NebulaSecurityUtils.secureRemoveItem(testKey);
+                } else {
+                    throw new Error('Los datos almacenados/recuperados no coinciden');
+                }
+            } catch (e) {
+                addResult('security-results', 'error', 
+                    `<span class="test-number">${testNumber++}</span>❌ Error en Almacenamiento`, 
+                    e.message);
+                console.error('❌ Test almacenamiento seguro: FALLÓ', e);
+            }
+
+            // --- APPSTATE SIMULATION TESTS ---
+            
+            // Test 7: Simulate appState initialization patterns
+            try {
+                // Simulate the IIFE patterns used in appState
+                const simulatedIsPrivate = (() => {
+                    try {
+                        return (typeof window.NebulaSecurityUtils !== 'undefined') ? 
+                            window.NebulaSecurityUtils.secureGetItem('isPrivateMode', true) :
+                            JSON.parse(localStorage.getItem('isPrivateMode')) ?? true;
+                    } catch { return true; }
+                })();
+                
+                const simulatedThemeKey = (() => {
+                    try {
+                        return (typeof window.NebulaSecurityUtils !== 'undefined') ? 
+                            window.NebulaSecurityUtils.secureGetItem('financialTheme', 'aureoAmanecer') :
+                            localStorage.getItem('financialTheme') || 'aureoAmanecer';
+                    } catch { return 'aureoAmanecer'; }
+                })();
+                
+                const simulatedData = (() => {
+                    try {
+                        const defaultData = { transactions: {}, goals: [], investments: [], debts: [] };
+                        return (typeof window.NebulaSecurityUtils !== 'undefined') ? 
+                            window.NebulaSecurityUtils.secureGetItem('financialData', defaultData) :
+                            JSON.parse(localStorage.getItem('financialData')) || defaultData;
+                    } catch { 
+                        return { transactions: {}, goals: [], investments: [], debts: [] }; 
+                    }
+                })();
+                
+                addResult('appstate-results', 'success', 
+                    `<span class="test-number">${testNumber++}</span>✅ Simulación AppState`, 
+                    'Los patrones IIFE del appState funcionan sin errores',
+                    `isPrivate: ${simulatedIsPrivate}\nthemeKey: ${simulatedThemeKey}\ndata keys: ${Object.keys(simulatedData).join(', ')}`);
+                console.log('✅ Test simulación appState: PASÓ');
+                
+            } catch (e) {
+                addResult('appstate-results', 'error', 
+                    `<span class="test-number">${testNumber++}</span>❌ Error en AppState`, 
+                    e.message);
+                console.error('❌ Test simulación appState: FALLÓ', e);
+            }
+
+            // Test 8: Simulate saveState method
+            try {
+                const testSaveState = function() {
+                    if (typeof window.NebulaSecurityUtils !== 'undefined') {
+                        window.NebulaSecurityUtils.secureSetItem('test_saveState', { test: 'data' });
+                        console.log('🔒 Estado guardado de forma segura localmente');
+                        return true;
+                    } else {
+                        localStorage.setItem('test_saveState', JSON.stringify({ test: 'data' }));
+                        console.log('⚠️ Estado guardado sin cifrado (fallback)');
+                        return false;
+                    }
+                };
+                
+                const savedSecurely = testSaveState();
+                
+                addResult('appstate-results', 'success', 
+                    `<span class="test-number">${testNumber++}</span>✅ Simulación SaveState`, 
+                    `Método saveState simulado ${savedSecurely ? 'con cifrado' : 'sin cifrado'}`);
+                console.log('✅ Test simulación saveState: PASÓ');
+                
+                // Cleanup
+                if (savedSecurely) {
+                    window.NebulaSecurityUtils.secureRemoveItem('test_saveState');
+                } else {
+                    localStorage.removeItem('test_saveState');
+                }
+                
+            } catch (e) {
+                addResult('appstate-results', 'error', 
+                    `<span class="test-number">${testNumber++}</span>❌ Error en SaveState`, 
+                    e.message);
+                console.error('❌ Test simulación saveState: FALLÓ', e);
+            }
+
+            // Show logs after a delay to capture all output
+            setTimeout(() => {
+                const consoleLogDiv = document.getElementById('console-log');
+                const logText = logs.map(log => 
+                    `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
+                ).join('\n');
+                consoleLogDiv.textContent = logText || 'No hay logs disponibles';
+
+                const errorLogDiv = document.getElementById('error-log');
+                const errorText = errors.map(error => 
+                    `[${error.timestamp}] ${error.type.toUpperCase()}: ${error.message}${error.stack ? '\n' + error.stack : ''}`
+                ).join('\n\n');
+                errorLogDiv.textContent = errorText || 'No hay errores capturados ✅';
+
+                console.log('🏁 Tests comprensivos completados');
+            }, 200);
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', runComprehensiveTests);
+    </script>
+</body>
+</html>

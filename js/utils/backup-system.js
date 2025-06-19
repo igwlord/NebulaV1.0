@@ -216,6 +216,8 @@ class BackupSystem {
 // Hacer disponible globalmente
 if (typeof window !== 'undefined') {
     window.BackupSystem = BackupSystem;
-} else {
+}
+// En entorno Node.js, exportar solo si module está disponible
+if (typeof module !== 'undefined' && module.exports) {
     module.exports = BackupSystem;
 }

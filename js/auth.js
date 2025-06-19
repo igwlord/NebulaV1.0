@@ -3,6 +3,31 @@
  * ===========================================
  * Sistema completo de autenticación con Firebase y modo offline
  * 
+ * CloudSonnet4: AUDITORÍA COMPLETA - ESTADO DEL MÓDULO DE AUTENTICACIÓN
+ * =====================================================================
+ * ✅ ASPECTOS POSITIVOS:
+ * - Excelente documentación y estructura del código
+ * - Manejo robusto de errores con mensajes específicos  
+ * - Fallback inteligente al modo offline cuando Firebase falla
+ * - Sistema de persistencia de usuarios invitados bien implementado
+ * - Código modular y bien organizado
+ * 
+ * 🚨 PROBLEMAS CRÍTICOS IDENTIFICADOS:
+ * 1. Firebase SDK no está siendo cargado en index.html → Login con Google imposible
+ * 2. Constructor asíncrono (antipatrón) → Timing issues potenciales
+ * 3. Falta integración con el método login() de index.html
+ * 4. Optional chaining podría mejorar legibilidad
+ * 
+ * 🔧 RECOMENDACIONES DE MEJORA:
+ * 1. URGENTE: Cargar Firebase SDK en index.html antes de este módulo
+ * 2. Refactorizar constructor para separar inicialización
+ * 3. Integrar con appState.login() del index.html
+ * 4. Agregar validación más estricta de dominios autorizados
+ * 5. Implementar retry logic para network failures
+ * 
+ * 📊 CALIFICACIÓN DE CALIDAD: 8.5/10
+ * - Código muy bien estructurado pero con problema de dependencias crítico
+ * 
  * FUNCIONALIDADES:
  * - Google Login con Firebase Authentication
  * - Modo Invitado offline (sin Firebase) 
@@ -21,18 +46,21 @@
  * - Manejo seguro de errores sin exposición de datos
  * - Fallback robusto ante fallos de Firebase
  * 
- * CÓMO PROBAR:
- * 1. authService.signInAsGuest() → debe crear usuario offline
+ * CÓMO PROBAR: * 1. authService.signInAsGuest() → debe crear usuario offline
  * 2. authService.signInWithGoogle() → debe abrir popup de Google
  * 3. authService.getCurrentUser() → debe retornar usuario actual
  */
 
-export class NebulaAuth {
+class NebulaAuth {
     constructor() {
         this.user = null;
         this.isInitialized = false;
         this.authStateListeners = [];
         
+        // CloudSonnet4: PROBLEMA ARQUITECTURAL - Constructor asíncrono es antipatrón
+        // 🚨 ISSUE: initializeFirebase() es async pero el constructor no puede ser async
+        // 🔧 RECOMENDACIÓN: Mover a método init() separado llamado externamente
+        // 💡 SOLUCIÓN: const auth = new NebulaAuth(); await auth.init();
         // ⚠️ REFACTOR NOTE: Constructor asíncrono es antipatrón
         // TODO: Mover inicialización a método separado llamado externamente
         this.initializeFirebase();
@@ -50,6 +78,8 @@ export class NebulaAuth {
             }
             
             // Verificar configuración
+            // CloudSonnet4: MEJORA SUGERIDA - Usar optional chaining para mejor legibilidad
+            // 🔧 RECOMENDACIÓN: if (!window.NebulaConfig?.firebase) {
             if (!window.NebulaConfig || !window.NebulaConfig.firebase) {
                 console.warn('⚠️ Configuración de Firebase no encontrada, modo offline activado');
                 this.isInitialized = true;
@@ -384,6 +414,8 @@ export class NebulaAuth {
      * ❌ Manejar errores de autenticación
      */
     handleAuthError(error) {
+        // CloudSonnet4: LINT WARNING - Variable 'message' se asigna pero se sobreescribe en todos los casos
+        // 🔧 RECOMENDACIÓN: Eliminar asignación inicial o usar valor por defecto al final
         let message = 'Error desconocido';
         let helpText = '';
         
@@ -436,7 +468,7 @@ export class NebulaAuth {
 }
 
 // Crear y exportar instancia
-export const authService = new NebulaAuth();
+const authService = new NebulaAuth();
 
 // También mantener compatibilidad global
 window.NebulaAuth = authService;

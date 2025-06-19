@@ -13,7 +13,7 @@
 // ===============================================
 // 🎨 TEMAS VISUALES
 // ===============================================
-export const THEMES = {
+const THEMES = {
     aureoAmanecer: { 
         name: 'Áureo Amanecer', 
         gradient: 'radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 40%, #0f1419 100%), url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffd700\' fill-opacity=\'0.1\'%3E%3Ccircle cx=\'7\' cy=\'7\' r=\'1\'/%3E%3Ccircle cx=\'27\' cy=\'27\' r=\'1\'/%3E%3Ccircle cx=\'47\' cy=\'47\' r=\'1\'/%3E%3Ccircle cx=\'17\' cy=\'37\' r=\'0.5\'/%3E%3Ccircle cx=\'37\' cy=\'17\' r=\'0.5\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")', 
@@ -87,7 +87,7 @@ export const THEMES = {
 // ===============================================
 // 🎨 ICONOS SVG VECTORIALES
 // ===============================================
-export const ICONS = {
+const ICONS = {
     dashboard: `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>`,
     income: `<circle cx="12" cy="12" r="10"/><path d="m8 12 4-4 4 4"/><path d="M12 8v8"/>`,
     expenses: `<circle cx="12" cy="12" r="10"/><path d="m8 12 4 4 4-4"/><path d="M12 8v8"/>`,
@@ -121,7 +121,7 @@ export const ICONS = {
 // ===============================================
 // 📂 CATEGORÍAS DE GASTOS
 // ===============================================
-export const CATEGORIES = ['Comida', 'Transporte', 'Ocio', 'Hogar', 'Salud', 'Educación', 'Regalos', 'Varios'];
+const CATEGORIES = ['Comida', 'Transporte', 'Ocio', 'Hogar', 'Salud', 'Educación', 'Regalos', 'Varios'];
 
 // ===============================================
 // 🛠️ FUNCIONES UTILITARIAS
@@ -133,7 +133,7 @@ export const CATEGORIES = ['Comida', 'Transporte', 'Ocio', 'Hogar', 'Salud', 'Ed
  * @param {string} className - Clases CSS del icono
  * @returns {string} HTML del icono
  */
-export function createIcon(iconPath, className = 'w-6 h-6') {
+function createIcon(iconPath, className = 'w-6 h-6') {
     return `<svg class="${className}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${iconPath}</svg>`;
 }
 
@@ -142,7 +142,7 @@ export function createIcon(iconPath, className = 'w-6 h-6') {
  * @param {number} amount - Cantidad a formatear
  * @returns {string} Cantidad formateada
  */
-export function formatCurrency(amount) {
+function formatCurrency(amount) {
     return new Intl.NumberFormat('es-CL', { 
         style: 'currency', 
         currency: 'CLP',
@@ -156,7 +156,7 @@ export function formatCurrency(amount) {
  * @param {string|number} value - Valor a formatear
  * @returns {string} Número formateado
  */
-export function formatNumberWithDots(value) {
+function formatNumberWithDots(value) {
     if (!value) return '';
     const numStr = value.toString().replace(/\D/g, '');
     return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -167,7 +167,7 @@ export function formatNumberWithDots(value) {
  * @param {string} value - Valor con puntos
  * @returns {number} Número parseado
  */
-export function parseNumberWithDots(value) {
+function parseNumberWithDots(value) {
     if (!value) return 0;
     return parseInt(value.replace(/\./g, '')) || 0;
 }
@@ -177,7 +177,7 @@ export function parseNumberWithDots(value) {
  * @param {string|number} value - Valor formateado
  * @returns {number} Número sin formato
  */
-export function parseFormattedNumber(value) {
+function parseFormattedNumber(value) {
     return parseNumberWithDots(value);
 }
 
@@ -186,7 +186,7 @@ export function parseFormattedNumber(value) {
  * @param {Date} date - Fecha
  * @returns {string} Clave del mes (YYYY-MM)
  */
-export function getMonthKey(date = new Date()) {
+function getMonthKey(date = new Date()) {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
 }
 
@@ -195,7 +195,7 @@ export function getMonthKey(date = new Date()) {
  * @param {Date} date - Fecha
  * @returns {string} Nombre del mes
  */
-export function getMonthName(date = new Date()) {
+function getMonthName(date = new Date()) {
     return date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
 }
 
@@ -203,7 +203,7 @@ export function getMonthName(date = new Date()) {
  * 🎲 Generar ID único
  * @returns {string} ID único
  */
-export function generateId() {
+function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
@@ -227,7 +227,7 @@ export function generateId() {
  * saveToLocalStorage('test', {nombre: 'test'})
  * // Verificar en DevTools → Application → Local Storage
  */
-export function saveToLocalStorage(key, data) {
+function saveToLocalStorage(key, data) {
     try {
         localStorage.setItem(key, JSON.stringify(data));
     } catch (error) {
@@ -241,7 +241,7 @@ export function saveToLocalStorage(key, data) {
  * @param {any} defaultValue - Valor por defecto
  * @returns {any} Datos obtenidos
  */
-export function getFromLocalStorage(key, defaultValue = null) {
+function getFromLocalStorage(key, defaultValue = null) {
     try {
         const item = localStorage.getItem(key);
         return item ? JSON.parse(item) : defaultValue;
@@ -257,7 +257,7 @@ export function getFromLocalStorage(key, defaultValue = null) {
  * @param {string} property - Propiedad del color
  * @returns {string} Color hexadecimal
  */
-export function getThemeColor(theme, property = 'accentColor') {
+function getThemeColor(theme, property = 'accentColor') {
     return theme[property] || '#FFD700';
 }
 
@@ -265,7 +265,7 @@ export function getThemeColor(theme, property = 'accentColor') {
  * 📱 Detectar si es dispositivo móvil
  * @returns {boolean} True si es móvil
  */
-export function isMobileDevice() {
+function isMobileDevice() {
     return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
@@ -273,7 +273,7 @@ export function isMobileDevice() {
  * 🌙 Obtener saludo según la hora
  * @returns {string} Saludo personalizado
  */
-export function getTimeBasedGreeting() {
+function getTimeBasedGreeting() {
     const hour = new Date().getHours();
     if (hour < 12) return 'Buenos días';
     if (hour < 18) return 'Buenas tardes';
@@ -286,7 +286,7 @@ export function getTimeBasedGreeting() {
  * @param {number} wait - Tiempo de espera en ms
  * @returns {Function} Función debounced
  */
-export function debounce(func, wait) {
+function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
         const later = () => {
@@ -304,7 +304,7 @@ export function debounce(func, wait) {
  * @param {number} target - Valor objetivo
  * @returns {number} Porcentaje (0-100)
  */
-export function calculateProgress(current, target) {
+function calculateProgress(current, target) {
     if (target <= 0) return 0;
     return Math.min(Math.max((current / target) * 100, 0), 100);
 }
@@ -316,7 +316,7 @@ export function calculateProgress(current, target) {
  * @param {number} end - Valor final
  * @param {number} duration - Duración en ms
  */
-export function animateCounter(element, start, end, duration = 1000) {
+function animateCounter(element, start, end, duration = 1000) {
     if (!element) return;
     
     const startTime = performance.now();
@@ -346,7 +346,7 @@ export function animateCounter(element, start, end, duration = 1000) {
  * @param {number} factor - Factor de interpolación (0-1)
  * @returns {string} Color interpolado
  */
-export function interpolateColor(color1, color2, factor) {
+function interpolateColor(color1, color2, factor) {
     const hex1 = color1.replace('#', '');
     const hex2 = color2.replace('#', '');
       const r1 = parseInt(hex1.substring(0, 2), 16);
@@ -370,7 +370,7 @@ export function interpolateColor(color1, color2, factor) {
  * @param {string} value - Valor del input
  * @returns {string} Valor formateado
  */
-export function formatThousands(value) {
+function formatThousands(value) {
     if (!value) return '';
     
     // Remover todo excepto números
@@ -384,7 +384,7 @@ export function formatThousands(value) {
  * 💰 CloudSonnet4: Aplicar formateo automático a input numérico
  * @param {HTMLElement} input - Elemento input
  */
-export function applyThousandsFormatting(input) {
+function applyThousandsFormatting(input) {
     if (!input) return;
     
     // Evento input para formateo en tiempo real
@@ -419,5 +419,33 @@ export function applyThousandsFormatting(input) {
 //    (time-to-live) para datos costosos de calcular como estadísticas y gráficos.
 //    Incluir invalidación automática cuando cambien los datos base. Esto
 //    mejoraría significativamente el rendimiento en dashboards complejos.
+
+// Exponer THEMES globalmente para evitar problemas con imports
+if (typeof window !== 'undefined') {
+    window.THEMES = THEMES;
+    window.ICONS = ICONS;
+    window.CATEGORIES = CATEGORIES;
+    
+    // Funciones helper
+    window.createIcon = createIcon;
+    window.formatCurrency = formatCurrency;
+    window.formatNumberWithDots = formatNumberWithDots;
+    window.parseNumberWithDots = parseNumberWithDots;
+    window.parseFormattedNumber = parseFormattedNumber;
+    window.getMonthKey = getMonthKey;
+    window.getMonthName = getMonthName;
+    window.generateId = generateId;
+    window.saveToLocalStorage = saveToLocalStorage;
+    window.getFromLocalStorage = getFromLocalStorage;
+    window.getThemeColor = getThemeColor;
+    window.isMobileDevice = isMobileDevice;
+    window.getTimeBasedGreeting = getTimeBasedGreeting;
+    window.debounce = debounce;
+    window.calculateProgress = calculateProgress;
+    window.animateCounter = animateCounter;
+    window.interpolateColor = interpolateColor;
+    window.formatThousands = formatThousands;
+    window.applyThousandsFormatting = applyThousandsFormatting;
+}
 
 

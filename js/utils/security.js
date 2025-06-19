@@ -4,6 +4,11 @@
  * Implementado en Fase 4 - Seguridad Avanzada
  */
 
+// Eliminar require y usar CryptoJS global
+// const CryptoJS = require('crypto-js'); // ELIMINADO
+// Usar window.CryptoJS global
+const CryptoJS = window.CryptoJS;
+
 const NebulaSecurityUtils = {
     // 🔐 Clave de cifrado (generada dinámicamente)
     encryptionKey: null,
@@ -12,76 +17,72 @@ const NebulaSecurityUtils = {
      * Inicializar sistema de seguridad
      */
     init() {
-        console.log('🔒 Inicializando sistema de seguridad...');
+        if (window.NEBULA_DEBUG) {
+            console.log('🔒 Inicializando sistema de seguridad...');
+        }
         this.generateEncryptionKey();
         this.setupCSPReporting();
         this.initializeSecureStorage();
-        console.log('✅ Sistema de seguridad inicializado');
+        if (window.NEBULA_DEBUG) {
+            console.log('✅ Sistema de seguridad inicializado');
+        }
     },
     
     /**
      * Generar clave de cifrado única por sesión
+     * Corregido para evitar caracteres no válidos
      */
     generateEncryptionKey() {
-        const array = new Uint8Array(32);
-        crypto.getRandomValues(array);
-        this.encryptionKey = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-        console.log('🔑 Clave de cifrado generada');
+        try {
+            const array = new Uint8Array(32);
+            crypto.getRandomValues(array);
+            this.encryptionKey = Array.from(array, byte => ('0' + byte.toString(16)).slice(-2)).join('');
+            if (window.NEBULA_DEBUG) {
+                console.log('🔑 Clave de cifrado generada correctamente');
+            }
+        } catch (error) {
+            console.error('❌ Error generando clave de cifrado:', error);
+            this.encryptionKey = null;
+        }
     },
-    
+
     /**
      * Cifrado simple pero efectivo para localStorage
-     * @param {string} text - Texto a cifrar
-     * @returns {string} - Texto cifrado
+     * Corregido para manejar caracteres no válidos
      */
     encrypt(text) {
         try {
             if (!this.encryptionKey) {
                 this.generateEncryptionKey();
             }
-            
-            // Cifrado simple XOR con la clave
-            let encrypted = '';
-            for (let i = 0; i < text.length; i++) {
-                const keyChar = this.encryptionKey[i % this.encryptionKey.length];
-                const textChar = text.charCodeAt(i);
-                const keyCode = parseInt(keyChar, 16);
-                encrypted += String.fromCharCode(textChar ^ keyCode);
-            }
-            
-            // Codificar en Base64 para almacenamiento seguro
-            return btoa(encrypted);
+            const encrypted = CryptoJS.AES.encrypt(text, CryptoJS.enc.Hex.parse(this.encryptionKey), {
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+                iv: CryptoJS.enc.Hex.parse('00000000000000000000000000000000')
+            }).toString();
+            return encrypted;
         } catch (error) {
             console.error('❌ Error en cifrado:', error);
-            return text; // Fallback: devolver texto plano
+            return text; // Fallback
         }
     },
-    
+
     /**
      * Descifrado de datos
-     * @param {string} encryptedText - Texto cifrado
-     * @returns {string} - Texto descifrado
+     * Corregido para manejar errores de descifrado
      */
     decrypt(encryptedText) {
         try {
             if (!this.encryptionKey) {
-                console.warn('⚠️ Clave de cifrado no disponible');
+                console.error('❌ Error: Clave de cifrado no disponible.');
                 return encryptedText;
             }
-            
-            // Decodificar Base64
-            const encrypted = atob(encryptedText);
-            
-            // Descifrar con XOR
-            let decrypted = '';
-            for (let i = 0; i < encrypted.length; i++) {
-                const keyChar = this.encryptionKey[i % this.encryptionKey.length];
-                const encryptedChar = encrypted.charCodeAt(i);
-                const keyCode = parseInt(keyChar, 16);
-                decrypted += String.fromCharCode(encryptedChar ^ keyCode);
-            }
-            
-            return decrypted;
+            const bytes = CryptoJS.AES.decrypt(encryptedText, CryptoJS.enc.Hex.parse(this.encryptionKey), {
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+                iv: CryptoJS.enc.Hex.parse('00000000000000000000000000000000')
+            });
+            return bytes.toString(CryptoJS.enc.Utf8);
         } catch (error) {
             console.error('❌ Error en descifrado:', error);
             return encryptedText; // Fallback
@@ -177,21 +178,29 @@ const NebulaSecurityUtils = {
      * Inicializar almacenamiento seguro
      */
     initializeSecureStorage() {
-        // Migrar datos existentes a almacenamiento seguro
         const keysToMigrate = ['nebula_data', 'nebula_settings', 'nebula_user_preferences'];
-        
-        keysToMigrate.forEach(key => {
-            const oldValue = localStorage.getItem(key);
-            if (oldValue && !localStorage.getItem(`nebula_${key}`)) {
-                try {
-                    this.secureSetItem(key.replace('nebula_', ''), oldValue);
-                    localStorage.removeItem(key); // Limpiar versión no cifrada
-                    console.log(`🔄 Migrado a almacenamiento seguro: ${key}`);
-                } catch (error) {
-                    console.error(`❌ Error migrando ${key}:`, error);
+
+        // Procesar en lotes para evitar llenar el heap
+        const batchSize = 1; // Procesar de a un elemento por vez
+        const processBatch = (batch) => {
+            batch.forEach(key => {
+                const oldValue = localStorage.getItem(key);
+                if (oldValue && !localStorage.getItem(`nebula_${key}`)) {
+                    try {
+                        this.secureSetItem(key.replace('nebula_', ''), oldValue);
+                        localStorage.removeItem(key); // Limpiar versión no cifrada
+                        console.log(`🔄 Migrado a almacenamiento seguro: ${key}`);
+                    } catch (error) {
+                        console.error(`❌ Error migrando ${key}:`, error);
+                    }
                 }
-            }
-        });
+            });
+        };
+
+        for (let i = 0; i < keysToMigrate.length; i += batchSize) {
+            const batch = keysToMigrate.slice(i, i + batchSize);
+            processBatch(batch);
+        }
     },
     
     /**
@@ -240,16 +249,39 @@ const NebulaSecurityUtils = {
     },
     
     /**
-     * Limpiar datos de seguridad
+     * Optimización: Liberar recursos no utilizados y evitar acumulaciones innecesarias
      */
     clearSecurityData() {
         const keys = Object.keys(localStorage).filter(key => key.startsWith('nebula_'));
-        keys.forEach(key => localStorage.removeItem(key));
+        keys.forEach(key => {
+            localStorage.removeItem(key);
+        });
         console.log('🧹 Datos de seguridad limpiados');
+
+        // Liberar referencias a objetos grandes
+        this.encryptionKey = null;
+    },
+
+    /* Protección Contra XSS */
+    escapeHTML(input) {
+        const div = document.createElement('div');
+        div.textContent = input;
+        return div.innerHTML;
     }
 };
 
-// Exportar para uso global
+// Asegurar que NebulaSecurityUtils esté disponible globalmente y manejar errores de carga
 if (typeof window !== 'undefined') {
-    window.NebulaSecurityUtils = NebulaSecurityUtils;
+    try {
+        if (!window.NebulaSecurityUtils) {
+            window.NebulaSecurityUtils = NebulaSecurityUtils;
+            console.log('✅ NebulaSecurityUtils definido globalmente.');
+        } else {
+            console.warn('⚠️ NebulaSecurityUtils ya estaba definido globalmente.');
+        }
+    } catch (error) {
+        console.error('❌ Error al definir NebulaSecurityUtils globalmente:', error);
+    }
+} else {
+    console.error('❌ El objeto window no está disponible. NebulaSecurityUtils no se puede definir globalmente.');
 }

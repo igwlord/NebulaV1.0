@@ -3,9 +3,9 @@
 // Versión: 1.6 - CSS Local Sin CDN
 // ===============================================
 
-const CACHE_NAME = 'nebula-financial-v1.6';
-const STATIC_CACHE = 'nebula-static-v1.6';
-const DYNAMIC_CACHE = 'nebula-dynamic-v1.6';
+const CACHE_NAME = 'nebula-financial-v1.7';
+const STATIC_CACHE = 'nebula-static-v1.7';
+const DYNAMIC_CACHE = 'nebula-dynamic-v1.7';
 
 // Recursos críticos para cachear inmediatamente
 const CRITICAL_ASSETS = [

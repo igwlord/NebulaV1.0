@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Validación de Seguridad Nebula</title>
+    <style>
+        body { 
+            font-family: 'Courier New', monospace; 
+            background: #0a0a1a; 
+            color: #00ff00; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .test-result { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border-left: 4px solid;
+        }
+        .success { background: rgba(0,255,0,0.1); border-color: #00ff00; }
+        .error { background: rgba(255,0,0,0.1); border-color: #ff0000; color: #ff6b6b; }
+        .warning { background: rgba(255,255,0,0.1); border-color: #ffff00; color: #ffd93d; }
+        .info { background: rgba(0,150,255,0.1); border-color: #0096ff; color: #5dade2; }
+        pre { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 4px; overflow-x: auto; }
+        h1, h2 { color: #fcd34d; text-align: center; }
+        .timestamp { opacity: 0.7; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Validación de Seguridad Nebula</h1>
+        <p class="timestamp">Ejecutado: <span id="timestamp"></span></p>
+        
+        <div id="results"></div>
+        
+        <h2>📝 Log de Console</h2>
+        <pre id="console-log"></pre>
+    </div>
+
+    <!-- Load CryptoJS first -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <!-- Load Security Utils -->
+    <script src="../js/utils/security.js"></script>
+
+    <script>
+        // Initialize timestamp
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Capture console logs
+        const logs = [];
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            logs.push({ type: 'log', message: args.join(' '), timestamp: new Date().toISOString() });
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            logs.push({ type: 'error', message: args.join(' '), timestamp: new Date().toISOString() });
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            logs.push({ type: 'warn', message: args.join(' '), timestamp: new Date().toISOString() });
+            originalWarn.apply(console, args);
+        };
+
+        function addResult(type, title, message, details = null) {
+            const resultsDiv = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `
+                <strong>${title}</strong><br>
+                ${message}
+                ${details ? `<pre>${details}</pre>` : ''}
+            `;
+            resultsDiv.appendChild(div);
+        }
+
+        function runSecurityValidation() {
+            console.log('🔒 Iniciando validación de seguridad...');
+            
+            // Test 1: CryptoJS availability
+            if (typeof window.CryptoJS !== 'undefined') {
+                addResult('success', '✅ CryptoJS Disponible', 'CryptoJS está cargado correctamente desde CDN');
+                console.log('✅ CryptoJS disponible');
+            } else {
+                addResult('error', '❌ CryptoJS No Disponible', 'CryptoJS no se encuentra disponible en window.CryptoJS');
+                console.error('❌ CryptoJS no disponible');
+            }
+
+            // Test 2: NebulaSecurityUtils availability
+            if (typeof window.NebulaSecurityUtils !== 'undefined') {
+                addResult('success', '✅ NebulaSecurityUtils Disponible', 'NebulaSecurityUtils está expuesto globalmente');
+                console.log('✅ NebulaSecurityUtils disponible');
+                
+                // Test 3: Initialize security
+                try {
+                    window.NebulaSecurityUtils.init();
+                    addResult('success', '✅ Inicialización Exitosa', 'NebulaSecurityUtils.init() ejecutado sin errores');
+                    console.log('✅ Inicialización exitosa');
+                    
+                    // Test 4: Basic encryption/decryption test
+                    try {
+                        const testData = { test: 'hello world', number: 123 };
+                        const encrypted = window.NebulaSecurityUtils.encryptData(JSON.stringify(testData));
+                        const decrypted = JSON.parse(window.NebulaSecurityUtils.decryptData(encrypted));
+                        
+                        if (decrypted.test === testData.test && decrypted.number === testData.number) {
+                            addResult('success', '✅ Cifrado/Descifrado Funcional', 
+                                'Los datos se cifran y descifran correctamente', 
+                                `Original: ${JSON.stringify(testData)}\nDescifrado: ${JSON.stringify(decrypted)}`);
+                            console.log('✅ Cifrado/descifrado funcional');
+                        } else {
+                            throw new Error('Los datos descifrados no coinciden');
+                        }
+                    } catch (cryptoError) {
+                        addResult('error', '❌ Error en Cifrado', cryptoError.message);
+                        console.error('❌ Error en cifrado:', cryptoError);
+                    }
+                    
+                    // Test 5: Secure storage test
+                    try {
+                        const testKey = 'test_validation_key';
+                        const testValue = { validation: true, timestamp: Date.now() };
+                        
+                        // Store securely
+                        window.NebulaSecurityUtils.secureSetItem(testKey, testValue);
+                        
+                        // Retrieve securely
+                        const retrieved = window.NebulaSecurityUtils.secureGetItem(testKey);
+                        
+                        if (retrieved && retrieved.validation === true) {
+                            addResult('success', '✅ Almacenamiento Seguro Funcional', 
+                                'Los datos se guardan y recuperan correctamente de forma cifrada',
+                                `Guardado: ${JSON.stringify(testValue)}\nRecuperado: ${JSON.stringify(retrieved)}`);
+                            console.log('✅ Almacenamiento seguro funcional');
+                            
+                            // Clean up
+                            window.NebulaSecurityUtils.secureRemoveItem(testKey);
+                        } else {
+                            throw new Error('Los datos recuperados no coinciden');
+                        }
+                    } catch (storageError) {
+                        addResult('error', '❌ Error en Almacenamiento Seguro', storageError.message);
+                        console.error('❌ Error en almacenamiento seguro:', storageError);
+                    }
+                    
+                } catch (initError) {
+                    addResult('error', '❌ Error en Inicialización', initError.message);
+                    console.error('❌ Error en inicialización:', initError);
+                }
+                
+            } else {
+                addResult('error', '❌ NebulaSecurityUtils No Disponible', 
+                    'NebulaSecurityUtils no está disponible en window.NebulaSecurityUtils');
+                console.error('❌ NebulaSecurityUtils no disponible');
+            }
+
+            // Test 6: Check if there are any global reference errors
+            try {
+                // This should NOT throw a ReferenceError anymore
+                if (NebulaSecurityUtils) {
+                    addResult('warning', '⚠️ Referencia Global Directa', 
+                        'NebulaSecurityUtils es accesible directamente (sin window.), esto puede causar errores en algunos contextos');
+                }
+            } catch (refError) {
+                if (refError instanceof ReferenceError) {
+                    addResult('success', '✅ Sin Referencias Globales Directas', 
+                        'NebulaSecurityUtils solo es accesible vía window.NebulaSecurityUtils (comportamiento esperado)');
+                    console.log('✅ Sin referencias globales directas');
+                } else {
+                    addResult('error', '❌ Error Inesperado en Referencias', refError.message);
+                }
+            }
+
+            // Show console logs
+            setTimeout(() => {
+                const consoleLogDiv = document.getElementById('console-log');
+                const logText = logs.map(log => 
+                    `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
+                ).join('\n');
+                consoleLogDiv.textContent = logText || 'No hay logs disponibles';
+            }, 100);
+        }
+
+        // Run validation when page loads
+        document.addEventListener('DOMContentLoaded', runSecurityValidation);
+    </script>
+</body>
+</html>

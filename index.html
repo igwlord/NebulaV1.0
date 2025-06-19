@@ -15,33 +15,57 @@
     <meta name="keywords" content="finanzas personales, gestión financiera, presupuesto, inversiones, nebula">
     <meta name="author" content="Nebula Financial Team">
     
-    <!-- 🎯 PERFORMANCE CRITICAL - Recursos Prioritarios -->    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <!-- 🎯 PERFORMANCE CRITICAL - Recursos Prioritarios -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
       <!-- 🚀 FUENTES - Carga Optimizada -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" as="style">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>    <!-- 🎨 TAILWIND CSS - CRÍTICO PARA PRODUCCIÓN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Configuración de Tailwind para producción
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        nebula: {
-                            primary: '#1e40af',
-                            secondary: '#7c3aed',
-                            accent: '#fcd34d',
-                            gold: '#ffd700',
-                            dark: '#0f0f23',
-                            darker: '#0a0a1a'
-                        }
-                    }
-                }
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>    <!-- 🔥 FIREBASE - Autenticación y Servicios -->
+    <script type="module">
+        // Importar configuración y funciones de Firebase (con cache-buster)
+        const timestamp = Date.now();
+        const { getFirebaseConfig } = await import(`./firebase-config.js?t=${timestamp}`);
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';        try {
+            console.log('🔥 Inicializando Firebase...');
+            
+            // Obtener configuración desde firebase-config.js
+            const firebaseConfig = getFirebaseConfig();
+            
+            // Inicializar Firebase
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const provider = new GoogleAuthProvider();
+            
+            // Configurar el proveedor de Google
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            // Hacer disponible globalmente
+            window.firebaseAuth = auth;
+            window.googleProvider = provider;
+            window.signInWithPopup = signInWithPopup;
+            window.signOut = signOut;
+            window.onAuthStateChanged = onAuthStateChanged;
+            window.firebaseAvailable = true;
+            
+            console.log('✅ Firebase inicializado correctamente con configuración desde .env');
+            
+            // Notificar a NebulaAuth que Firebase está listo
+            if (window.NebulaAuth && typeof window.NebulaAuth.initializeAuth === 'function') {
+                console.log('🔄 Reinicializando NebulaAuth con Firebase...');
+                window.NebulaAuth.initializeAuth();
             }
+            
+        } catch (error) {
+            console.warn('⚠️ Error inicializando Firebase:', error);
+            console.log('💡 La app funcionará en modo local sin autenticación de Google');
+            
+            // Marcar Firebase como no disponible
+            window.firebaseAvailable = false;
         }
     </script>
     
@@ -436,7 +460,8 @@
         // 🔥 SUPER CACHE-BUSTING PARA DEPURACIÓN
         const CACHE_BUSTER = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         console.log('🔥 Cache-Buster activo:', CACHE_BUSTER);
-          // 🎯 CARGA INTELIGENTE DE TAILWIND
+        
+        // 🎯 CARGA INTELIGENTE DE TAILWIND
         const loadTailwind = () => {
             if (!document.getElementById('tailwind-css')) {
                 const script = document.createElement('script');
@@ -535,7 +560,7 @@
         <div id="parallax-bg" class="fixed inset-0 z-0 perspective-[1000px]"></div>
         <main id="content-root" class="relative z-10 pb-24 nebula-fade-in" aria-label="Contenido principal de la aplicación"></main>
         <div id="dock-root" class="fixed bottom-0 left-0 right-0 z-20"></div>
-        <div id="modal-root" class="fixed inset-0 z-50 pointer-events-none"></div>
+        <div id="modal-root" class="fixed inset-0 z-50"></div>
 
         <!-- 🎭 SISTEMA DE MODALES ELEGANTE -->
         <div id="nebula-modal-overlay" class="nebula-modal-overlay">
@@ -568,17 +593,10 @@
             </div>
         </div>
         <div id="notification-container" class="notification-container"></div>
-    </div>
-
-    <!-- � FIREBASE - Autenticación con Google -->
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
-    <script src="config/firebase-config.js"></script>
-    
-    <!-- �🔒 SEGURIDAD CRÍTICA - Carga Prioritaria -->    <script src="js/utils/security.js"></script>
+    </div>    <!-- 🔒 SEGURIDAD CRÍTICA - Carga Prioritaria -->
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+    <script src="js/utils/security.js"></script>
     <script src="js/utils/input-validation.js"></script>
-    <script src="js/auth.js"></script>
     
     <!-- 🚀 SISTEMA DE CARGA MODULAR ÉPICO -->
     <script>
@@ -600,10 +618,9 @@
                 'js/modules/goals-new.js',
                 'js/modules/investments-new.js',
                 'js/modules/debts-new.js'
-            ],
-            // 🎨 EXTRAS - Carga bajo demanda
+            ],            // 🎨 EXTRAS - Sin calendarios
             extras: [
-                'js/modules/calendar.js'
+                // Calendarios eliminados completamente
             ]
         };
         
@@ -780,12 +797,20 @@
                 const { THEMES } = await import('./js/utils/helpers.js');
                 
                 // 🌍 HACER THEMES DISPONIBLE PARA startNebula
-                window.THEMES = THEMES;
+                window.THEMES = THEMES;                console.log('✅ THEMES cargado, iniciando aplicación...');
                 
-                console.log('✅ THEMES cargado, iniciando aplicación...');
+                // 🚀 VERIFICAR DOM ANTES DE INICIALIZAR
+                const domReady = ['content-root', 'dock-root', 'parallax-bg', 'modal-root']
+                    .every(id => document.getElementById(id));
                 
-                // 🚀 INICIALIZAR APLICACIÓN - startNebula hará el resto
-                startNebula();
+                console.log('🔍 DOM Ready:', domReady, 'nebulaStarted:', window.nebulaStarted || false);
+                
+                if (domReady && !window.nebulaStarted) {
+                    console.log('🚀 Ejecutando startNebula desde initNebulaEpic...');
+                    startNebula();
+                } else {
+                    console.log('⏳ Skipping startNebula - DOM no listo o ya iniciado');
+                }
                 
                 console.log('🎉 Nebula Financial inicializado correctamente');
                 
@@ -945,14 +970,13 @@
             plus: `<path d="M12 5v14m-7-7h14" />`,
             trash: `<path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>`,
             eye: `<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>`,
-            eyeOff: `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a18.35 18.35 0 0 1-2.18 3.2M3.5 12a10.43 10.43 0 0 1 2.22-3.2"/><path d="M1 1l22 22"/>`,
-            chevronLeft: `<path d="m15 18-6-6 6-6"/>`,
+            eyeOff: `<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a18.35 18.35 0 0 1-2.18 3.2M3.5 12a10.43 10.43 0 0 1 2.22-3.2"/><path d="M1 1l22 22"/>`,            chevronLeft: `<path d="m15 18-6-6 6-6"/>`,
             chevronRight: `<path d="m9 18 6-6-6-6"/>`,
+            chevronDown: `<path d="m6 9 6 6 6-6"/>`,
             history: `<path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/>`,
             mail: `<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>`,
-            zap: `<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>`,
-            x: `<path d="M18 6 6 18M6 6l12 12"/>`,
-            // Nuevos iconos para notificaciones y calendario
+            zap: `<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>`,            x: `<path d="M18 6 6 18M6 6l12 12"/>`,
+            // CloudSonnet4: ÍCONO CALENDARIO RESTAURADO - Necesario para navegación
             calendar: `<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`,
             check: `<polyline points="20 6 9 17 4 12"/>`,
             alertCircle: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/>`,
@@ -1084,11 +1108,11 @@
                         NebulaSecurityUtils.secureGetItem('financialTheme', 'aureoAmanecer') :
                         localStorage.getItem('financialTheme') || 'aureoAmanecer';
                 } catch { return 'aureoAmanecer'; }
-            })(),
-            
-            // --- Estado Temporal de Navegación ---
+            })(),            // --- Estado Temporal de Navegación ---
             currentDate: new Date(),
+            // CloudSonnet4: VARIABLE CALENDAR RESTAURADA - Necesaria para modal calendario
             calendarViewYear: new Date().getFullYear(),
+            calendarView: 'months', // 'months' o 'years' para cambiar vista del modal
               // --- Datos Financieros Principales ---
             data: (() => {
                 try {
@@ -1108,20 +1132,46 @@
             get currentMonthKey() { 
                 return `${this.currentDate.getFullYear()}-${String(this.currentDate.getMonth() + 1).padStart(2, '0')}`; 
             },
-            
-            // 🎨 Método para obtener tema actual (compatibilidad con módulos)
+              // 🎨 Método para obtener tema actual (compatibilidad con módulos)
             getCurrentTheme() {
                 return this.theme;
             },
               // --- Persistencia de Datos ---
             saveState() {
                 try {
+                    // 🔐 Sincronizar con perfil de usuario autenticado si disponible
+                    if (this.user && this.user.provider === 'google' && window.nebulaAuth) {
+                        console.log('🔐 Sincronizando datos con perfil de usuario...');
+                        
+                        // Preparar datos financieros para sincronización
+                        const financialData = {
+                            transactions: this.data.transactions,
+                            goals: this.data.goals,
+                            investments: this.data.investments,
+                            debts: this.data.debts,
+                            theme: this.themeKey,
+                            isPrivate: this.isPrivate,
+                            lastUpdate: Date.now()
+                        };
+                        
+                        // Intentar guardar en el perfil del usuario
+                        window.nebulaAuth.updateUserProfile({ financialData })
+                            .then(() => {
+                                console.log('✅ Datos sincronizados con perfil de usuario');
+                            })
+                            .catch(error => {
+                                console.warn('⚠️ Error sincronizando con perfil:', error);
+                                // Continuar con guardado local como fallback
+                            });
+                    }
+                    
+                    // 🔒 Guardar localmente (siempre como backup)
                     if (NebulaSecurityUtils) {
                         // Usar almacenamiento seguro cifrado
                         NebulaSecurityUtils.secureSetItem('financialTheme', this.themeKey);
                         NebulaSecurityUtils.secureSetItem('financialData', this.data);
                         NebulaSecurityUtils.secureSetItem('isPrivateMode', this.isPrivate);
-                        console.log('🔒 Estado guardado de forma segura');
+                        console.log('🔒 Estado guardado de forma segura localmente');
                     } else {
                         // Fallback a localStorage normal
                         localStorage.setItem('financialTheme', this.themeKey);
@@ -1133,53 +1183,179 @@
                     console.error('❌ Error guardando estado:', error);
                     // Último recurso: localStorage directo
                     localStorage.setItem('financialTheme', this.themeKey);
-                    localStorage.setItem('financialData', JSON.stringify(this.data));
-                    localStorage.setItem('isPrivateMode', JSON.stringify(this.isPrivate));
+                    localStorage.setItem('financialData', JSON.stringify(this.data));                    localStorage.setItem('isPrivateMode', JSON.stringify(this.isPrivate));
                 }
-            },            
-            // --- Autenticación ---
+            },
+              // --- Autenticación ---
             async login(method) {
                 this.isLoading = true; 
                 renderApp(); 
                 
                 try {
-                    if (method === 'google') {
-                        // Intentar login con Firebase
-                        if (window.NebulaAuth) {
-                            const user = await window.NebulaAuth.signInWithGoogle();
+                    // 🔐 Usar sistema de autenticación Nebula si está disponible
+                    if (window.nebulaAuth && window.nebulaAuthUI) {
+                        console.log('🔐 Usando sistema de autenticación Nebula...');
+                        
+                        if (method === 'google') {
+                            const result = await window.nebulaAuth.signInWithGoogle();
+                            
+                            if (result.success) {
+                                console.log('✅ Login exitoso con Nebula Auth:', result.user);
+                                
+                                this.user = {
+                                    name: result.user.displayName || result.profile?.displayName || 'Usuario de Google',
+                                    email: result.user.email || result.profile?.email,
+                                    photoURL: result.user.photoURL || result.profile?.photoURL,
+                                    uid: result.user.uid,
+                                    provider: 'google',
+                                    profile: result.profile
+                                };
+                                
+                                // Cargar datos del perfil si existen
+                                if (result.profile?.financialData) {
+                                    Object.assign(this.data, result.profile.financialData);
+                                }
+                                
+                                NotificationSystem.success(
+                                    '¡Bienvenido!', 
+                                    `Hola ${this.user.name}, tu perfil está sincronizado`
+                                );
+                            } else {
+                                throw new Error(result.error || 'Error en autenticación Nebula');
+                            }
+                            
+                        } else if (method === 'guest') {
+                            // Login como invitado con Nebula
                             this.user = { 
-                                name: user.displayName || user.email || 'Usuario Google',
-                                email: user.email,
-                                photo: user.photoURL 
+                                name: 'Invitado',
+                                provider: 'guest'
                             };
-                        } else {
-                            console.warn('⚠️ Firebase no disponible, usando modo simulado');
-                            this.user = { name: 'Usuario de Google', email: 'user@gmail.com' };
+                            
+                            // Guardar en sessionStorage
+                            sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                            
+                            NotificationSystem.info(
+                                'Modo Invitado', 
+                                'Estás usando la app sin sincronización'
+                            );
                         }
+                        
                     } else {
-                        // Modo invitado
-                        this.user = { name: 'Invitado' };
+                        // 🔥 Fallback al sistema básico de Firebase
+                        console.log('⚠️ Nebula Auth no disponible, usando Firebase básico...');
+                        
+                        if (method === 'google') {
+                            // Verificar que Firebase esté disponible
+                            if (!window.firebaseAuth || !window.googleProvider || !window.signInWithPopup) {
+                                throw new Error('Firebase no está disponible');
+                            }
+                            
+                            console.log('🔥 Iniciando login con Google...');
+                            
+                            // Intentar login con Google
+                            const result = await window.signInWithPopup(window.firebaseAuth, window.googleProvider);
+                            const user = result.user;
+                            
+                            console.log('✅ Login exitoso:', user);
+                            
+                            // Configurar usuario autenticado
+                            this.user = {
+                                name: user.displayName || 'Usuario de Google',
+                                email: user.email,
+                                photoURL: user.photoURL,
+                                uid: user.uid,
+                                provider: 'google'
+                            };
+                            
+                            // Guardar sesión
+                            if (NebulaSecurityUtils) {
+                                NebulaSecurityUtils.secureSetItem('financialUser', this.user);
+                                NebulaSecurityUtils.secureSetItem('userSession', {
+                                    loginTime: Date.now(),
+                                    provider: 'google'
+                                });
+                            } else {
+                                sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                            }
+                            
+                            NotificationSystem.success(
+                                '¡Bienvenido!', 
+                                `Hola ${this.user.name}, tu sesión está activa`
+                            );
+                            
+                        } else {
+                            // Login como invitado (sin Firebase)
+                            this.user = { 
+                                name: 'Invitado',
+                                provider: 'guest'
+                            };
+                            sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                            
+                            NotificationSystem.info(
+                                'Modo Invitado', 
+                                'Estás usando la app sin sincronización'
+                            );
+                        }
                     }
                     
-                    sessionStorage.setItem('financialUser', JSON.stringify(this.user));
-                    this.isLoading = false;
-                    renderApp(); 
                 } catch (error) {
                     console.error('❌ Error en login:', error);
-                    // Fallback en caso de error
-                    this.user = { name: method === 'google' ? 'Usuario de Google' : 'Invitado' };
-                    sessionStorage.setItem('financialUser', JSON.stringify(this.user));
-                    this.isLoading = false;
-                    renderApp();
-                }            },
-            
-            logout() {
-                this.user = null;
-                sessionStorage.removeItem('financialUser');
-                if (window.NebulaAuth) {
-                    window.NebulaAuth.signOut();
+                    
+                    let errorMessage = 'Error desconocido';
+                    
+                    if (error.code === 'auth/popup-closed-by-user') {
+                        errorMessage = 'Login cancelado por el usuario';
+                    } else if (error.code === 'auth/popup-blocked') {
+                        errorMessage = 'Popup bloqueado. Permite popups para este sitio';
+                    } else if (error.code === 'auth/network-request-failed') {
+                        errorMessage = 'Error de conexión. Verifica tu internet';
+                    } else if (error.message.includes('Firebase no está disponible')) {
+                        errorMessage = 'Servicio de autenticación no disponible. Intenta como invitado';
+                    } else {
+                        errorMessage = error.message || 'Error al iniciar sesión';
+                    }
+                    
+                    NotificationSystem.error('Error de Login', errorMessage);
+                    
+                    // En caso de error, ofrecer login como invitado
+                    if (method === 'google') {
+                        setTimeout(() => {
+                            if (confirm('¿Deseas continuar como invitado?')) {
+                                this.login('guest');
+                                return;
+                            }
+                        }, 2000);
+                    }
                 }
-                renderApp();
+                
+                this.isLoading = false;
+                renderApp(); 
+            },
+            
+            // Función para cerrar sesión
+            async logout() {
+                try {
+                    if (this.user?.provider === 'google' && window.firebaseAuth) {
+                        await window.signOut(window.firebaseAuth);
+                        console.log('✅ Sesión de Google cerrada');
+                    }
+                    
+                    // Limpiar datos de sesión
+                    this.user = null;
+                    if (NebulaSecurityUtils) {
+                        NebulaSecurityUtils.secureRemoveItem('financialUser');
+                        NebulaSecurityUtils.secureRemoveItem('userSession');
+                    } else {
+                        sessionStorage.removeItem('financialUser');
+                    }
+                    
+                    NotificationSystem.success('Sesión cerrada', 'Has cerrado sesión exitosamente');
+                    renderApp();
+                    
+                } catch (error) {
+                    console.error('❌ Error cerrando sesión:', error);
+                    NotificationSystem.error('Error', 'Error al cerrar sesión');
+                }
             },
             
             // --- Configuración Visual ---
@@ -1199,22 +1375,59 @@
                 this.saveState(); 
                 renderApp(); 
             },
-            
-            // --- Navegación Temporal ---
+              // --- Navegación Temporal ---
             changeMonth(direction) { 
                 this.currentDate.setMonth(this.currentDate.getMonth() + direction); 
                 renderApp(); 
             },
-            
+              // CloudSonnet4: FUNCIÓN CRÍTICA RESTAURADA - Selección de mes desde modal calendario
+            // 🔧 SOLUCIÓN: Función setCalendarDate necesaria para navegación desde modal
             setCalendarDate(monthIndex) {
                 this.currentDate = new Date(this.calendarViewYear, monthIndex, 1);
-                this.closeModal(true);
+                this.closeModal(true); // Cerrar modal y refrescar app
+            },
+              // CloudSonnet4: FUNCIONES CALENDARIO RESTAURADAS - Navegación completa de años
+            // --- Navegación de Calendario ---
+            changeCalendarYear(direction) { 
+                this.calendarViewYear += direction; 
+                renderModal(); 
+            },
+
+            changeCalendarDecade(direction) {
+                this.calendarViewYear += direction * 10;
+                renderModal();
+            },
+
+            switchCalendarView(view = null) {
+                if (view) {
+                    this.calendarView = view;
+                } else {
+                    this.calendarView = this.calendarView === 'months' ? 'years' : 'months';
+                }
+                renderModal();
+            },
+
+            selectCalendarYear(year) {
+                this.calendarViewYear = parseInt(year);
+                this.calendarView = 'months';
+                renderModal();
             },
             
-            // --- Gestión de Modales ---
+            setCalendarYear(year) { 
+                if(year > 1900 && year < 2200) this.calendarViewYear = year; 
+                renderModal(); 
+            },            goToToday() { 
+                const today = new Date();
+                this.currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                this.calendarViewYear = today.getFullYear(); 
+                this.calendarView = 'months'; // Resetear vista a meses
+                this.closeModal(true); // Cerrar modal y refrescar app
+            },            // --- Gestión de Modales ---
             openModal(modalType) {
+                // CloudSonnet4: MODAL CALENDARIO RESTAURADO - Funcionalidad completa habilitada
                 if (modalType === 'calendar') {
                     this.calendarViewYear = this.currentDate.getFullYear();
+                    this.calendarView = 'months'; // Siempre empezar en vista de meses
                 }
                 this.activeModal = modalType;
                 renderModal();
@@ -1233,69 +1446,6 @@
                 } else {
                      this.activeModal = null;
                      if (shouldRenderAppAfter) renderApp();
-                }
-            },
-              // --- Navegación de Calendario Mejorada ---
-            changeCalendarYear(direction) { 
-                const newYear = this.calendarViewYear + direction;
-                
-                // Validar rango de años
-                if (newYear >= 1900 && newYear <= 2100) {
-                    this.calendarViewYear = newYear;
-                    renderModal();
-                    
-                    // Feedback visual suave
-                    const yearInput = document.getElementById('calendar-year-input');
-                    if (yearInput) {
-                        yearInput.style.transform = 'scale(1.05)';
-                        setTimeout(() => {
-                            yearInput.style.transform = 'scale(1)';
-                        }, 150);
-                    }
-                } else {
-                    // Feedback para límites alcanzados
-                    if (window.NotificationSystem) {
-                        const limitMessage = newYear < 1900 ? 
-                            'Has alcanzado el año mínimo (1900)' : 
-                            'Has alcanzado el año máximo (2100)';
-                        window.NotificationSystem.warning('Límite de navegación', limitMessage);
-                    }
-                }
-            },
-            
-            setCalendarYear(year) { 
-                if (year >= 1900 && year <= 2100) {
-                    this.calendarViewYear = year;
-                    renderModal();
-                    
-                    // Feedback positivo
-                    if (window.NotificationSystem) {
-                        window.NotificationSystem.info('Calendario', `Navegando a ${year}`);
-                    }
-                } else {
-                    // Feedback de error para años fuera de rango
-                    if (window.NotificationSystem) {
-                        window.NotificationSystem.error('Año inválido', 'Por favor ingresa un año entre 1900 y 2100');
-                    }
-                    
-                    // Restaurar el valor válido en el input
-                    const yearInput = document.getElementById('calendar-year-input');
-                    if (yearInput) {
-                        yearInput.value = this.calendarViewYear;
-                    }
-                }
-            },
-            
-            goToday() { 
-                this.currentDate = new Date(); 
-                this.calendarViewYear = this.currentDate.getFullYear(); 
-                this.closeModal(true);
-                
-                // Feedback de navegación
-                if (window.NotificationSystem) {
-                    const today = new Date();
-                    const monthName = today.toLocaleString('es-ES', { month: 'long' });
-                    window.NotificationSystem.success('Calendario', `Navegando a ${monthName} ${today.getFullYear()}`);
                 }
             },// --- Gestión de Transacciones ---
             addTransaction(t) {
@@ -1695,26 +1845,9 @@
                 dockRoot.innerHTML = '';
             } else if (!appState.user) {
                 contentRoot.innerHTML = renderLoginView();
-                dockRoot.innerHTML = '';            } else {
+                dockRoot.innerHTML = '';
+            } else {
                 let viewHTML = '';
-                
-                // Header con información del usuario
-                viewHTML += `
-                    <div class="mb-6 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                ${appState.user.photo ? `<img src="${appState.user.photo}" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-white/20"/>` : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">${appState.user.name.charAt(0).toUpperCase()}</div>`}
-                                <div>
-                                    <h2 class="text-lg font-semibold ${appState.theme.textPrimary}">¡Hola, ${appState.user.name}!</h2>
-                                    ${appState.user.email ? `<p class="text-sm ${appState.theme.textSecondary}">${appState.user.email}</p>` : ''}
-                                </div>
-                            </div>
-                            <button onclick="appState.logout()" class="px-4 py-2 bg-red-500/20 hover:bg-red-500 text-red-300 hover:text-white rounded-lg transition-all duration-200 text-sm font-medium">
-                                Cerrar Sesión
-                            </button>
-                        </div>
-                    </div>
-                `;
                 
                 // Agregar selector de mes para vistas que lo requieren
                 if(!['settings', 'achievements', 'goals', 'investments', 'debts'].includes(appState.activeView)) {
@@ -1770,20 +1903,29 @@
         
         /**
          * 🔐 Vista de Login/Autenticación
-         */
-        function renderLoginView() {
+         */        function renderLoginView() {
             return `
-                <div class="flex flex-col items-center justify-center h-screen login-card p-4">
-                    <div class="backdrop-blur-md rounded-2xl shadow-lg p-8 ${appState.theme.surface} text-center w-full max-w-sm">
-                        <h1 class="text-4xl font-black ${appState.theme.accent}">Nebula</h1>
-                        <p class="mt-2 ${appState.theme.textSecondary}">Tu universo financiero personal.</p>
-                        <div class="mt-8 space-y-4">
-                            <button data-login-method="google" class="login-button w-full flex items-center justify-center gap-3 bg-white/90 text-slate-800 font-bold py-3 px-4 rounded-lg hover:bg-white transition-transform transform hover:scale-105">
-                                ${createIcon(ICONS.mail, 'w-6 h-6')}
-                                Ingresar con Correo
+                <div class="flex flex-col items-center justify-center h-screen login-card p-4" style="background-image: url('images/Fondo login Nebula.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                    <div class="backdrop-blur-lg rounded-3xl shadow-2xl p-8 bg-white/10 border border-white/20 text-center w-full max-w-md">
+                        <div class="mb-6">
+                            <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <img src="images/NebulaICO.png" alt="Nebula" class="w-12 h-12">
+                            </div>
+                            <h1 class="text-4xl font-black text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Nebula</h1>
+                            <p class="mt-2 text-white/80 text-sm">Tu universo financiero personal</p>
+                        </div>
+                        <div class="space-y-4">
+                            <button data-login-method="google" class="login-button w-full flex items-center justify-center gap-3 bg-white text-gray-700 font-medium py-3.5 px-6 rounded-lg hover:bg-gray-50 hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] border border-gray-200 shadow-lg">
+                                <svg viewBox="0 0 24 24" class="w-5 h-5 flex-shrink-0">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                </svg>
+                                Continuar con Google
                             </button>
-                            <button data-login-method="guest" class="login-button w-full bg-white/20 text-white font-bold py-3 px-4 rounded-lg hover:bg-white/30 transition-transform transform hover:scale-105">
-                                Entrar como Invitado
+                            <button data-login-method="guest" class="login-button w-full bg-white/20 backdrop-blur-sm text-white font-medium py-3.5 px-6 rounded-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-[1.02] border border-white/30 shadow-lg">
+                                🚀 Entrar como Invitado
                             </button>
                         </div>
                     </div>
@@ -1848,16 +1990,16 @@
                             <div class="absolute inset-0 ${appState.theme.accentGlow} opacity-20 blur-lg"></div>
                         </h1>
                         ${timeLabel}
-                    </div>
-                    
-                    <!-- Controles de navegación centrados -->
-                    <div class="flex items-center justify-center gap-4">                        <button id="month-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes anterior (←)" aria-label="Ir al mes anterior" role="button">
+                    </div>                    <!-- Controles de navegación centrados -->
+                    <div class="flex items-center justify-center gap-4">
+                        <button id="month-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes anterior (←)" aria-label="Ir al mes anterior" role="button">
                             ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
                         </button>
                         
-                        <div class="relative">                            <button id="calendar-dropdown-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Abrir calendario (C)" aria-label="Abrir calendario" role="button">
-                                ${createIcon(ICONS.calendar, "w-6 h-6")}                            </button>
-                        </div>
+                        <!-- CloudSonnet4: BOTÓN CALENDARIO CENTRADO - Ubicación minimalista perfecta -->
+                        <button id="calendar-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm border-2 border-transparent hover:border-white/20" title="Seleccionar mes (C)" aria-label="Abrir calendario" role="button">
+                            ${createIcon(ICONS.calendar, "w-6 h-6")}
+                        </button>
                         
                         <button id="month-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes siguiente (→)">
                             ${createIcon(ICONS.chevronRight, "w-6 h-6")}
@@ -1873,105 +2015,177 @@
         /**
          * 🎭 Renderizador Principal de Modales
          * Controla qué modal mostrar según el estado activo
-         */
-        function renderModal() {
+         */        function renderModal() {
             modalRoot.innerHTML = '';
             
+            // CloudSonnet4: MODAL CALENDARIO RESTAURADO - Renderizado completo habilitado
             if (appState.activeModal === 'calendar') {
                 modalRoot.innerHTML = renderCalendarModal();
-            } else if (appState.activeModal === 'shortcuts') {
-                modalRoot.innerHTML = renderShortcutsModal();
             }
             
-            if (appState.activeModal) {
+            if (appState.activeModal === 'shortcuts') {
+                modalRoot.innerHTML = renderShortcutsModal();
+            }
+              if (appState.activeModal) {
                 addModalEventListeners();
             }
         }
-
-        /**
-         * 📅 Modal de Calendario con Navegación Anual
-         */
-        function renderCalendarModal() {
+          /**
+         * 📅 Modal de Calendario Épico con Navegación Completa
+         * Sistema avanzado de selección de mes y año con indicadores visuales
+         */        function renderCalendarModal() {
             const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const monthsLong = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             const today = new Date();
             const currentSelectedDate = appState.currentDate;
+            const calendarView = appState.calendarView || 'months'; // 'months' o 'years'
 
+            // Vista de selección de años
+            if (calendarView === 'years') {
+                const currentDecade = Math.floor(appState.calendarViewYear / 10) * 10;
+                const yearsHTML = Array.from({length: 12}, (_, i) => {
+                    const year = currentDecade + i;
+                    let yearClass = 'bg-black/20 backdrop-blur-sm border border-white/10';
+                    
+                    // Año actual
+                    if (year === today.getFullYear()) {
+                        yearClass = `${appState.theme.accentBg} text-slate-900 font-black border-2 ${appState.theme.accentBorder}`;
+                    }
+                    
+                    // Año seleccionado en el calendario
+                    if (year === currentSelectedDate.getFullYear()) {
+                        yearClass += ` ring-2 ${appState.theme.accentRing}`;
+                    }
+                    
+                    return `<button data-year="${year}" class="year-button p-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:scale-105 hover:bg-white/10 ${yearClass}" title="Seleccionar año ${year}">${year}</button>`;
+                }).join('');
+
+                return `
+                    <div class="modal-container fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm modal-enter p-4">
+                        <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-lg mx-4">
+                            <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full transition-colors">
+                                ${createIcon(ICONS.x, 'w-6 h-6')}
+                            </button>
+                            
+                            <!-- Header del selector de años -->
+                            <div class="text-center mb-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <button id="decade-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
+                                        ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
+                                    </button>
+                                    <h3 class="text-xl font-bold ${appState.theme.textPrimary}">${currentDecade} - ${currentDecade + 11}</h3>
+                                    <button id="decade-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
+                                        ${createIcon(ICONS.chevronRight, "w-6 h-6")}
+                                    </button>
+                                </div>
+                                <button id="back-to-months" class="text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors">
+                                    ← Volver a meses
+                                </button>
+                            </div>
+                            
+                            <!-- Grid de años -->
+                            <div class="grid grid-cols-3 gap-3 text-center">${yearsHTML}</div>
+                            
+                            <!-- Footer con acciones -->
+                            <div class="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+                                <button id="today-button-years" class="flex items-center gap-2 py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm transition-all hover:scale-105">
+                                    ${createIcon(ICONS.calendar, "w-4 h-4")}
+                                    Ir a Hoy
+                                </button>
+                                <div class="text-xs ${appState.theme.textSecondary}">
+                                    Selecciona un año
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;            }
+
+            // Vista de selección de meses (por defecto)
             const monthsHTML = months.map((month, index) => {
                 const monthKey = `${appState.calendarViewYear}-${String(index + 1).padStart(2, '0')}`;
-                let monthClass = 'bg-black/20 backdrop-blur-sm';
+                let monthClass = 'bg-black/20 backdrop-blur-sm border border-white/10';
+                let statusIcon = '';
                 
-                // Indicador visual para meses con datos
-                if (appState.data.transactions[monthKey] && Object.values(appState.data.transactions[monthKey]).length > 0) {
-                    const density = Math.min(Object.values(appState.data.transactions[monthKey]).length / 10, 1);
-                    monthClass = `bg-black/30 opacity-${Math.floor(density * 10) * 10 + 30} backdrop-blur-md`;
+                // Verificar si el mes tiene datos (simplificado)
+                const hasData = appState.data.transactions[monthKey] && appState.data.transactions[monthKey].length > 0;
+                if (hasData) {
+                    monthClass = 'bg-emerald-500/30 border-emerald-400/50 text-emerald-200';
+                    statusIcon = '●';
+                } else {
+                    monthClass = 'bg-gray-600/20 border-gray-500/30 text-gray-300';
+                    statusIcon = '○';
                 }
                 
-                // Destacar mes seleccionado actualmente
-                if(appState.calendarViewYear === currentSelectedDate.getFullYear() && index === currentSelectedDate.getMonth()) {
-                     monthClass += ` ring-2 ${appState.theme.accentRing}`;
+                // Mes actual (hoy)
+                if (appState.calendarViewYear === today.getFullYear() && index === today.getMonth()) {
+                    monthClass = `${appState.theme.accentBg} text-slate-900 font-black border-2 ${appState.theme.accentBorder}`;
+                    statusIcon = '⭐';
                 }
                 
-                // Destacar mes actual
-                if(appState.calendarViewYear === today.getFullYear() && index === today.getMonth()) {
-                    monthClass = `${appState.theme.accentBg} text-slate-900`;
+                // Mes seleccionado actualmente
+                if (appState.calendarViewYear === currentSelectedDate.getFullYear() && index === currentSelectedDate.getMonth()) {
+                    monthClass += ` ring-2 ring-white/50 ring-offset-2 ring-offset-transparent`;
                 }
                 
-                return `<button data-month-index="${index}" class="month-button p-4 rounded-lg text-lg font-semibold transition-transform duration-200 hover:scale-110 ${monthClass}" title="${new Date(appState.calendarViewYear, index).toLocaleString('es-ES', {month:'long'})}">${month}</button>`;
+                return `
+                    <button data-month-index="${index}" class="month-button group relative p-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg ${monthClass}" title="${monthsLong[index]} ${appState.calendarViewYear}">
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-sm opacity-70">${statusIcon}</span>
+                            <span>${month}</span>
+                        </div>
+                        <div class="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                    </button>
+                `;
             }).join('');
             
             return `
                 <div class="modal-container fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm modal-enter p-4">
-                    <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-md mx-4">
-                        <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full">
+                    <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-lg mx-4">
+                        <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full transition-colors">
                             ${createIcon(ICONS.x, 'w-6 h-6')}
-                        </button>                        <div class="flex items-center justify-between mb-6">
-                            <button id="calendar-year-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110" title="Año anterior (←)">
-                                ${createIcon(ICONS.chevronLeft, "w-8 h-8")}
-                            </button>
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm ${appState.theme.textSecondary}">Año:</span>
-                                    <input type="number" id="calendar-year-input" value="${appState.calendarViewYear}" class="text-2xl font-bold ${appState.theme.textPrimary} bg-white/10 w-24 text-center focus:outline-none focus:bg-white/20 rounded-lg backdrop-blur-md border border-white/20 focus:border-white/40 transition-all px-2 py-1" aria-label="Año del calendario" min="1900" max="2100" title="Escribe un año o usa las flechas">
-                                </div>
-                                <div class="text-xs ${appState.theme.textSecondary}">
-                                    ${(() => {
-                                        // Contar meses con datos en el año actual
-                                        let monthsWithData = 0;
-                                        for (let i = 1; i <= 12; i++) {
-                                            const monthKey = `${appState.calendarViewYear}-${String(i).padStart(2, '0')}`;
-                                            if (appState.data.transactions[monthKey] && Object.values(appState.data.transactions[monthKey]).length > 0) {
-                                                monthsWithData++;
-                                            }
-                                        }
-                                        return monthsWithData > 0 ? `📊 ${monthsWithData} meses con datos` : '📭 Sin datos registrados';
-                                    })()}
-                                </div>
+                        </button>
+                        
+                        <!-- Header con navegación de año -->
+                        <div class="text-center mb-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <button id="calendar-year-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
+                                    ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
+                                </button>
+                                <button id="year-selector" class="text-2xl font-bold ${appState.theme.textPrimary} hover:${appState.theme.accent} px-4 py-2 rounded-lg transition-all hover:bg-white/10" title="Seleccionar año">
+                                    ${appState.calendarViewYear} ${createIcon(ICONS.chevronDown, "w-5 h-5 inline ml-1")}
+                                </button>
+                                <button id="calendar-year-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
+                                    ${createIcon(ICONS.chevronRight, "w-6 h-6")}
+                                </button>
                             </div>
-                            <button id="calendar-year-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110" title="Año siguiente (→)">
-                                ${createIcon(ICONS.chevronRight, "w-8 h-8")}
-                            </button>
+                            <p class="text-sm ${appState.theme.textSecondary}">Selecciona un mes para navegar</p>
+                        </div>
+                          <!-- Grid de meses -->
+                        <div class="grid grid-cols-3 gap-3 text-center mb-6">${monthsHTML}</div>
+                        
+                        <!-- Leyenda simplificada -->
+                        <div class="flex justify-center gap-6 mb-4 text-sm ${appState.theme.textSecondary}">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 rounded bg-gradient-to-br from-emerald-500 to-emerald-600"></div>
+                                <span>Con datos</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 rounded bg-gradient-to-br from-gray-500 to-gray-600"></div>
+                                <span>Sin datos</span>
+                            </div>
                         </div>
                         
-                        <div class="grid grid-cols-4 gap-4 text-center">${monthsHTML}</div>
-                          <div class="flex items-center justify-between mt-6">
-                            <button id="today-button" class="py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm transition-all hover:scale-105">
-                                📅 Volver a Hoy
+                        <!-- Footer con acciones -->
+                        <div class="flex items-center justify-between">
+                            <button id="today-button" class="flex items-center gap-2 py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm transition-all hover:scale-105">
+                                ${createIcon(ICONS.calendar, "w-4 h-4")}
+                                Ir a Hoy
                             </button>
-                            <div class="flex items-center gap-4 text-xs ${appState.theme.textSecondary}">
-                               <div class="flex items-center gap-1">
-                                   <span class="w-3 h-3 rounded-full ${appState.theme.accentBg}"></span>Actual
-                               </div>
-                               <div class="flex items-center gap-1">
-                                   <span class="w-3 h-3 rounded-full bg-white/20"></span>Con Datos
-                               </div>
+                            <div class="flex items-center gap-2 text-xs ${appState.theme.textSecondary}">
+                                <span class="w-3 h-3 rounded-full ${appState.theme.accentBg}"></span>
+                                <span>Mes actual</span>
                             </div>
-                       </div>
-                       
-                       <!-- Indicadores de navegación -->
-                       <div class="mt-4 text-center text-xs ${appState.theme.textSecondary} border-t border-white/10 pt-3">
-                           <p>💡 <strong>Navegación:</strong> ← → para cambiar año • Click en mes para seleccionar</p>
-                           <p class="mt-1">📅 Rango disponible: 1900 - 2100</p>
-                       </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2176,7 +2390,11 @@
                         <div class="flex justify-between items-start">                           <div>
                                 <p class="font-bold text-lg ${appState.theme.textPrimary}">${inv.name}</p>
                                 <p class="text-sm ${appState.theme.textSecondary}">${inv.type}</p>
-                           </div>                           <div class="flex space-x-2">
+                           </div>
+                           <div class="flex space-x-2">
+                               <button data-action="edit-investment" data-investment-id="${inv.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar inversión">
+                                   ${createIcon(ICONS.edit, 'w-4 h-4')}
+                               </button>
                                <button data-action="delete-investment" data-investment-id="${inv.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar inversión">
                                    ${createIcon(ICONS.trash, 'w-4 h-4')}
                                </button>
@@ -2220,7 +2438,11 @@
                         <div>
                             <p class="font-bold ${appState.theme.textPrimary}">${goal.name}</p>
                             <p class="text-sm ${appState.theme.textSecondary} mt-1">${formatCurrency(goal.saved)} / ${formatCurrency(goal.target)}</p>
-                        </div>                        <div class="flex space-x-2">
+                        </div>
+                        <div class="flex space-x-2">
+                            <button data-action="edit-goal" data-goal-id="${goal.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar meta">
+                                ${createIcon(ICONS.edit, 'w-4 h-4')}
+                            </button>
                             <button data-action="delete-goal" data-goal-id="${goal.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar meta">
                                 ${createIcon(ICONS.trash, 'w-4 h-4')}
                             </button>
@@ -2250,7 +2472,11 @@
             const debtsHTML = appState.data.debts.map(debt => `
                 <li class="border border-white/10 rounded-lg flex justify-between items-center p-4">
                     <div><p class="font-semibold ${appState.theme.textPrimary}">${debt.description}</p></div>                    <div class="flex items-center gap-4">
-                        <p class="font-bold text-lg ${appState.theme.negative}">${formatCurrency(debt.amount)}</p>                        <div class="flex space-x-2">
+                        <p class="font-bold text-lg ${appState.theme.negative}">${formatCurrency(debt.amount)}</p>
+                        <div class="flex space-x-2">
+                            <button data-action="edit-debt" data-debt-id="${debt.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar deuda">
+                                ${createIcon(ICONS.edit, 'w-4 h-4')}
+                            </button>
                             <button data-action="delete-debt" data-debt-id="${debt.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar deuda">
                                 ${createIcon(ICONS.trash, 'w-4 h-4')}
                             </button>
@@ -2348,8 +2574,7 @@
                     <h2 class="text-3xl font-bold ${appState.theme.textPrimary}">${label} en Construcción</h2>
                     <p class="mt-4 ${appState.theme.textSecondary}">¡Estamos explorando esta galaxia! Vuelve pronto.</p>
                 </div>
-            `;
-        }        function renderDock() {
+            `;        }        function renderDock() {
             const navItems = [
                 { id: 'dashboard', label: 'Resumen', icon: ICONS.dashboard, key: 'D' },
                 { id: 'income', label: 'Ingresos', icon: ICONS.income, key: 'I' },
@@ -2367,13 +2592,38 @@
                         title="${item.label} (${item.key})">
                     ${createIcon(item.icon, "w-6 h-6")}
                 </button>
-            `).join('');            return `
+            `).join('');
+
+            // 🔐 Botón de perfil para usuarios autenticados
+            const profileButton = appState.user ? `
+                <button id="profile-button" aria-label="Perfil de Usuario" 
+                        class="profile-button p-2 w-14 h-14 flex items-center justify-center
+                               ${appState.theme.textSecondary} hover:text-white relative
+                               bg-white/10 backdrop-blur-sm rounded-full border border-white/20" 
+                        title="${appState.user.name} - Ver perfil">
+                    ${appState.user.photoURL ? 
+                        `<img src="${appState.user.photoURL}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">` :
+                        `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                            ${appState.user.name.charAt(0).toUpperCase()}
+                        </div>`
+                    }
+                    ${appState.user.provider === 'google' ? 
+                        `<div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-white/30"></div>` : 
+                        ''
+                    }
+                </button>
+            ` : '';
+
+            return `
                 <nav class="p-4 backdrop-blur-lg bg-black/20">
-                    <div class="dock-container w-full max-w-md mx-auto flex justify-between items-center">
-                        ${navButtonsHTML}
+                    <div class="dock-container w-full max-w-lg mx-auto flex justify-between items-center gap-2">
+                        <div class="flex justify-between items-center flex-1">
+                            ${navButtonsHTML}
+                        </div>
+                        ${profileButton}
                     </div>
                 </nav>`;
-        }        function renderParallaxBackground() {
+        }function renderParallaxBackground() {
             if (parallaxBg.children.length > 0 && parallaxBg.dataset.theme === appState.themeKey) return '';
             parallaxBg.dataset.theme = appState.themeKey;
 
@@ -2480,11 +2730,34 @@
             document.querySelectorAll('.login-button').forEach(btn => 
                 btn.addEventListener('click', e => appState.login(e.currentTarget.dataset.loginMethod))
             );
-            
-            // Navegación del dock
+              // Navegación del dock
             document.querySelectorAll('.nav-button').forEach(btn => 
                 btn.addEventListener('click', (e) => appState.setView(e.currentTarget.dataset.view))
             );
+            
+            // 🔐 Botón de perfil - Mostrar menú de usuario
+            const profileButton = document.getElementById('profile-button');
+            if (profileButton) {
+                profileButton.addEventListener('click', () => {
+                    if (window.nebulaAuthUI) {
+                        window.nebulaAuthUI.showProfile();
+                    } else {
+                        // Fallback: mostrar información básica del usuario
+                        const user = appState.user;
+                        const message = `
+                            👤 Usuario: ${user.name}
+                            📧 Email: ${user.email || 'No disponible'}
+                            🔗 Proveedor: ${user.provider === 'google' ? 'Google' : 'Invitado'}
+                            
+                            ¿Deseas cerrar sesión?
+                        `;
+                        
+                        if (confirm(message)) {
+                            appState.logout();
+                        }
+                    }
+                });
+            }
             
             // Toggle de privacidad
             const privacyToggle = document.getElementById('privacy-toggle');
@@ -2606,7 +2879,14 @@
                 
                 if (!action || !target) return;
                   switch(action) {
-                    case 'delete-investment':
+                    case 'edit-investment': {
+                        const investmentId = parseInt(target.dataset.investmentId);
+                        if (window.NebulaInvestmentsModule) {
+                            window.NebulaInvestmentsModule.editInvestment(investmentId);
+                        }
+                        break;
+                    }
+                    case 'delete-investment': {
                         const delInvestmentId = parseInt(target.dataset.investmentId);
                         if (window.NebulaInvestmentsModule) {
                             window.NebulaInvestmentsModule.deleteInvestment(delInvestmentId);
@@ -2617,11 +2897,19 @@
                             renderApp();
                         }
                         break;
+                    }
                     case 'add-investment':
                         if (window.NebulaInvestmentsModule) {
                             window.NebulaInvestmentsModule.showAddInvestmentForm();
-                        }                        break;
-                    case 'delete-goal':
+                        }
+                        break;                    case 'edit-goal': {
+                        const goalId = parseInt(target.dataset.goalId);
+                        if (window.NebulaGoalsModule) {
+                            window.NebulaGoalsModule.editGoal(goalId);
+                        }
+                        break;
+                    }
+                    case 'delete-goal': {
                         const delGoalId = parseInt(target.dataset.goalId);
                         if (window.NebulaGoalsModule) {
                             window.NebulaGoalsModule.deleteGoal(delGoalId);
@@ -2631,11 +2919,19 @@
                             renderApp();
                         }
                         break;
+                    }
                     case 'add-goal':
                         if (window.NebulaGoalsModule) {
                             window.NebulaGoalsModule.showAddGoalForm();
-                        }                        break;
-                    case 'delete-debt':
+                        }
+                        break;                    case 'edit-debt': {
+                        const debtId = parseInt(target.dataset.debtId);
+                        if (window.NebulaDebtsModule) {
+                            window.NebulaDebtsModule.editDebt(debtId);
+                        }
+                        break;
+                    }
+                    case 'delete-debt': {
                         const delDebtId = parseInt(target.dataset.debtId);
                         if (window.NebulaDebtsModule) {
                             window.NebulaDebtsModule.deleteDebt(delDebtId);
@@ -2645,6 +2941,7 @@
                             renderApp();
                         }
                         break;
+                    }
                     case 'add-debt':
                         if (window.NebulaDebtsModule) {
                             window.NebulaDebtsModule.showAddDebtForm();
@@ -2695,55 +2992,25 @@
                     NotificationSystem.success('Tema cambiado', 
                         `Aplicado: ${THEMES[e.currentTarget.dataset.themeKey].name}`);
                 })
-            );
-            
-            // Navegación de meses
+            );            // Navegación de meses
             const monthPrev = document.getElementById('month-prev');
             if (monthPrev) monthPrev.addEventListener('click', () => appState.changeMonth(-1));
             
             const monthNext = document.getElementById('month-next');
             if (monthNext) monthNext.addEventListener('click', () => appState.changeMonth(1));
-              // Calendario - unificado para usar modal
-            const calendarDropdownButton = document.getElementById('calendar-dropdown-button');
+              // CloudSonnet4: EVENT LISTENER BOTÓN CALENDARIO CENTRADO
+            const calendarButton = document.getElementById('calendar-button');
+            if (calendarButton) calendarButton.addEventListener('click', () => appState.openModal('calendar'));
             
-            if (calendarDropdownButton) {
-                calendarDropdownButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    // Usar el mismo modal que el shortcut "C"
-                    appState.openModal('calendar');
-                });
-            }
-              // Modal calendar (mantenido para compatibilidad)
-            const openCalendarButton = document.getElementById('open-calendar-button');
-            if(openCalendarButton) openCalendarButton.addEventListener('click', () => appState.openModal('calendar'));
-              const openShortcutsButton = document.getElementById('open-shortcuts-button');
+            const openShortcutsButton = document.getElementById('open-shortcuts-button');
             if (openShortcutsButton) openShortcutsButton.addEventListener('click', () => appState.openModal('shortcuts'));
-            
-            // 🔧 NUEVOS BOTONES DE CONFIGURACIÓN
+              // 🔧 NUEVOS BOTONES DE CONFIGURACIÓN
             const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {                logoutButton.addEventListener('click', async () => {
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async () => {
                     try {
-                        // CloudSonnet4: Modal elegante para cerrar sesión
-                        const confirmed = await showWarningModal(
-                            '¿Cerrar sesión?',
-                            'Tus datos se mantendrán guardados localmente de forma segura.',
-                            { 
-                                confirmText: 'Cerrar sesión',
-                                cancelText: 'Permanecer' 
-                            }
-                        );
-                        if (!confirmed) return;
-                        
-                        // Limpiar datos de sesión (pero no los datos financieros)
-                        if (NebulaSecurityUtils) {
-                            NebulaSecurityUtils.secureRemoveItem('user_session');
-                            NebulaSecurityUtils.secureRemoveItem('auth_token');
-                        }
-                        
-                        NotificationSystem.success('Sesión cerrada', 'Has cerrado sesión exitosamente');
-                        
-                        // Opcional: recargar la app para reinicializar
-                        setTimeout(() => location.reload(), 1500);
+                        // Usar la función de logout integrada con Firebase
+                        await appState.logout();
                         
                     } catch (error) {
                         console.error('Error cerrando sesión:', error);
@@ -2906,52 +3173,170 @@
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(updateDockGlider, 100);
             });
-        }
-
-        function addModalEventListeners() {
+        }        function addModalEventListeners() {
+            console.log('🔧 Registrando event listeners del modal...');
+            
             const modalContainer = document.querySelector('.modal-container');
             if(modalContainer) {
+                console.log('✅ Modal container encontrado');
+                
+                // Asegurar que el modal sea completamente interactivo
+                modalContainer.style.pointerEvents = 'auto';
+                modalContainer.style.userSelect = 'auto';
+                
                 modalContainer.addEventListener('click', (e) => {
-                    if(e.target === modalContainer) appState.closeModal();
-                });
-                modalContainer.querySelector('.modal-close-button')?.addEventListener('click', () => appState.closeModal());
-            }            if (appState.activeModal === 'calendar') {
-                document.getElementById('calendar-year-prev')?.addEventListener('click', () => appState.changeCalendarYear(-1));
-                document.getElementById('calendar-year-next')?.addEventListener('click', () => appState.changeCalendarYear(1));
-                document.getElementById('today-button')?.addEventListener('click', () => appState.goToday());
-                
-                const yearInput = document.getElementById('calendar-year-input');
-                if (yearInput) {
-                    yearInput.addEventListener('change', e => appState.setCalendarYear(parseInt(e.target.value)));
-                    
-                    // Navegación con teclado para el año
-                    yearInput.addEventListener('keydown', (e) => {
-                        if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
-                            e.preventDefault();
-                            appState.changeCalendarYear(1);
-                        } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
-                            e.preventDefault();
-                            appState.changeCalendarYear(-1);
-                        }
-                    });
-                }
-                
-                // Navegación global del modal con teclado
-                document.addEventListener('keydown', function calendarKeyHandler(e) {
-                    if (appState.activeModal === 'calendar') {
-                        if (e.key === 'ArrowLeft' && !yearInput?.contains(e.target)) {
-                            e.preventDefault();
-                            appState.changeCalendarYear(-1);
-                        } else if (e.key === 'ArrowRight' && !yearInput?.contains(e.target)) {
-                            e.preventDefault();
-                            appState.changeCalendarYear(1);
-                        }
-                    } else {
-                        document.removeEventListener('keydown', calendarKeyHandler);
+                    if(e.target === modalContainer) {
+                        console.log('🔘 Click fuera del modal detectado');
+                        appState.closeModal();
                     }
                 });
                 
-                document.querySelectorAll('.month-button').forEach(btn => btn.addEventListener('click', e => appState.setCalendarDate(parseInt(e.currentTarget.dataset.monthIndex))));
+                const closeButton = modalContainer.querySelector('.modal-close-button');
+                if (closeButton) {
+                    console.log('✅ Botón cerrar encontrado');
+                    closeButton.style.pointerEvents = 'auto';
+                    closeButton.addEventListener('click', (e) => {
+                        console.log('🔘 Click en botón cerrar detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.closeModal();
+                    });
+                } else {
+                    console.log('❌ Botón cerrar NO encontrado');
+                }
+            } else {
+                console.log('❌ Modal container NO encontrado');
+            }            // CloudSonnet4: EVENT LISTENERS CALENDARIO RESTAURADOS COMPLETAMENTE
+            if (appState.activeModal === 'calendar') {
+                console.log('🗓️ Registrando event listeners del calendario...');
+                
+                // Listeners universales (siempre disponibles)
+                const todayButton = document.getElementById('today-button');
+                if (todayButton) {
+                    console.log('✅ Botón "Ir a Hoy" encontrado');
+                    todayButton.style.pointerEvents = 'auto';
+                    todayButton.addEventListener('click', (e) => {
+                        console.log('🔘 Click en "Ir a Hoy" detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.goToToday();
+                    });
+                } else {
+                    console.log('❌ Botón "Ir a Hoy" NO encontrado');
+                }
+                
+                const todayButtonYears = document.getElementById('today-button-years');
+                if (todayButtonYears) {
+                    console.log('✅ Botón "Ir a Hoy" (años) encontrado');
+                    todayButtonYears.style.pointerEvents = 'auto';
+                    todayButtonYears.addEventListener('click', (e) => {
+                        console.log('🔘 Click en "Ir a Hoy" (años) detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.goToToday();
+                    });
+                }
+
+                // Listeners para vista de meses
+                const yearPrev = document.getElementById('calendar-year-prev');
+                if (yearPrev) {
+                    console.log('✅ Botón año anterior encontrado');
+                    yearPrev.style.pointerEvents = 'auto';
+                    yearPrev.addEventListener('click', (e) => {
+                        console.log('🔘 Click año anterior detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.changeCalendarYear(-1);
+                    });
+                }
+                
+                const yearNext = document.getElementById('calendar-year-next');
+                if (yearNext) {
+                    console.log('✅ Botón año siguiente encontrado');
+                    yearNext.style.pointerEvents = 'auto';
+                    yearNext.addEventListener('click', (e) => {
+                        console.log('🔘 Click año siguiente detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.changeCalendarYear(1);
+                    });
+                }
+                
+                const yearSelector = document.getElementById('year-selector');
+                if (yearSelector) {
+                    console.log('✅ Selector de año encontrado');
+                    yearSelector.style.pointerEvents = 'auto';
+                    yearSelector.addEventListener('click', (e) => {
+                        console.log('🔘 Click selector año detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.switchCalendarView('years');
+                    });
+                }
+
+                // Listeners para vista de años
+                const decadePrev = document.getElementById('decade-prev');
+                if (decadePrev) {
+                    decadePrev.style.pointerEvents = 'auto';
+                    decadePrev.addEventListener('click', (e) => {
+                        console.log('🔘 Click década anterior detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.changeCalendarDecade(-1);
+                    });
+                }
+                
+                const decadeNext = document.getElementById('decade-next');
+                if (decadeNext) {
+                    decadeNext.style.pointerEvents = 'auto';
+                    decadeNext.addEventListener('click', (e) => {
+                        console.log('🔘 Click década siguiente detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.changeCalendarDecade(1);
+                    });
+                }
+                
+                const backToMonths = document.getElementById('back-to-months');
+                if (backToMonths) {
+                    backToMonths.style.pointerEvents = 'auto';
+                    backToMonths.addEventListener('click', (e) => {
+                        console.log('🔘 Click volver a meses detectado');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        appState.switchCalendarView('months');
+                    });
+                }
+
+                // Listeners para botones de mes
+                const monthButtons = document.querySelectorAll('.month-button');
+                console.log(`📅 ${monthButtons.length} botones de mes encontrados`);
+                monthButtons.forEach((btn, index) => {
+                    btn.style.pointerEvents = 'auto';
+                    btn.addEventListener('click', e => {
+                        console.log(`🔘 Click en mes ${index + 1} detectado`);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const monthIndex = parseInt(e.currentTarget.dataset.monthIndex);
+                        appState.setCalendarDate(monthIndex);
+                    });
+                });
+
+                // Listeners para botones de año
+                const yearButtons = document.querySelectorAll('.year-button');
+                console.log(`📅 ${yearButtons.length} botones de año encontrados`);
+                yearButtons.forEach(btn => {
+                    btn.style.pointerEvents = 'auto';
+                    btn.addEventListener('click', e => {
+                        console.log(`🔘 Click en año ${e.currentTarget.dataset.year} detectado`);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const year = e.currentTarget.dataset.year;
+                        appState.selectCalendarYear(year);
+                    });
+                });
+                
+                console.log('✅ Event listeners del calendario registrados');
             }
         }
           // ===============================================
@@ -3071,11 +3456,11 @@
                 this.register('ArrowRight', () => {
                     if (!appState.activeModal) appState.changeMonth(1);
                 }, 'Mes siguiente');
-                
-                // Funciones especiales
+                  // Funciones especiales
                 this.register('Escape', () => {
                     if (appState.activeModal) appState.closeModal();
                 }, 'Cerrar modal');
+                // Shortcut para calendario restaurado
                 this.register('c', () => {
                     if (!appState.activeModal) appState.openModal('calendar');
                 }, 'Abrir calendario');
@@ -3170,9 +3555,26 @@
         // 🚀 INICIALIZACIÓN MEJORADA PARA LIVE SERVER
         // ===============================================
         
-        // Función de inicialización robusta
-        function startNebula() {
+        // Función de inicialización robusta        // Variable para controlar que startNebula solo se ejecute una vez
+        let nebulaStarted = false;
+        window.nebulaStarted = false; // También global para debugging
+          function startNebula() {
+            if (nebulaStarted) {
+                console.log('⚠️ Nebula ya está iniciado, ignorando llamada duplicada');
+                return;
+            }
+            
+            // Verificar si ya se renderizó la aplicación (indica éxito previo)
+            if (document.querySelector('#content-root').innerHTML.trim() !== '') {
+                console.log('⚠️ Aplicación ya renderizada, ignorando startNebula duplicado');
+                nebulaStarted = true;
+                window.nebulaStarted = true;
+                return;
+            }
+            
             try {
+                nebulaStarted = true;
+                window.nebulaStarted = true;
                 console.log('🚀 Iniciando Nebula Financial...');
                 
                 // Verificar elementos DOM
@@ -3186,16 +3588,19 @@
                 
                 // Asignar elementos a variables globales
                 [contentRoot, dockRoot, parallaxBg, modalRoot] = domElements;
-                  // Verificar objetos necesarios
+                
+                // Verificar objetos necesarios
                 if (!THEMES || !ICONS || !appState) {
                     throw new Error('Objetos globales no definidos');
                 }
-                  // 🌍 EXPOSICIÓN GLOBAL CRÍTICA - Para compatibilidad con módulos
+                
+                // 🌍 EXPOSICIÓN GLOBAL CRÍTICA - Para compatibilidad con módulos
                 window.appState = appState;
                 window.THEMES = THEMES;
                 window.ICONS = ICONS;
                 window.renderApp = renderApp;
-                  // Función global para aplicar autoformato numérico
+                
+                // Función global para aplicar autoformato numérico
                 window.formatThousands = function(value) {
                     if (!value) return '';
                     // Remover todo excepto números
@@ -3249,20 +3654,90 @@
                 
                 // Renderizar aplicación
                 renderApp();
-                  // Configurar dock
+                
+                // 🔐 INICIALIZAR SISTEMA DE AUTENTICACIÓN NEBULA
+                if (typeof NebulaAuthUI !== 'undefined' && window.NebulaAuth) {
+                    console.log('🔐 Inicializando sistema de autenticación Nebula...');
+                    
+                    // Usar la instancia global de NebulaAuth
+                    window.nebulaAuth = window.NebulaAuth; // Alias para compatibilidad
+                    window.nebulaAuthUI = new NebulaAuthUI(window.NebulaAuth);
+                    
+                    // Configurar listener de estado de autenticación
+                    window.nebulaAuth.addAuthListener((authData) => {
+                        const { user, profile, isAuthenticated } = authData;
+                        if (isAuthenticated && user && profile) {
+                            console.log('🔐 Usuario autenticado:', user.displayName);
+                            appState.user = {
+                                name: user.displayName || profile.displayName || 'Usuario',
+                                email: user.email || profile.email,
+                                photoURL: user.photoURL || profile.photoURL,
+                                uid: user.uid,
+                                provider: 'google',
+                                profile: profile
+                            };
+                            
+                            // Cargar datos del usuario desde el perfil
+                            if (profile.financialData) {
+                                Object.assign(appState, profile.financialData);
+                            }
+                            
+                            // Solo renderizar si renderApp está disponible
+                            if (typeof renderApp === 'function') {
+                                renderApp();
+                            } else {
+                                console.log('⏳ renderApp no disponible aún');
+                            }
+                        } else {
+                            console.log('👤 Usuario no autenticado');
+                            // Limpiar datos de usuario pero mantener datos locales
+                            appState.user = null;
+                        }
+                    });
+                    
+                    // La inicialización de NebulaAuth se hace automáticamente en el constructor
+                    console.log('✅ Sistema de autenticación Nebula configurado');
+                    
+                } else {
+                    console.log('⚠️ Sistema de autenticación Nebula no disponible');
+                    
+                    // 🔥 Fallback a Firebase Authentication básico
+                    if (window.firebaseAuth && window.onAuthStateChanged) {
+                        window.onAuthStateChanged(window.firebaseAuth, (user) => {
+                            if (user) {
+                                console.log('🔥 Usuario autenticado detectado:', user.displayName);
+                                if (!appState.user || appState.user.uid !== user.uid) {
+                                    appState.user = {
+                                        name: user.displayName || 'Usuario de Google',
+                                        email: user.email,
+                                        photoURL: user.photoURL,
+                                        uid: user.uid,
+                                        provider: 'google'
+                                    };
+                                    renderApp();
+                                }
+                            } else {
+                                console.log('🔥 No hay usuario autenticado');
+                            }
+                        });
+                    } else {
+                        console.log('⚠️ Firebase no disponible, usando autenticación local');
+                    }
+                }
+                
+                // Configurar dock
                 setTimeout(() => {
                     if (typeof updateDockGlider === 'function') {
                         updateDockGlider();
                     }
                 }, 200);
-                
-                // Mostrar mensaje de bienvenida si es la primera vez
-                const isFirstVisit = NebulaSecurityUtils ? 
-                    !NebulaSecurityUtils.secureGetItem('nebula_visited') :
+                  // Mostrar mensaje de bienvenida si es la primera vez
+                const isFirstVisit = (typeof window.NebulaSecurityUtils !== 'undefined') ? 
+                    !window.NebulaSecurityUtils.secureGetItem('nebula_visited') :
                     !localStorage.getItem('nebula_visited');
                 if (isFirstVisit) {
-                    if (NebulaSecurityUtils) {
-                        NebulaSecurityUtils.secureSetItem('nebula_visited', true);
+                    if (typeof window.NebulaSecurityUtils !== 'undefined') {
+                        window.NebulaSecurityUtils.secureSetItem('nebula_visited', true);
                     } else {
                         localStorage.setItem('nebula_visited', 'true');
                     }
@@ -3275,6 +3750,8 @@
                 console.log('✅ Nebula iniciada correctamente');
                 
             } catch (error) {
+                nebulaStarted = false; // Reset para permitir reintento
+                window.nebulaStarted = false;
                 console.error('❌ Error en inicialización:', error);
                 
                 // Mostrar página de error
@@ -3290,7 +3767,7 @@
                             <button onclick="location.reload()" style="background: linear-gradient(45deg, #22c55e, #16a34a); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: transform 0.2s; margin-right: 10px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                 🔄 Recargar App
                             </button>
-                            <button onclick="if(NebulaSecurityUtils) { NebulaSecurityUtils.clearSecurityData(); } else { localStorage.clear(); } location.reload()" style="background: linear-gradient(45deg, #f59e0b, #d97706); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">>
+                            <button onclick="if(NebulaSecurityUtils) { NebulaSecurityUtils.clearSecurityData(); } else { localStorage.clear(); } location.reload()" style="background: linear-gradient(45deg, #f59e0b, #d97706); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                 🗑️ Limpiar Datos
                             </button>
                         </div>
@@ -3536,7 +4013,8 @@
             console.log('✅ Módulo de Gastos cargado');
         }).catch(error => {
             console.error('❌ Error cargando módulo de gastos:', error);
-        });
-    </script>
+        });    </script>    <!-- 🔐 SISTEMA DE AUTENTICACIÓN NEBULA - Integración Completa -->
+    <script src="nebula-auth.js"></script>
+    <script src="nebula-auth-ui.js"></script>
 </body>
 </html>
