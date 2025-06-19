@@ -758,10 +758,9 @@
         };
         
         console.log('✅ Funciones globales críticas expuestas');
-        
-        // 🔒 INICIALIZAR SEGURIDAD CRÍTICA
-        if (typeof NebulaSecurityUtils !== 'undefined') {
-            NebulaSecurityUtils.init();
+          // 🔒 INICIALIZAR SEGURIDAD CRÍTICA
+        if (typeof window.NebulaSecurityUtils !== 'undefined') {
+            window.NebulaSecurityUtils.init();
             console.log('🔒 Sistema de seguridad Nebula inicializado');
         }
         
@@ -1093,32 +1092,31 @@
             user: JSON.parse(sessionStorage.getItem('financialUser')) || null,
             isLoading: false,
             activeView: 'dashboard',
-            activeModal: null,
-              // --- Configuración y Preferencias ---
+            activeModal: null,            // --- Configuración y Preferencias ---
             isPrivate: (() => {
                 try {
-                    return NebulaSecurityUtils ? 
-                        NebulaSecurityUtils.secureGetItem('isPrivateMode', true) :
+                    return (typeof window.NebulaSecurityUtils !== 'undefined') ? 
+                        window.NebulaSecurityUtils.secureGetItem('isPrivateMode', true) :
                         JSON.parse(localStorage.getItem('isPrivateMode')) ?? true;
                 } catch { return true; }
             })(),
+            
             themeKey: (() => {
                 try {
-                    return NebulaSecurityUtils ? 
-                        NebulaSecurityUtils.secureGetItem('financialTheme', 'aureoAmanecer') :
+                    return (typeof window.NebulaSecurityUtils !== 'undefined') ? 
+                        window.NebulaSecurityUtils.secureGetItem('financialTheme', 'aureoAmanecer') :
                         localStorage.getItem('financialTheme') || 'aureoAmanecer';
                 } catch { return 'aureoAmanecer'; }
-            })(),            // --- Estado Temporal de Navegación ---
+            })(),// --- Estado Temporal de Navegación ---
             currentDate: new Date(),
             // CloudSonnet4: VARIABLE CALENDAR RESTAURADA - Necesaria para modal calendario
             calendarViewYear: new Date().getFullYear(),
-            calendarView: 'months', // 'months' o 'years' para cambiar vista del modal
-              // --- Datos Financieros Principales ---
+            calendarView: 'months', // 'months' o 'years' para cambiar vista del modal            // --- Datos Financieros Principales ---
             data: (() => {
                 try {
                     const defaultData = { transactions: {}, goals: [], investments: [], debts: [] };
-                    return NebulaSecurityUtils ? 
-                        NebulaSecurityUtils.secureGetItem('financialData', defaultData) :
+                    return (typeof window.NebulaSecurityUtils !== 'undefined') ? 
+                        window.NebulaSecurityUtils.secureGetItem('financialData', defaultData) :
                         JSON.parse(localStorage.getItem('financialData')) || defaultData;
                 } catch { 
                     return { transactions: {}, goals: [], investments: [], debts: [] }; 
@@ -1164,13 +1162,12 @@
                                 // Continuar con guardado local como fallback
                             });
                     }
-                    
-                    // 🔒 Guardar localmente (siempre como backup)
-                    if (NebulaSecurityUtils) {
+                      // 🔒 Guardar localmente (siempre como backup)
+                    if (typeof window.NebulaSecurityUtils !== 'undefined') {
                         // Usar almacenamiento seguro cifrado
-                        NebulaSecurityUtils.secureSetItem('financialTheme', this.themeKey);
-                        NebulaSecurityUtils.secureSetItem('financialData', this.data);
-                        NebulaSecurityUtils.secureSetItem('isPrivateMode', this.isPrivate);
+                        window.NebulaSecurityUtils.secureSetItem('financialTheme', this.themeKey);
+                        window.NebulaSecurityUtils.secureSetItem('financialData', this.data);
+                        window.NebulaSecurityUtils.secureSetItem('isPrivateMode', this.isPrivate);
                         console.log('🔒 Estado guardado de forma segura localmente');
                     } else {
                         // Fallback a localStorage normal
@@ -1266,11 +1263,10 @@
                                 uid: user.uid,
                                 provider: 'google'
                             };
-                            
-                            // Guardar sesión
-                            if (NebulaSecurityUtils) {
-                                NebulaSecurityUtils.secureSetItem('financialUser', this.user);
-                                NebulaSecurityUtils.secureSetItem('userSession', {
+                              // Guardar sesión
+                            if (typeof window.NebulaSecurityUtils !== 'undefined') {
+                                window.NebulaSecurityUtils.secureSetItem('financialUser', this.user);
+                                window.NebulaSecurityUtils.secureSetItem('userSession', {
                                     loginTime: Date.now(),
                                     provider: 'google'
                                 });
@@ -1340,11 +1336,10 @@
                         console.log('✅ Sesión de Google cerrada');
                     }
                     
-                    // Limpiar datos de sesión
-                    this.user = null;
-                    if (NebulaSecurityUtils) {
-                        NebulaSecurityUtils.secureRemoveItem('financialUser');
-                        NebulaSecurityUtils.secureRemoveItem('userSession');
+                    // Limpiar datos de sesión                    this.user = null;
+                    if (typeof window.NebulaSecurityUtils !== 'undefined') {
+                        window.NebulaSecurityUtils.secureRemoveItem('financialUser');
+                        window.NebulaSecurityUtils.secureRemoveItem('userSession');
                     } else {
                         sessionStorage.removeItem('financialUser');
                     }
@@ -1734,7 +1729,6 @@
                     modalIcon.innerHTML = `
                         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                        </svg>
                     `;
                 } else {
                     modalIcon.innerHTML = `
@@ -1833,2143 +1827,99 @@
         let contentRoot, dockRoot, parallaxBg, modalRoot;// ===============================================
         // 🖼️ FUNCIONES DE RENDERIZADO PRINCIPAL
         // ===============================================
-          /**
-         * 🎯 RENDERIZADOR PRINCIPAL DE LA APLICACIÓN
-         * Controla el flujo de renderizado según el estado actual
-         */        function renderApp() {
-            // Las partículas de fondo se manejan directamente en parallax-bg
+        
+        /**
+         * Renderiza la vista activa según el estado de la aplicación.
+         * @returns {string} HTML de la vista activa
+         */
+        function renderViewByState() {
+            let viewHTML = '';
+
+            // Agregar selector de mes para vistas específicas
+            const viewsWithMonthSelector = ['settings', 'achievements', 'goals', 'investments', 'debts'];
+            if (!viewsWithMonthSelector.includes(appState.activeView)) {
+                viewHTML += renderMonthSelector();
+            }
+
+            // Mapeo de vistas a funciones de renderizado
+            const viewRenderers = {
+                'dashboard': () => window.NebulaDashboardModule ? window.NebulaDashboardModule.render() : renderDashboard(),
+                'income': () => window.NebulaIncomeModule ? window.NebulaIncomeModule.render() : renderTransactionsView('income'),
+                'expenses': () => window.NebulaExpensesModule ? window.NebulaExpensesModule.render() : renderTransactionsView('expense'),
+                'goals': () => window.NebulaGoalsModule ? window.NebulaGoalsModule.render() : renderGoalsView(),
+                'investments': () => window.NebulaInvestmentsModule ? window.NebulaInvestmentsModule.render() : renderInvestmentsView(),
+                'debts': () => window.NebulaDebtsModule ? window.NebulaDebtsModule.render() : renderDebtsView(),
+                'settings': () => window.NebulaSettingsModule ? window.NebulaSettingsModule.render() : renderSettingsView(),
+                'default': () => renderComingSoon(appState.activeView)
+            };
+
+            // Renderizar vista según la selección activa
+            viewHTML += (viewRenderers[appState.activeView] || viewRenderers['default'])();
+
+            return viewHTML;
+        }
+
+        /**
+         * 🎯 Renderizador principal de la aplicación
+         * Controla el flujo de renderizado según el estado actual de la aplicación.
+         */
+        function renderApp() {
+            // Renderizar partículas de fondo
             parallaxBg.innerHTML = renderParallaxBackground();
-            
+
             if (appState.isLoading) {
+                // Mostrar pantalla de carga
                 contentRoot.innerHTML = renderLoadingScreen();
                 dockRoot.innerHTML = '';
             } else if (!appState.user) {
+                // Mostrar vista de login si no hay usuario autenticado
                 contentRoot.innerHTML = renderLoginView();
                 dockRoot.innerHTML = '';
             } else {
-                let viewHTML = '';
-                
-                // Agregar selector de mes para vistas que lo requieren
-                if(!['settings', 'achievements', 'goals', 'investments', 'debts'].includes(appState.activeView)) {
-                   viewHTML += renderMonthSelector();
-                }                // Renderizar vista según selección activa
-                switch (appState.activeView) {
-                    case 'dashboard': 
-                        viewHTML += window.NebulaDashboardModule ? window.NebulaDashboardModule.render() : renderDashboard(); 
-                        break;
-                    case 'income': 
-                        viewHTML += window.NebulaIncomeModule ? window.NebulaIncomeModule.render() : renderTransactionsView('income'); 
-                        break;
-                    case 'expenses': 
-                        viewHTML += window.NebulaExpensesModule ? window.NebulaExpensesModule.render() : renderTransactionsView('expense'); 
-                        break;
-                    case 'goals': 
-                        viewHTML += window.NebulaGoalsModule ? window.NebulaGoalsModule.render() : renderGoalsView(); 
-                        break;
-                    case 'investments': 
-                        viewHTML += window.NebulaInvestmentsModule ? window.NebulaInvestmentsModule.render() : renderInvestmentsView(); 
-                        break;
-                    case 'debts': 
-                        viewHTML += window.NebulaDebtsModule ? window.NebulaDebtsModule.render() : renderDebtsView(); 
-                        break;
-                    case 'settings': 
-                        viewHTML += window.NebulaSettingsModule ? window.NebulaSettingsModule.render() : renderSettingsView(); 
-                        break;
-                    default: 
-                        viewHTML += renderComingSoon(appState.activeView);
-                }
-                
-                contentRoot.innerHTML = `<main class="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full view-transition">${viewHTML}</main>`;
+                // Renderizar vista activa
+                contentRoot.innerHTML = `<main class="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full view-transition">${renderViewByState()}</main>`;
                 dockRoot.innerHTML = renderDock();
             }
-            
+
             addEventListeners();
-              // Actualizar glider después del renderizado
+
+            // Actualizar glider después del renderizado
             setTimeout(() => updateDockGlider(), 100);
         }
 
-        // 🚀 CloudSonnet4 - Función global para cargar secciones (para uso de módulos)
-        window.loadSection = function(sectionName) {
-            if (sectionName && sectionName !== appState.activeView) {
-                appState.activeView = sectionName;
-            }
-            window.currentSection = appState.activeView; // Para que los módulos sepan en qué sección están
-            renderApp();
-        };
-
-          // ===============================================
-        // 🎭 FUNCIONES DE RENDERIZADO DE VISTAS ESPECIALES
-        // ===============================================
-        
         /**
-         * 🔐 Vista de Login/Autenticación
-         */        function renderLoginView() {
-            return `
-                <div class="flex flex-col items-center justify-center h-screen login-card p-4" style="background-image: url('images/Fondo login Nebula.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-                    <div class="backdrop-blur-lg rounded-3xl shadow-2xl p-8 bg-white/10 border border-white/20 text-center w-full max-w-md">
-                        <div class="mb-6">
-                            <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                                <img src="images/NebulaICO.png" alt="Nebula" class="w-12 h-12">
-                            </div>
-                            <h1 class="text-4xl font-black text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Nebula</h1>
-                            <p class="mt-2 text-white/80 text-sm">Tu universo financiero personal</p>
-                        </div>
-                        <div class="space-y-4">
-                            <button data-login-method="google" class="login-button w-full flex items-center justify-center gap-3 bg-white text-gray-700 font-medium py-3.5 px-6 rounded-lg hover:bg-gray-50 hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] border border-gray-200 shadow-lg">
-                                <svg viewBox="0 0 24 24" class="w-5 h-5 flex-shrink-0">
-                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                                </svg>
-                                Continuar con Google
-                            </button>
-                            <button data-login-method="guest" class="login-button w-full bg-white/20 backdrop-blur-sm text-white font-medium py-3.5 px-6 rounded-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-[1.02] border border-white/30 shadow-lg">
-                                🚀 Entrar como Invitado
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        /**
-         * ⏳ Pantalla de Carga con Animación Orbital
+         * 📅 Modal de calendario con navegación avanzada
+         * Renderiza un modal para seleccionar meses y años con indicadores visuales.
+         * @returns {string} HTML del modal de calendario
          */
-        function renderLoadingScreen() {
-            return `
-                <div class="fixed inset-0 flex flex-col items-center justify-center text-white z-50">
-                    <div class="w-64 h-64 relative mb-8">
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-yellow-400 rounded-full ${appState.theme.accentGlow}"></div>
-                        <div class="absolute inset-0 animate-[spin_20s_linear_infinite]">
-                            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full"></div>
-                        </div>
-                        <div class="absolute inset-4 animate-[spin_30s_linear_infinite_reverse]">
-                            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full"></div>
-                        </div>
-                        <div class="absolute inset-10 animate-[spin_45s_linear_infinite]">
-                            <div class="absolute bottom-0 right-1/2 translate-x-1/2 w-5 h-5 bg-green-500 rounded-full"></div>
-                        </div>
-                    </div>
-                    <h1 class="text-3xl font-bold text-white mb-2">Alineando las estrellas...</h1>
-                    <p class="${appState.theme.textSecondary}">Cargando tu universo financiero.</p>
-                </div>
-            `;
-        }
-          /**
-         * 📅 Selector de Mes con Calendario Desplegable
-         */        function renderMonthSelector() {
-            const today = new Date();
-            const currentDate = appState.currentDate;
-            const monthName = currentDate.toLocaleString('es-ES', { month: 'long' });
-            const year = currentDate.getFullYear();
-            
-            // Determinar si es pasado, presente o futuro
-            let timeLabel = '';
-            if (currentDate.getFullYear() < today.getFullYear() || 
-                (currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() < today.getMonth())) {
-                timeLabel = `<span class="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 font-medium backdrop-blur-sm border border-amber-400/30">✨ PASADO</span>`;
-            } else if (currentDate.getFullYear() > today.getFullYear() || 
-                      (currentDate.getFullYear() === today.getFullYear() && currentDate.getMonth() > today.getMonth())) {
-                timeLabel = `<span class="text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-medium backdrop-blur-sm border border-cyan-400/30">🚀 FUTURO</span>`;
-            } else {
-                timeLabel = `<span class="text-xs px-3 py-1 rounded-full ${appState.theme.accentBg}/20 ${appState.theme.accent} font-medium backdrop-blur-sm border ${appState.theme.accentBorder}/30">🌟 ACTUAL</span>`;
-            }
-            
-            return `
-                <div class="text-center mb-8 relative">
-                    <!-- Título principal centrado con efectos -->
-                    <div class="flex flex-col items-center gap-3 mb-6">
-                        <h1 class="text-3xl sm:text-4xl font-black ${appState.theme.textPrimary} capitalize relative">
-                            <span class="relative z-10 bg-gradient-to-r from-${appState.theme.accent.replace('text-', '')} to-${appState.theme.accent.replace('text-', '')} bg-clip-text text-transparent filter drop-shadow-lg">
-                                ${monthName} ${year}
-                            </span>
-                            <!-- Efecto de brillo sutil -->
-                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent blur-sm opacity-30 animate-pulse"></div>
-                            <!-- Sombra de resplandor -->
-                            <div class="absolute inset-0 ${appState.theme.accentGlow} opacity-20 blur-lg"></div>
-                        </h1>
-                        ${timeLabel}
-                    </div>                    <!-- Controles de navegación centrados -->
-                    <div class="flex items-center justify-center gap-4">
-                        <button id="month-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes anterior (←)" aria-label="Ir al mes anterior" role="button">
-                            ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
-                        </button>
-                        
-                        <!-- CloudSonnet4: BOTÓN CALENDARIO CENTRADO - Ubicación minimalista perfecta -->
-                        <button id="calendar-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm border-2 border-transparent hover:border-white/20" title="Seleccionar mes (C)" aria-label="Abrir calendario" role="button">
-                            ${createIcon(ICONS.calendar, "w-6 h-6")}
-                        </button>
-                        
-                        <button id="month-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes siguiente (→)">
-                            ${createIcon(ICONS.chevronRight, "w-6 h-6")}
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-          // ===============================================
-        // 🪟 SISTEMA DE MODALES
-        // ===============================================
-        
-        /**
-         * 🎭 Renderizador Principal de Modales
-         * Controla qué modal mostrar según el estado activo
-         */        function renderModal() {
-            modalRoot.innerHTML = '';
-            
-            // CloudSonnet4: MODAL CALENDARIO RESTAURADO - Renderizado completo habilitado
-            if (appState.activeModal === 'calendar') {
-                modalRoot.innerHTML = renderCalendarModal();
-            }
-            
-            if (appState.activeModal === 'shortcuts') {
-                modalRoot.innerHTML = renderShortcutsModal();
-            }
-              if (appState.activeModal) {
-                addModalEventListeners();
-            }
-        }
-          /**
-         * 📅 Modal de Calendario Épico con Navegación Completa
-         * Sistema avanzado de selección de mes y año con indicadores visuales
-         */        function renderCalendarModal() {
+        function renderCalendarModal() {
             const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-            const monthsLong = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
             const today = new Date();
             const currentSelectedDate = appState.currentDate;
-            const calendarView = appState.calendarView || 'months'; // 'months' o 'years'
 
-            // Vista de selección de años
-            if (calendarView === 'years') {
-                const currentDecade = Math.floor(appState.calendarViewYear / 10) * 10;
-                const yearsHTML = Array.from({length: 12}, (_, i) => {
-                    const year = currentDecade + i;
-                    let yearClass = 'bg-black/20 backdrop-blur-sm border border-white/10';
-                    
-                    // Año actual
-                    if (year === today.getFullYear()) {
-                        yearClass = `${appState.theme.accentBg} text-slate-900 font-black border-2 ${appState.theme.accentBorder}`;
-                    }
-                    
-                    // Año seleccionado en el calendario
-                    if (year === currentSelectedDate.getFullYear()) {
-                        yearClass += ` ring-2 ${appState.theme.accentRing}`;
-                    }
-                    
-                    return `<button data-year="${year}" class="year-button p-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:scale-105 hover:bg-white/10 ${yearClass}" title="Seleccionar año ${year}">${year}</button>`;
-                }).join('');
-
-                return `
-                    <div class="modal-container fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm modal-enter p-4">
-                        <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-lg mx-4">
-                            <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full transition-colors">
-                                ${createIcon(ICONS.x, 'w-6 h-6')}
-                            </button>
-                            
-                            <!-- Header del selector de años -->
-                            <div class="text-center mb-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <button id="decade-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
-                                        ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
-                                    </button>
-                                    <h3 class="text-xl font-bold ${appState.theme.textPrimary}">${currentDecade} - ${currentDecade + 11}</h3>
-                                    <button id="decade-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
-                                        ${createIcon(ICONS.chevronRight, "w-6 h-6")}
-                                    </button>
-                                </div>
-                                <button id="back-to-months" class="text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors">
-                                    ← Volver a meses
-                                </button>
-                            </div>
-                            
-                            <!-- Grid de años -->
-                            <div class="grid grid-cols-3 gap-3 text-center">${yearsHTML}</div>
-                            
-                            <!-- Footer con acciones -->
-                            <div class="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                                <button id="today-button-years" class="flex items-center gap-2 py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm transition-all hover:scale-105">
-                                    ${createIcon(ICONS.calendar, "w-4 h-4")}
-                                    Ir a Hoy
-                                </button>
-                                <div class="text-xs ${appState.theme.textSecondary}">
-                                    Selecciona un año
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;            }
-
-            // Vista de selección de meses (por defecto)
+            // Generar botones de meses
             const monthsHTML = months.map((month, index) => {
-                const monthKey = `${appState.calendarViewYear}-${String(index + 1).padStart(2, '0')}`;
-                let monthClass = 'bg-black/20 backdrop-blur-sm border border-white/10';
-                let statusIcon = '';
-                
-                // Verificar si el mes tiene datos (simplificado)
-                const hasData = appState.data.transactions[monthKey] && appState.data.transactions[monthKey].length > 0;
-                if (hasData) {
-                    monthClass = 'bg-emerald-500/30 border-emerald-400/50 text-emerald-200';
-                    statusIcon = '●';
-                } else {
-                    monthClass = 'bg-gray-600/20 border-gray-500/30 text-gray-300';
-                    statusIcon = '○';
-                }
-                
-                // Mes actual (hoy)
-                if (appState.calendarViewYear === today.getFullYear() && index === today.getMonth()) {
+                const isCurrentMonth = today.getFullYear() === currentSelectedDate.getFullYear() && today.getMonth() === index;
+                const isSelectedMonth = currentSelectedDate.getMonth() === index;
+
+                let monthClass = 'bg-gray-600/20 border-gray-500/30 text-gray-300';
+                if (isCurrentMonth) {
                     monthClass = `${appState.theme.accentBg} text-slate-900 font-black border-2 ${appState.theme.accentBorder}`;
-                    statusIcon = '⭐';
+                } else if (isSelectedMonth) {
+                    monthClass += ' ring-2 ring-white/50';
                 }
-                
-                // Mes seleccionado actualmente
-                if (appState.calendarViewYear === currentSelectedDate.getFullYear() && index === currentSelectedDate.getMonth()) {
-                    monthClass += ` ring-2 ring-white/50 ring-offset-2 ring-offset-transparent`;
-                }
-                
-                return `
-                    <button data-month-index="${index}" class="month-button group relative p-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg ${monthClass}" title="${monthsLong[index]} ${appState.calendarViewYear}">
-                        <div class="flex flex-col items-center gap-1">
-                            <span class="text-sm opacity-70">${statusIcon}</span>
-                            <span>${month}</span>
-                        </div>
-                        <div class="absolute inset-0 bg-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                    </button>
-                `;
+
+                return `<button data-month-index="${index}" class="month-button p-4 rounded-lg ${monthClass}">${month}</button>`;
             }).join('');
-            
-            return `
-                <div class="modal-container fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm modal-enter p-4">
-                    <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-lg mx-4">
-                        <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full transition-colors">
-                            ${createIcon(ICONS.x, 'w-6 h-6')}
-                        </button>
-                        
-                        <!-- Header con navegación de año -->
-                        <div class="text-center mb-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <button id="calendar-year-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
-                                    ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
-                                </button>
-                                <button id="year-selector" class="text-2xl font-bold ${appState.theme.textPrimary} hover:${appState.theme.accent} px-4 py-2 rounded-lg transition-all hover:bg-white/10" title="Seleccionar año">
-                                    ${appState.calendarViewYear} ${createIcon(ICONS.chevronDown, "w-5 h-5 inline ml-1")}
-                                </button>
-                                <button id="calendar-year-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110">
-                                    ${createIcon(ICONS.chevronRight, "w-6 h-6")}
-                                </button>
-                            </div>
-                            <p class="text-sm ${appState.theme.textSecondary}">Selecciona un mes para navegar</p>
-                        </div>
-                          <!-- Grid de meses -->
-                        <div class="grid grid-cols-3 gap-3 text-center mb-6">${monthsHTML}</div>
-                        
-                        <!-- Leyenda simplificada -->
-                        <div class="flex justify-center gap-6 mb-4 text-sm ${appState.theme.textSecondary}">
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 rounded bg-gradient-to-br from-emerald-500 to-emerald-600"></div>
-                                <span>Con datos</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-4 h-4 rounded bg-gradient-to-br from-gray-500 to-gray-600"></div>
-                                <span>Sin datos</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Footer con acciones -->
-                        <div class="flex items-center justify-between">
-                            <button id="today-button" class="flex items-center gap-2 py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm transition-all hover:scale-105">
-                                ${createIcon(ICONS.calendar, "w-4 h-4")}
-                                Ir a Hoy
-                            </button>
-                            <div class="flex items-center gap-2 text-xs ${appState.theme.textSecondary}">
-                                <span class="w-3 h-3 rounded-full ${appState.theme.accentBg}"></span>
-                                <span>Mes actual</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-          /**
-         * ⌨️ Modal de Atajos de Teclado Actualizado
-         */
-        function renderShortcutsModal() {
-            const shortcutsList = ShortcutSystem.getShortcutsList();
-            
-            const shortcutsHTML = shortcutsList.map(s => `
-                <li class="flex justify-between items-center p-3 bg-black/20 rounded-lg backdrop-blur-md">
-                    <span class="${appState.theme.textSecondary}">${s.description}</span>
-                    <kbd class="px-3 py-1.5 text-sm font-semibold ${appState.theme.textPrimary} ${appState.theme.surface} border ${appState.theme.accentBorder} rounded-md">${s.key}</kbd>
-                </li>
-            `).join('');
 
             return `
-                 <div class="modal-container fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm modal-enter p-4">
-                    <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-md mx-4 max-h-[80vh] overflow-y-auto">
-                        <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full">
-                            ${createIcon(ICONS.x, 'w-6 h-6')}
-                        </button>
-                        <h2 class="text-2xl font-bold ${appState.theme.textPrimary} mb-6">Atajos de Teclado</h2>
-                        <ul class="space-y-3">${shortcutsHTML}</ul>
-                        
-                        <div class="mt-6 pt-4 border-t border-white/10">
-                            <p class="text-xs ${appState.theme.textSecondary} text-center">
-                                Los atajos no funcionan cuando estás escribiendo en campos de texto.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }// ===============================================
-        // 📊 VISTAS PRINCIPALES DE LA APLICACIÓN
-        // ===============================================
-        
-        /**
-         * 🏠 Vista Principal del Dashboard
-         * Muestra resumen financiero con orbe central interactivo
-         */
-        function renderDashboard() {
-            const { balance, netWorth } = calculateSummary();
-            const firstGoal = appState.data.goals[0];
-            let monthsToGoal = "Sin metas";
-            
-            if(firstGoal) {
-                const allTransactions = Object.values(appState.data.transactions).flat();
-                const globalIncome = allTransactions.filter(t=>t.type==='income').reduce((sum,t)=>sum+t.amount,0);
-                const globalExpenses = allTransactions.filter(t=>t.type==='expense').reduce((sum,t)=>sum+t.amount,0);
-                const firstDate = allTransactions.length > 0 ? new Date(allTransactions.reduce((min, t) => Math.min(min, new Date(t.date).getTime()), Date.now())) : new Date();
-                const monthsDiff = Math.max(1, (new Date().getFullYear() - firstDate.getFullYear()) * 12 + (new Date().getMonth() - firstDate.getMonth()) + 1);
-                const monthlySavings = (globalIncome-globalExpenses)/monthsDiff;
-                monthsToGoal = monthlySavings > 0 ? `${Math.ceil((firstGoal.target - firstGoal.saved)/monthlySavings)} meses` : '∞';
-            }            const infoHTML = appState.isPrivate ? `
-                <div class="flex flex-col items-center justify-center ${appState.theme.textPrimary} p-10 rounded-full cursor-pointer" id="privacy-toggle">
-                    ${createIcon(ICONS.eyeOff, "w-20 h-20")}
-                    <p class="font-semibold mt-2">Información Oculta</p>
-                </div>
-            ` : `
-                <div class="flex flex-col items-center justify-center text-slate-900 w-full h-full">
-                    <div class="relative mb-4">
-                        <div class="flex items-center gap-2">
-                            <p class="text-sm font-medium opacity-70">Patrimonio Neto</p>                            <button id="privacy-toggle" class="text-slate-900/50 hover:text-slate-900 transition-colors" title="Ocultar información" aria-label="Alternar modo privacidad" aria-pressed="${appState.privacyMode}" role="button">
-                                ${createIcon(ICONS.eye, "w-5 h-5")}
-                            </button>
-                        </div>
-                        <p class="text-4xl font-bold">${formatCurrency(netWorth)}</p>
-                    </div>
-                    <div class="flex justify-around w-full text-sm">
-                        <div>
-                            <p class="font-medium opacity-70">Balance (Mes)</p>
-                            <p class="font-semibold text-lg">${formatCurrency(balance)}</p>
-                        </div>
-                        <div class="border-l border-slate-900/30"></div>
-                        <div>
-                            <p class="font-medium opacity-70">Próxima Meta</p>
-                            <p class="font-semibold text-lg">${monthsToGoal}</p>
-                        </div>
-                    </div>
-                </div>
-            `;            return `
-                <div class="flex flex-col items-center justify-center h-[calc(100vh-250px)] relative">
-                    <div class="w-80 h-80 sm:w-96 sm:h-96 rounded-full flex items-center justify-center text-center transition-all duration-500" 
-                         style="background: radial-gradient(circle at 30% 30%, ${appState.theme.sunColor || appState.theme.accentColor}, ${appState.theme.accentColor}aa 60%, ${appState.theme.accentColor}44 100%); 
-                                box-shadow: 0 0 40px 10px ${appState.theme.sunColor || appState.theme.accentColor}60, 
-                                           0 0 80px 30px ${appState.theme.sunColor || appState.theme.accentColor}30, 
-                                           0 0 120px 50px ${appState.theme.sunColor || appState.theme.accentColor}20,
-                                           inset 0 0 30px ${appState.theme.sunColor || appState.theme.accentColor}20;">
-                        ${infoHTML}
-                    </div>
-                    
-                    <!-- Rayos de sol sutiles -->
-                    <div class="absolute inset-0 pointer-events-none">
-                        ${Array.from({length: 8}, (_, i) => `
-                            <div class="absolute w-1 h-20 origin-bottom animate-pulse" 
-                                 style="background: linear-gradient(to top, ${appState.theme.sunColor || appState.theme.accentColor}20, transparent);
-                                        left: 50%; top: 50%; 
-                                        transform: translate(-50%, -100%) rotate(${i * 45}deg);
-                                        animation-delay: ${i * 0.2}s;
-                                        opacity: 0.6;">
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }        /**
-         * 💰 Vista de Gestión de Transacciones (Ingresos/Gastos)
-         * @param {string} type - Tipo de transacción ('income' o 'expense')
-         */
-        function renderTransactionsView(type) {
-            const title = type === 'income' ? 'Ingresos' : 'Gastos';
-            const isExpense = type === 'expense';
-            const currentMonthTransactions = appState.data.transactions[appState.currentMonthKey] || [];              // Renderizar lista de transacciones del mes actual
-            const transactionsHTML = currentMonthTransactions
-                .filter(t => t.type === type)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .map(t => `
-                    <li class="border border-white/10 p-4 rounded-lg flex justify-between items-center transition-all hover:bg-white/5">
-                        <div>
-                            <p class="font-semibold ${appState.theme.textPrimary}">${t.description}</p>
-                            <div class="flex items-center gap-2 mt-1">
-                                ${ isExpense && t.category ? `<p class="text-xs font-medium px-2 py-0.5 rounded-full" style="background-color:${appState.theme.accentColor}30; color:${appState.theme.accentColor}">${t.category}</p>` : '' }
-                                <p class="text-xs ${appState.theme.textSecondary}">${new Date(t.date).toLocaleDateString()}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <p class="font-bold text-lg ${type === 'income' ? appState.theme.positive : appState.theme.negative}">
-                                ${formatCurrency(t.amount)}
-                            </p>
-                            <button class="delete-transaction-button text-red-500/70 hover:text-red-500 transition-colors" data-transaction-id="${t.id}" title="Eliminar transacción">
-                                ${createIcon(ICONS.trash, 'w-5 h-5')}
-                            </button>
-                        </div>
-                    </li>
-                `).join('');
-
-            // Opciones de categorías para gastos
-            const categoryOptionsHTML = CATEGORIES.map(cat => 
-                `<option class="bg-slate-800" value="${cat}">${cat}</option>`
-            ).join('');            // Campo de categoría (solo para gastos)
-            const categoryFieldHTML = isExpense ? `
-                <div>
-                    <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Categoría</label>
-                    <select name="category" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required>
-                        ${categoryOptionsHTML}
-                    </select>
-                </div>
-            ` : '';return `
-                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
-                        <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">💰 Gestión de ${title}</h2>
-                        
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <button id="repeat-month-button" data-type="${type}" class="flex items-center gap-2 text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-3 py-2 rounded-lg hover:bg-white/5" title="Copia las transacciones del mes anterior">
-                               ${createIcon(ICONS.history, 'w-4 h-4')} Repetir Mes Anterior
-                            </button>
-                            <button id="repeat-yearly-button" data-type="${type}" class="flex items-center gap-2 text-sm ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-3 py-2 rounded-lg hover:bg-white/5" title="Copia estas transacciones hasta fin de año">
-                               ${createIcon(ICONS.repeat, 'w-4 h-4')} Repetir Anualmente
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <form id="transaction-form" class="grid grid-cols-1 md:grid-cols-${isExpense ? '4' : '2'} gap-4 mb-8 items-end">                        <div class="${isExpense ? 'md:col-span-2' : ''}">
-                            <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Descripción</label>
-                            <input type="text" name="description" placeholder="${type === 'income' ? 'Ej: Sueldo de presidente' : 'Ej: Comida para la expedición'}" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="la descripción" />
-                        </div>
-                        
-                        ${categoryFieldHTML}                        <div>
-                            <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Monto</label>
-                            <input type="text" inputmode="numeric" name="amount" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el monto" />
-                        </div>
-
-                        <div class="md:col-span-full">
-                            <button type="submit" class="w-full mt-2 ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-opacity ${appState.theme.accentGlow} flex items-center justify-center gap-2">
-                                ${createIcon(ICONS.plus)} Agregar ${title.slice(0,-1)}
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div class="mt-6">
-                        <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">Historial del Mes</h3>
-                        <ul class="space-y-3">                            ${transactionsHTML || `<p class="${appState.theme.textSecondary} text-center py-4">No hay transacciones aún.</p>`}
-                        </ul>
+                <div class="modal-container fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+                    <div class="modal-content relative p-6 ${appState.theme.surface} w-full max-w-lg">
+                        <div class="grid grid-cols-3 gap-3">${monthsHTML}</div>
                     </div>
                 </div>
             `;
         }
-        
-        // ✅ EXPOSICIÓN GLOBAL INMEDIATA - Para módulos
-        window.renderTransactionsView = renderTransactionsView;
-        
-        function renderInvestmentsView() {
-            const { totalInvestments } = calculateSummary();
-            const totalInitial = appState.data.investments.reduce((sum, i) => sum + i.initialAmount, 0);
-            const portfolioPerformance = totalInitial === 0 ? 0 : ((totalInvestments - totalInitial) / totalInitial) * 100;
-            const performanceClass = portfolioPerformance >= 0 ? appState.theme.positive : appState.theme.negative;            const investmentsHTML = appState.data.investments.map(inv => {
-                const performance = inv.initialAmount === 0 ? 0 : ((inv.currentAmount - inv.initialAmount) / inv.initialAmount) * 100;
-                return `
-                    <div class="border border-white/10 p-4 rounded-lg flex flex-col justify-between">
-                        <div class="flex justify-between items-start">                           <div>
-                                <p class="font-bold text-lg ${appState.theme.textPrimary}">${inv.name}</p>
-                                <p class="text-sm ${appState.theme.textSecondary}">${inv.type}</p>
-                           </div>
-                           <div class="flex space-x-2">
-                               <button data-action="edit-investment" data-investment-id="${inv.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar inversión">
-                                   ${createIcon(ICONS.edit, 'w-4 h-4')}
-                               </button>
-                               <button data-action="delete-investment" data-investment-id="${inv.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar inversión">
-                                   ${createIcon(ICONS.trash, 'w-4 h-4')}
-                               </button>
-                           </div>
-                        </div>
-                        <div class="mt-4">
-                            <label class="text-xs ${appState.theme.textSecondary}">Valor Actual</label>
-                            <input type="text" inputmode="numeric" data-investment-id="${inv.id}" value="${formatNumberWithDots(inv.currentAmount)}" placeholder="0" class="numeric-input investment-update-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" />
-                            <p class="mt-2 text-right text-sm font-semibold ${performance >= 0 ? appState.theme.positive : appState.theme.negative}">${performance.toFixed(2)}%</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');            return `
-                <div class="border border-white/10 rounded-2xl shadow-lg p-6 mb-6">
-                    <h2 class="text-2xl font-bold ${appState.theme.textPrimary} mb-4">Resumen de Cartera</h2>
-                    <div class="flex justify-between items-center">
-                        <div><p class="text-sm ${appState.theme.textSecondary}">Valor Total</p><p class="text-3xl font-bold ${appState.theme.textPrimary}">${formatCurrency(totalInvestments)}</p></div>
-                        <div class="text-right"><p class="text-sm ${appState.theme.textSecondary}">Rendimiento</p><div class="text-3xl font-bold flex items-center gap-2 ${performanceClass}"><span>${portfolioPerformance > 0 ? '+':''}${portfolioPerformance.toFixed(2)}%</span></div></div>
-                    </div>                </div>
-                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">Inversiones</h2>
-                        <button data-action="add-investment" class="px-4 py-2 ${appState.theme.accentBg} text-white rounded-lg hover:opacity-90 transition-all duration-200 ${appState.theme.accentGlow} font-medium">
-                            + Nueva Inversión
-                        </button>
-                    </div>
-                    <form id="investment-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 items-end">
-                        <div class="md:col-span-2"><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Activo</label><input name="name" type="text" placeholder="Ej: Acciones de Adamantium..." class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el nombre del activo" /></div>
-                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Tipo</label><select name="type" class="w-full border border-white/20 text-white rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent"><option class="bg-slate-800">Acciones</option><option class="bg-slate-800">Cripto</option><option class="bg-slate-800">Fondos</option><option class="bg-slate-800">Otro</option></select></div>
-                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Inversión Inicial</label><input name="initialAmount" type="text" inputmode="numeric" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="la inversión inicial" /></div>
-                        <div class="md:col-span-4"><button type="submit" class="w-full mt-2 ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-opacity ${appState.theme.accentGlow} flex items-center justify-center gap-2">${createIcon(ICONS.plus)}Añadir Inversión</button></div>
-                    </form>
-                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mt-8 mb-4">Mis Activos</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${investmentsHTML || `<p class="${appState.theme.textSecondary} text-center py-4 col-span-full">Tu cartera de inversiones está vacía.</p>`}</div>
-                </div>
-            `;
-        }
-          function renderGoalsView() {
-             const goalsHTML = appState.data.goals.map(goal => `
-                <div class="border border-white/10 p-4 rounded-lg">                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="font-bold ${appState.theme.textPrimary}">${goal.name}</p>
-                            <p class="text-sm ${appState.theme.textSecondary} mt-1">${formatCurrency(goal.saved)} / ${formatCurrency(goal.target)}</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button data-action="edit-goal" data-goal-id="${goal.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar meta">
-                                ${createIcon(ICONS.edit, 'w-4 h-4')}
-                            </button>
-                            <button data-action="delete-goal" data-goal-id="${goal.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar meta">
-                                ${createIcon(ICONS.trash, 'w-4 h-4')}
-                            </button>
-                        </div>
-                    </div>
-                    <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
-                        <div class="${appState.theme.accentBg} h-2.5 rounded-full" style="width: ${((goal.saved / goal.target) * 100)}%"></div>
-                    </div>
-                </div>
-            `).join('');            return `
-                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">Metas de Ahorro</h2>
-                        <button data-action="add-goal" class="px-4 py-2 ${appState.theme.accentBg} text-white rounded-lg hover:opacity-90 transition-all duration-200 ${appState.theme.accentGlow} font-medium">
-                            + Nueva Meta
-                        </button>
-                    </div>
-                    <form id="goal-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-end">                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Nombre de la Meta</label><input type="text" name="name" placeholder="Ej: Viaje a Marte" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el nombre de la meta" /></div>
-                        <div><label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Monto Objetivo</label><input type="text" inputmode="numeric" name="target" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el monto objetivo" /></div>
-                        <div class="self-end"><button type="submit" class="w-full ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-colors ${appState.theme.accentGlow} flex items-center justify-center gap-2">${createIcon(ICONS.plus)}Crear Meta</button></div>
-                    </form>
-                    <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mt-8 mb-4">Mis Metas</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${goalsHTML || `<p class="${appState.theme.textSecondary} col-span-full text-center py-4">Aún no has definido metas.</p>`}</div>
-                </div>
-            `;
-        }        function renderDebtsView() {
-            const debtsHTML = appState.data.debts.map(debt => `
-                <li class="border border-white/10 rounded-lg flex justify-between items-center p-4">
-                    <div><p class="font-semibold ${appState.theme.textPrimary}">${debt.description}</p></div>                    <div class="flex items-center gap-4">
-                        <p class="font-bold text-lg ${appState.theme.negative}">${formatCurrency(debt.amount)}</p>
-                        <div class="flex space-x-2">
-                            <button data-action="edit-debt" data-debt-id="${debt.id}" class="p-2 bg-blue-500/20 hover:bg-blue-500 rounded-lg transition-all duration-200 text-blue-300 hover:text-white" title="Editar deuda">
-                                ${createIcon(ICONS.edit, 'w-4 h-4')}
-                            </button>
-                            <button data-action="delete-debt" data-debt-id="${debt.id}" class="p-2 bg-red-500/20 hover:bg-red-500 rounded-lg transition-all duration-200 text-red-300 hover:text-white" title="Eliminar deuda">
-                                ${createIcon(ICONS.trash, 'w-4 h-4')}
-                            </button>
-                        </div>
-                    </div>
-                </li>
-            `).join('');            return `
-                <div class="border border-white/10 rounded-2xl shadow-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold ${appState.theme.textPrimary}">💳 Gestión de Deudas</h2>
-                        <button data-action="add-debt" class="px-4 py-2 ${appState.theme.accentBg} text-white rounded-lg hover:opacity-90 transition-all duration-200 ${appState.theme.accentGlow} font-medium">
-                            + Nueva Deuda
-                        </button>
-                    </div>
-                    <form id="debt-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 items-end">                        <div>
-                            <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Descripción</label>
-                            <input type="text" name="description" placeholder="Ej: Préstamo de Mercado Plasma" class="w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="la descripción de la deuda" />
-                        </div>                        <div>
-                            <label class="block text-sm font-medium ${appState.theme.textSecondary} mb-1">Monto Total</label>
-                            <input type="text" inputmode="numeric" name="amount" placeholder="0" class="numeric-input w-full border border-white/20 ${appState.theme.textPrimary} rounded-md p-2 focus:ring-2 ${appState.theme.accentRing} focus:outline-none bg-transparent" required data-field-name="el monto total" />
-                        </div>
-                        <div class="self-end">
-                            <button type="submit" class="w-full ${appState.theme.accentBg} text-slate-900 font-bold py-3 px-4 rounded-md hover:opacity-90 transition-all ${appState.theme.accentGlow} flex items-center justify-center gap-2 transform hover:scale-105">
-                                ${createIcon(ICONS.plus)} Agregar Deuda
-                            </button>
-                        </div>
-                    </form>
-                    <div class="mt-6">
-                        <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">Deudas Actuales</h3>
-                        <ul class="space-y-3">
-                            ${debtsHTML || `<div class="text-center py-8"><p class="${appState.theme.textSecondary}">🎉 ¡No tienes deudas registradas!</p></div>`}
-                        </ul>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function renderSettingsView() {
-            const themesHTML = Object.entries(THEMES).map(([key, theme]) => `
-                <button data-theme-key="${key}" class="theme-selector p-4 rounded-lg border-2 transition-all ${appState.themeKey === key ? `${theme.accentBorder} scale-105 shadow-lg` : 'border-transparent opacity-70 hover:opacity-100'}">
-                    <div class="w-full h-16 rounded-md mb-2" style="background: ${theme.gradient}"></div>
-                    <p class="${appState.theme.textPrimary}">${theme.name}</p>
-                </button>
-            `).join('');            return `
-                <div class="${appState.theme.surface} rounded-2xl shadow-lg p-6">
-                    <h2 class="text-2xl font-bold ${appState.theme.textPrimary} mb-6">⚙️ Ajustes y Personalización</h2>
-                    <div class="space-y-8">
-                        <div>
-                            <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🎨 Tema Visual</h3>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">${themesHTML}</div>
-                        </div>                        <div>
-                            <h3 class="text-xl font-semibold ${appState.theme.textPrimary} mb-4">🛠️ Herramientas</h3>
-                             <button id="open-shortcuts-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md mb-3">
-                                ${createIcon(ICONS.zap, `w-6 h-6 ${appState.theme.accent}`)}
-                                <div>
-                                    <p class="font-bold ${appState.theme.textPrimary}">⚡ Atajos de Teclado</p>
-                                    <p class="text-sm ${appState.theme.textSecondary}">Navega más rápido por la aplicación.</p>
-                                </div>
-                            </button>
-                            
-                            <button id="logout-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md mb-3">
-                                ${createIcon(ICONS.logOut, `w-6 h-6 ${appState.theme.accent}`)}
-                                <div>
-                                    <p class="font-bold ${appState.theme.textPrimary}">🚪 Cerrar Sesión</p>
-                                    <p class="text-sm ${appState.theme.textSecondary}">Salir de tu cuenta de Nebula Financial.</p>
-                                </div>
-                            </button>
-                            
-                            <button id="export-excel-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-black/10 p-4 rounded-lg transition-colors backdrop-blur-md mb-3">
-                                ${createIcon(ICONS.download, `w-6 h-6 ${appState.theme.accent}`)}
-                                <div>
-                                    <p class="font-bold ${appState.theme.textPrimary}">📊 Exportar a Excel</p>
-                                    <p class="text-sm ${appState.theme.textSecondary}">Descarga todos tus datos financieros.</p>
-                                </div>
-                            </button>
-                            
-                            <button id="clear-all-data-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-red-500/20 p-4 rounded-lg transition-colors backdrop-blur-md border border-red-500/30">
-                                ${createIcon(ICONS.trash, `w-6 h-6 text-red-400`)}
-                                <div>
-                                    <p class="font-bold text-red-400">🗑️ Borrar Todos los Datos</p>
-                                    <p class="text-sm text-red-300">⚠️ Esta acción no se puede deshacer.</p>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function renderComingSoon(section = 'Esta sección') {
-            const label = { achievements: 'Logros' }[section] || 'Esta sección';
-            return `
-                <div class="backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} text-center h-[calc(100vh-200px)] flex flex-col justify-center items-center">
-                    <div class="w-24 h-24 text-cyan-400 mb-4 animate-pulse">${createIcon(ICONS.settings)}</div>
-                    <h2 class="text-3xl font-bold ${appState.theme.textPrimary}">${label} en Construcción</h2>
-                    <p class="mt-4 ${appState.theme.textSecondary}">¡Estamos explorando esta galaxia! Vuelve pronto.</p>
-                </div>
-            `;        }        function renderDock() {
-            const navItems = [
-                { id: 'dashboard', label: 'Resumen', icon: ICONS.dashboard, key: 'D' },
-                { id: 'income', label: 'Ingresos', icon: ICONS.income, key: 'I' },
-                { id: 'expenses', label: 'Gastos', icon: ICONS.expenses, key: 'G' },
-                { id: 'investments', label: 'Inversiones', icon: ICONS.investments, key: 'N' },
-                { id: 'debts', label: 'Deudas', icon: ICONS.debts, key: 'P' },
-                { id: 'goals', label: 'Metas', icon: ICONS.goals, key: 'M' },
-                { id: 'settings', label: 'Ajustes', icon: ICONS.settings, key: 'A' }
-            ];
-
-            const navButtonsHTML = navItems.map(item => `
-                <button data-view="${item.id}" aria-label="${item.label}" 
-                        class="nav-button p-3 w-16 h-16 flex items-center justify-center
-                               ${appState.activeView === item.id ? `text-white active` : `${appState.theme.textSecondary} hover:text-white`}" 
-                        title="${item.label} (${item.key})">
-                    ${createIcon(item.icon, "w-6 h-6")}
-                </button>
-            `).join('');
-
-            // 🔐 Botón de perfil para usuarios autenticados
-            const profileButton = appState.user ? `
-                <button id="profile-button" aria-label="Perfil de Usuario" 
-                        class="profile-button p-2 w-14 h-14 flex items-center justify-center
-                               ${appState.theme.textSecondary} hover:text-white relative
-                               bg-white/10 backdrop-blur-sm rounded-full border border-white/20" 
-                        title="${appState.user.name} - Ver perfil">
-                    ${appState.user.photoURL ? 
-                        `<img src="${appState.user.photoURL}" alt="Avatar" class="w-8 h-8 rounded-full object-cover">` :
-                        `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
-                            ${appState.user.name.charAt(0).toUpperCase()}
-                        </div>`
-                    }
-                    ${appState.user.provider === 'google' ? 
-                        `<div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-white/30"></div>` : 
-                        ''
-                    }
-                </button>
-            ` : '';
-
-            return `
-                <nav class="p-4 backdrop-blur-lg bg-black/20">
-                    <div class="dock-container w-full max-w-lg mx-auto flex justify-between items-center gap-2">
-                        <div class="flex justify-between items-center flex-1">
-                            ${navButtonsHTML}
-                        </div>
-                        ${profileButton}
-                    </div>
-                </nav>`;
-        }function renderParallaxBackground() {
-            if (parallaxBg.children.length > 0 && parallaxBg.dataset.theme === appState.themeKey) return '';
-            parallaxBg.dataset.theme = appState.themeKey;
-
-            // 🎨 EFECTOS DE PARTÍCULAS OPTIMIZADOS
-            // Todos los temas ahora usan el mismo patrón eficiente de "Aureo Amancer"
-            // para mejorar el rendimiento y reducir los tiempos de carga
-            switch(appState.theme.particleType) {
-                case 'goldenDust': {
-                    // Polvo dorado flotante para Áureo Amanecer - EFECTO DUAL
-                    const particles = Array.from({ length: 120 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 3 + 1;
-                        const duration = Math.random() * 8 + 4;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
-                    }).join('');
-
-                    const backgroundStars = Array.from({ length: 150 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const twinkle = Math.random() * 3 + 2;
-                        return `<div class="absolute w-px h-px bg-amber-200 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
-                    }).join('');
-
-                    return particles + backgroundStars;
-                }
-
-                case 'crimsonMist': {
-                    // Niebla carmesí para Crisón Vespertino - EFECTO DUAL MEJORADO
-                    const mist = Array.from({ length: 25 }).map(() => {
-                        const duration = Math.random() * 30 + 15;
-                        const size = Math.random() * 300 + 150;
-                        const startX = Math.random() * 100;
-                        const startY = Math.random() * 100;
-                        return `<div class="particle absolute rounded-full" style="left: ${startX}%; top: ${startY}%; width: ${size}px; height: ${size}px; background: radial-gradient(circle, ${appState.theme.sunColor}08, transparent 70%); animation: drift ${duration}s linear infinite alternate; transform: translateZ(0);"></div>`;
-                    }).join('');
-                    
-                    const sparkles = Array.from({ length: 100 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 2 + 1;
-                        const duration = Math.random() * 6 + 3;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*3}px ${appState.theme.sunColor}80; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.5 + 0.2};"></div>`;
-                    }).join('');
-
-                    const backgroundStars = Array.from({ length: 180 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const pulse = Math.random() * 4 + 3;
-                        return `<div class="absolute w-px h-px bg-rose-300 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: pulse ${pulse}s ease-in-out infinite;"></div>`;
-                    }).join('');
-
-                    return mist + sparkles + backgroundStars;
-                }                case 'aquaFlow': {
-                    // Flujo acuático para Aguamarina Celeste - EFECTO OPTIMIZADO (mismo patrón que Aureo)
-                    const particles = Array.from({ length: 120 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 3 + 1;
-                        const duration = Math.random() * 8 + 4;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
-                    }).join('');
-
-                    const backgroundStars = Array.from({ length: 150 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const twinkle = Math.random() * 3 + 2;
-                        return `<div class="absolute w-px h-px bg-cyan-200 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
-                    }).join('');
-
-                    return particles + backgroundStars;
-                }                case 'royalAura': {
-                    // Aura real para Violeta Real - EFECTO OPTIMIZADO (mismo patrón que Aureo)
-                    const particles = Array.from({ length: 120 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 3 + 1;
-                        const duration = Math.random() * 8 + 4;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
-                    }).join('');
-
-                    const backgroundStars = Array.from({ length: 150 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const twinkle = Math.random() * 3 + 2;
-                        return `<div class="absolute w-px h-px bg-purple-100 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
-                    }).join('');
-
-                    return particles + backgroundStars;
-                }
-
-                default: return '';
-            }
-        }
-
-        function updateDockGlider() {
-            // El nuevo efecto es puramente CSS, no requiere JavaScript
-        }/**
-         * 🎮 Gestor de Event Listeners Mejorado
-         * Maneja todos los eventos de la interfaz de usuario
-         */
-        function addEventListeners() {
-            // Eventos de autenticación
-            document.querySelectorAll('.login-button').forEach(btn => 
-                btn.addEventListener('click', e => appState.login(e.currentTarget.dataset.loginMethod))
-            );
-              // Navegación del dock
-            document.querySelectorAll('.nav-button').forEach(btn => 
-                btn.addEventListener('click', (e) => appState.setView(e.currentTarget.dataset.view))
-            );
-            
-            // 🔐 Botón de perfil - Mostrar menú de usuario
-            const profileButton = document.getElementById('profile-button');
-            if (profileButton) {
-                profileButton.addEventListener('click', () => {
-                    if (window.nebulaAuthUI) {
-                        window.nebulaAuthUI.showProfile();
-                    } else {
-                        // Fallback: mostrar información básica del usuario
-                        const user = appState.user;
-                        const message = `
-                            👤 Usuario: ${user.name}
-                            📧 Email: ${user.email || 'No disponible'}
-                            🔗 Proveedor: ${user.provider === 'google' ? 'Google' : 'Invitado'}
-                            
-                            ¿Deseas cerrar sesión?
-                        `;
-                        
-                        if (confirm(message)) {
-                            appState.logout();
-                        }
-                    }
-                });
-            }
-            
-            // Toggle de privacidad
-            const privacyToggle = document.getElementById('privacy-toggle');
-            if(privacyToggle) privacyToggle.addEventListener('click', () => appState.togglePrivacy());
-            
-            // Formato numérico automático
-            document.querySelectorAll('.numeric-input').forEach(input => {
-                input.addEventListener('input', e => {
-                    const cursorPosition = e.target.selectionStart;
-                    const originalLength = e.target.value.length;
-                    const rawValue = e.target.value.replace(/\D/g, '');
-                    e.target.value = formatNumberWithDots(rawValue);
-                    const newLength = e.target.value.length;
-                    e.target.setSelectionRange(cursorPosition + (newLength - originalLength), cursorPosition + (newLength - originalLength));
-                });
-            });            // 🔒 Formularios con protección XSS y validación visual
-            const transactionForm = document.getElementById('transaction-form');
-            if (transactionForm) {
-                transactionForm.addEventListener('submit', e => {
-                    e.preventDefault();
-                    
-                    // CloudSonnet4: validación visual campo obligatorio
-                    if (!validateForm(transactionForm)) {
-                        return; // No proceder si hay errores
-                    }
-                    
-                    const transactionData = {
-                        type: appState.activeView === 'income' ? 'income' : 'expense',
-                        description: sanitizeHTML(e.target.elements.description.value),
-                        category: e.target.elements.category ? sanitizeHTML(e.target.elements.category.value) : undefined,
-                        amount: parseFormattedNumber(e.target.elements.amount.value)
-                    };
-                    
-                    appState.addTransaction(transactionData);
-                    e.target.reset();
-                    
-                    NotificationSystem.success('Éxito', 
-                        `${transactionData.type === 'income' ? 'Ingreso' : 'Gasto'} agregado correctamente`);
-                });
-            }
-
-            const investmentForm = document.getElementById('investment-form');
-            if(investmentForm) {
-                investmentForm.addEventListener('submit', e => {
-                    e.preventDefault();
-                    
-                    // CloudSonnet4: validación visual campo obligatorio
-                    if (!validateForm(investmentForm)) {
-                        return; // No proceder si hay errores
-                    }
-                    
-                    const initial = parseFormattedNumber(e.target.elements.initialAmount.value);
-                    appState.addInvestment({ 
-                        name: sanitizeHTML(e.target.elements.name.value), 
-                        type: sanitizeHTML(e.target.elements.type.value), 
-                        initialAmount: initial, 
-                        currentAmount: initial 
-                    });
-                    e.target.reset();
-                    NotificationSystem.success('Éxito', 'Inversión agregada correctamente');
-                });
-            }
-            
-            const goalForm = document.getElementById('goal-form');
-            if (goalForm) {
-                goalForm.addEventListener('submit', e => {
-                    e.preventDefault();
-                    
-                    // CloudSonnet4: validación visual campo obligatorio
-                    if (!validateForm(goalForm)) {
-                        return; // No proceder si hay errores
-                    }
-                    
-                    appState.addGoal({ 
-                        name: sanitizeHTML(e.target.elements.name.value), 
-                        target: parseFormattedNumber(e.target.elements.target.value) 
-                    });
-                    e.target.reset();
-                    NotificationSystem.success('Éxito', 'Meta creada correctamente');
-                });
-            }
-            
-            const debtForm = document.getElementById('debt-form');
-            if(debtForm) {
-                debtForm.addEventListener('submit', e => {
-                    e.preventDefault();
-                    
-                    // CloudSonnet4: validación visual campo obligatorio
-                    if (!validateForm(debtForm)) {
-                        return; // No proceder si hay errores
-                    }
-                    
-                    appState.addDebt({ 
-                        description: sanitizeHTML(e.target.elements.description.value), 
-                        amount: parseFormattedNumber(e.target.elements.amount.value)
-                    });
-                    e.target.reset();
-                    NotificationSystem.success('Éxito', 'Deuda registrada correctamente');
-                });
-            }
-            
-            // Botones de repetición
-            const repeatButton = document.getElementById('repeat-month-button');
-            if (repeatButton) {
-                repeatButton.addEventListener('click', e => {
-                    appState.repeatPreviousMonth(e.currentTarget.dataset.type);
-                });
-            }
-            
-            const repeatYearlyButton = document.getElementById('repeat-yearly-button');
-            if (repeatYearlyButton) {
-                repeatYearlyButton.addEventListener('click', e => {
-                    appState.repeatYearlyFromCurrent(e.currentTarget.dataset.type);
-                });
-            }            // Event delegation para botones con data-action (para compatibilidad con módulos)
-            document.addEventListener('click', (e) => {
-                const action = e.target.closest('[data-action]')?.dataset.action;
-                const target = e.target.closest('[data-action]');
-                
-                if (!action || !target) return;
-                  switch(action) {
-                    case 'edit-investment': {
-                        const investmentId = parseInt(target.dataset.investmentId);
-                        if (window.NebulaInvestmentsModule) {
-                            window.NebulaInvestmentsModule.editInvestment(investmentId);
-                        }
-                        break;
-                    }
-                    case 'delete-investment': {
-                        const delInvestmentId = parseInt(target.dataset.investmentId);
-                        if (window.NebulaInvestmentsModule) {
-                            window.NebulaInvestmentsModule.deleteInvestment(delInvestmentId);
-                        } else {
-                            // Fallback al método integrado
-                            appState.deleteInvestment(delInvestmentId);
-                            NotificationSystem.info('Eliminado', 'Inversión eliminada');
-                            renderApp();
-                        }
-                        break;
-                    }
-                    case 'add-investment':
-                        if (window.NebulaInvestmentsModule) {
-                            window.NebulaInvestmentsModule.showAddInvestmentForm();
-                        }
-                        break;                    case 'edit-goal': {
-                        const goalId = parseInt(target.dataset.goalId);
-                        if (window.NebulaGoalsModule) {
-                            window.NebulaGoalsModule.editGoal(goalId);
-                        }
-                        break;
-                    }
-                    case 'delete-goal': {
-                        const delGoalId = parseInt(target.dataset.goalId);
-                        if (window.NebulaGoalsModule) {
-                            window.NebulaGoalsModule.deleteGoal(delGoalId);
-                        } else {
-                            appState.deleteGoal(delGoalId);
-                            NotificationSystem.info('Eliminado', 'Meta eliminada');
-                            renderApp();
-                        }
-                        break;
-                    }
-                    case 'add-goal':
-                        if (window.NebulaGoalsModule) {
-                            window.NebulaGoalsModule.showAddGoalForm();
-                        }
-                        break;                    case 'edit-debt': {
-                        const debtId = parseInt(target.dataset.debtId);
-                        if (window.NebulaDebtsModule) {
-                            window.NebulaDebtsModule.editDebt(debtId);
-                        }
-                        break;
-                    }
-                    case 'delete-debt': {
-                        const delDebtId = parseInt(target.dataset.debtId);
-                        if (window.NebulaDebtsModule) {
-                            window.NebulaDebtsModule.deleteDebt(delDebtId);
-                        } else {
-                            appState.deleteDebt(delDebtId);
-                            NotificationSystem.info('Eliminado', 'Deuda eliminada');
-                            renderApp();
-                        }
-                        break;
-                    }
-                    case 'add-debt':
-                        if (window.NebulaDebtsModule) {
-                            window.NebulaDebtsModule.showAddDebtForm();
-                        }
-                        break;
-                }
-            });
-
-            // Eliminación de elementos (legacy - mantenido para compatibilidad)
-            document.querySelectorAll('.delete-transaction-button').forEach(btn => 
-                btn.addEventListener('click', e => {
-                    appState.deleteTransaction(parseInt(e.currentTarget.dataset.transactionId));
-                    NotificationSystem.info('Eliminado', 'Transacción eliminada');
-                })
-            );
-            
-            document.querySelectorAll('.investment-update-input').forEach(input => 
-                input.addEventListener('input', e => 
-                    appState.updateInvestment(parseInt(e.target.dataset.investmentId), parseFormattedNumber(e.target.value))
-                )
-            );
-            
-            document.querySelectorAll('.delete-investment-button').forEach(btn => 
-                btn.addEventListener('click', e => {
-                    appState.deleteInvestment(parseInt(e.currentTarget.dataset.investmentId));
-                    NotificationSystem.info('Eliminado', 'Inversión eliminada');
-                })
-            );
-            
-            document.querySelectorAll('.delete-goal-button').forEach(btn => 
-                btn.addEventListener('click', e => {
-                    appState.deleteGoal(parseInt(e.currentTarget.dataset.goalId));
-                    NotificationSystem.info('Eliminado', 'Meta eliminada');
-                })
-            );
-            
-            document.querySelectorAll('.delete-debt-button').forEach(btn => 
-                btn.addEventListener('click', e => {
-                    appState.deleteDebt(parseInt(e.currentTarget.dataset.debtId));
-                    NotificationSystem.info('Eliminado', 'Deuda eliminada');
-                })
-            );
-            
-            // Selección de temas
-            document.querySelectorAll('.theme-selector').forEach(btn => 
-                btn.addEventListener('click', (e) => {
-                    appState.setTheme(e.currentTarget.dataset.themeKey);
-                    NotificationSystem.success('Tema cambiado', 
-                        `Aplicado: ${THEMES[e.currentTarget.dataset.themeKey].name}`);
-                })
-            );            // Navegación de meses
-            const monthPrev = document.getElementById('month-prev');
-            if (monthPrev) monthPrev.addEventListener('click', () => appState.changeMonth(-1));
-            
-            const monthNext = document.getElementById('month-next');
-            if (monthNext) monthNext.addEventListener('click', () => appState.changeMonth(1));
-              // CloudSonnet4: EVENT LISTENER BOTÓN CALENDARIO CENTRADO
-            const calendarButton = document.getElementById('calendar-button');
-            if (calendarButton) calendarButton.addEventListener('click', () => appState.openModal('calendar'));
-            
-            const openShortcutsButton = document.getElementById('open-shortcuts-button');
-            if (openShortcutsButton) openShortcutsButton.addEventListener('click', () => appState.openModal('shortcuts'));
-              // 🔧 NUEVOS BOTONES DE CONFIGURACIÓN
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', async () => {
-                    try {
-                        // Usar la función de logout integrada con Firebase
-                        await appState.logout();
-                        
-                    } catch (error) {
-                        console.error('Error cerrando sesión:', error);
-                        NotificationSystem.error('Error', 'No se pudo cerrar la sesión');
-                    }
-                });
-            }
-            
-            const exportExcelButton = document.getElementById('export-excel-button');
-            if (exportExcelButton) {
-                exportExcelButton.addEventListener('click', async () => {
-                    try {
-                        NotificationSystem.info('Exportando...', 'Preparando tus datos financieros');
-                        
-                        // Crear array con todas las transacciones del estado actual
-                        const allTransactions = [];
-                        
-                        // Obtener transacciones de todos los meses
-                        Object.entries(appState.data.transactions).forEach(([monthKey, transactions]) => {
-                            transactions.forEach(transaction => {
-                                allTransactions.push({
-                                    tipo: transaction.type === 'income' ? 'Ingreso' : 'Gasto',
-                                    descripcion: transaction.description,
-                                    monto: transaction.amount,
-                                    fecha: transaction.date,
-                                    categoria: transaction.category || '',
-                                    mes: monthKey
-                                });
-                            });
-                        });
-                        
-                        // Agregar inversiones
-                        appState.data.investments.forEach(investment => {
-                            allTransactions.push({
-                                tipo: 'Inversión',
-                                descripcion: investment.name,
-                                monto: investment.currentValue || investment.initialAmount,
-                                fecha: investment.date || new Date().toISOString().split('T')[0],
-                                categoria: investment.type || '',
-                                mes: ''
-                            });
-                        });
-                        
-                        // Agregar metas
-                        appState.data.goals.forEach(goal => {
-                            allTransactions.push({
-                                tipo: 'Meta',
-                                descripcion: goal.name,
-                                monto: goal.targetAmount,
-                                fecha: goal.targetDate || '',
-                                categoria: '',
-                                mes: ''
-                            });
-                        });
-                        
-                        // Agregar deudas
-                        appState.data.debts.forEach(debt => {
-                            allTransactions.push({
-                                tipo: 'Deuda',
-                                descripcion: debt.description,
-                                monto: debt.amount,
-                                fecha: debt.date || new Date().toISOString().split('T')[0],
-                                categoria: debt.type || '',
-                                mes: ''
-                            });
-                        });
-                        
-                        // Crear CSV
-                        let csvContent = "data:text/csv;charset=utf-8,";
-                        csvContent += "Tipo,Descripción,Monto,Fecha,Categoría,Mes\\n";
-                        
-                        allTransactions.forEach(item => {
-                            csvContent += `"${item.tipo}","${item.descripcion}",${item.monto},"${item.fecha}","${item.categoria}","${item.mes}"\\n`;
-                        });
-                        
-                        // Descargar archivo
-                        const encodedUri = encodeURI(csvContent);
-                        const link = document.createElement("a");
-                        link.setAttribute("href", encodedUri);
-                        link.setAttribute("download", `nebula_financial_${new Date().toISOString().split('T')[0]}.csv`);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        
-                        NotificationSystem.success('¡Exportado!', 'Tus datos se han descargado exitosamente');
-                        
-                    } catch (error) {
-                        console.error('Error exportando datos:', error);
-                        NotificationSystem.error('Error', 'No se pudieron exportar los datos');
-                    }
-                });
-            }
-            
-            const clearAllDataButton = document.getElementById('clear-all-data-button');            if (clearAllDataButton) {
-                clearAllDataButton.addEventListener('click', async () => {
-                    try {
-                        // CloudSonnet4: Primera confirmación con modal elegante
-                        const confirmed1 = await showDangerModal(
-                            '⚠️ Eliminar todos los datos',
-                            'Esta acción eliminará <strong>TODOS</strong> tus datos financieros.<br><br>¿Estás absolutamente seguro?',
-                            { 
-                                confirmText: 'Continuar',
-                                cancelText: 'Cancelar' 
-                            }
-                        );
-                        if (!confirmed1) return;
-                        
-                        // CloudSonnet4: Segunda confirmación crítica
-                        const confirmed2 = await showDangerModal(
-                            '🚨 ÚLTIMA CONFIRMACIÓN',
-                            `Se borrarán permanentemente:<br><br>
-                            • <strong>Todos los ingresos</strong><br>
-                            • <strong>Todos los gastos</strong><br>
-                            • <strong>Todas las inversiones</strong><br>
-                            • <strong>Todas las metas</strong><br>
-                            • <strong>Todas las deudas</strong><br><br>
-                            <span style="color: #ef4444; font-weight: bold;">Esta acción NO SE PUEDE DESHACER.</span><br><br>
-                            ¿Continuar con la eliminación?`,
-                            { 
-                                confirmText: 'SÍ, BORRAR TODO',
-                                cancelText: 'No, mantener datos' 
-                            }
-                        );
-                        if (!confirmed2) return;
-                        
-                        // Limpiar todos los datos del estado
-                        appState.data = {
-                            transactions: {},
-                            investments: [],
-                            goals: [],
-                            debts: []
-                        };
-                        
-                        // Limpiar localStorage
-                        if (NebulaSecurityUtils) {
-                            NebulaSecurityUtils.secureRemoveItem('financialData');
-                        } else {
-                            localStorage.removeItem('financialData');
-                        }
-                        
-                        // Guardar el estado vacío
-                        appState.saveState();
-                        
-                        NotificationSystem.success('Datos eliminados', 'Todos los datos financieros han sido borrados');
-                        
-                        // Recargar la app para mostrar estado limpio
-                        setTimeout(() => renderApp(), 1000);
-                        
-                    } catch (error) {
-                        console.error('Error borrando datos:', error);
-                        NotificationSystem.error('Error', 'No se pudieron borrar los datos');
-                    }
-                });
-            }// Actualizar glider al cargar eventos
-            updateDockGlider();
-            
-            // Observer simple para cambios de tamaño
-            let resizeTimer;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(updateDockGlider, 100);
-            });
-        }        function addModalEventListeners() {
-            console.log('🔧 Registrando event listeners del modal...');
-            
-            const modalContainer = document.querySelector('.modal-container');
-            if(modalContainer) {
-                console.log('✅ Modal container encontrado');
-                
-                // Asegurar que el modal sea completamente interactivo
-                modalContainer.style.pointerEvents = 'auto';
-                modalContainer.style.userSelect = 'auto';
-                
-                modalContainer.addEventListener('click', (e) => {
-                    if(e.target === modalContainer) {
-                        console.log('🔘 Click fuera del modal detectado');
-                        appState.closeModal();
-                    }
-                });
-                
-                const closeButton = modalContainer.querySelector('.modal-close-button');
-                if (closeButton) {
-                    console.log('✅ Botón cerrar encontrado');
-                    closeButton.style.pointerEvents = 'auto';
-                    closeButton.addEventListener('click', (e) => {
-                        console.log('🔘 Click en botón cerrar detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.closeModal();
-                    });
-                } else {
-                    console.log('❌ Botón cerrar NO encontrado');
-                }
-            } else {
-                console.log('❌ Modal container NO encontrado');
-            }            // CloudSonnet4: EVENT LISTENERS CALENDARIO RESTAURADOS COMPLETAMENTE
-            if (appState.activeModal === 'calendar') {
-                console.log('🗓️ Registrando event listeners del calendario...');
-                
-                // Listeners universales (siempre disponibles)
-                const todayButton = document.getElementById('today-button');
-                if (todayButton) {
-                    console.log('✅ Botón "Ir a Hoy" encontrado');
-                    todayButton.style.pointerEvents = 'auto';
-                    todayButton.addEventListener('click', (e) => {
-                        console.log('🔘 Click en "Ir a Hoy" detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.goToToday();
-                    });
-                } else {
-                    console.log('❌ Botón "Ir a Hoy" NO encontrado');
-                }
-                
-                const todayButtonYears = document.getElementById('today-button-years');
-                if (todayButtonYears) {
-                    console.log('✅ Botón "Ir a Hoy" (años) encontrado');
-                    todayButtonYears.style.pointerEvents = 'auto';
-                    todayButtonYears.addEventListener('click', (e) => {
-                        console.log('🔘 Click en "Ir a Hoy" (años) detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.goToToday();
-                    });
-                }
-
-                // Listeners para vista de meses
-                const yearPrev = document.getElementById('calendar-year-prev');
-                if (yearPrev) {
-                    console.log('✅ Botón año anterior encontrado');
-                    yearPrev.style.pointerEvents = 'auto';
-                    yearPrev.addEventListener('click', (e) => {
-                        console.log('🔘 Click año anterior detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.changeCalendarYear(-1);
-                    });
-                }
-                
-                const yearNext = document.getElementById('calendar-year-next');
-                if (yearNext) {
-                    console.log('✅ Botón año siguiente encontrado');
-                    yearNext.style.pointerEvents = 'auto';
-                    yearNext.addEventListener('click', (e) => {
-                        console.log('🔘 Click año siguiente detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.changeCalendarYear(1);
-                    });
-                }
-                
-                const yearSelector = document.getElementById('year-selector');
-                if (yearSelector) {
-                    console.log('✅ Selector de año encontrado');
-                    yearSelector.style.pointerEvents = 'auto';
-                    yearSelector.addEventListener('click', (e) => {
-                        console.log('🔘 Click selector año detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.switchCalendarView('years');
-                    });
-                }
-
-                // Listeners para vista de años
-                const decadePrev = document.getElementById('decade-prev');
-                if (decadePrev) {
-                    decadePrev.style.pointerEvents = 'auto';
-                    decadePrev.addEventListener('click', (e) => {
-                        console.log('🔘 Click década anterior detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.changeCalendarDecade(-1);
-                    });
-                }
-                
-                const decadeNext = document.getElementById('decade-next');
-                if (decadeNext) {
-                    decadeNext.style.pointerEvents = 'auto';
-                    decadeNext.addEventListener('click', (e) => {
-                        console.log('🔘 Click década siguiente detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.changeCalendarDecade(1);
-                    });
-                }
-                
-                const backToMonths = document.getElementById('back-to-months');
-                if (backToMonths) {
-                    backToMonths.style.pointerEvents = 'auto';
-                    backToMonths.addEventListener('click', (e) => {
-                        console.log('🔘 Click volver a meses detectado');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        appState.switchCalendarView('months');
-                    });
-                }
-
-                // Listeners para botones de mes
-                const monthButtons = document.querySelectorAll('.month-button');
-                console.log(`📅 ${monthButtons.length} botones de mes encontrados`);
-                monthButtons.forEach((btn, index) => {
-                    btn.style.pointerEvents = 'auto';
-                    btn.addEventListener('click', e => {
-                        console.log(`🔘 Click en mes ${index + 1} detectado`);
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const monthIndex = parseInt(e.currentTarget.dataset.monthIndex);
-                        appState.setCalendarDate(monthIndex);
-                    });
-                });
-
-                // Listeners para botones de año
-                const yearButtons = document.querySelectorAll('.year-button');
-                console.log(`📅 ${yearButtons.length} botones de año encontrados`);
-                yearButtons.forEach(btn => {
-                    btn.style.pointerEvents = 'auto';
-                    btn.addEventListener('click', e => {
-                        console.log(`🔘 Click en año ${e.currentTarget.dataset.year} detectado`);
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const year = e.currentTarget.dataset.year;
-                        appState.selectCalendarYear(year);
-                    });
-                });
-                
-                console.log('✅ Event listeners del calendario registrados');
-            }
-        }
-          // ===============================================
-        // 🚀 FUNCIONES DE PERFORMANCE - Optimización de eventos
-        /**
-         * Debounce para optimizar eventos de input frecuentes
-         * @param {Function} func - Función a ejecutar
-         * @param {number} wait - Tiempo de espera en ms
-         * @returns {Function} Función debounced
-         */
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        /**
-         * Throttle para limitar ejecución de funciones
-         * @param {Function} func - Función a ejecutar
-         * @param {number} limit - Límite en ms
-         * @returns {Function} Función throttled
-         */
-        function throttle(func, limit) {
-            let inThrottle;
-            return function(...args) {
-                if (!inThrottle) {
-                    func.apply(this, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-
-        /**
-         * Lazy loading para elementos que aparecen en viewport
-         * @param {string} selector - Selector CSS de elementos
-         * @param {Function} callback - Función a ejecutar cuando sea visible
-         */
-        function observeIntersection(selector, callback) {
-            if ('IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            callback(entry.target);
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.1 });
-
-                document.querySelectorAll(selector).forEach(el => observer.observe(el));
-            } else {
-                // Fallback para navegadores sin IntersectionObserver
-                document.querySelectorAll(selector).forEach(callback);
-            }        }
-
-        // ===============================================
-        // 🧮 FUNCIONES DE CÁLCULO FINANCIERO
-        // ===============================================
-        
-        function calculateSummary() {
-            const currentTransactions = appState.data.transactions[appState.currentMonthKey] || [];
-            const totalIncome = currentTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            const totalExpenses = currentTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-            
-            const allTransactions = Object.values(appState.data.transactions).flat();
-            const totalSavings = allTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0) - allTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-            const totalInvestments = appState.data.investments.reduce((sum, i) => sum + i.currentAmount, 0);
-            const totalDebts = appState.data.debts.reduce((sum, d) => sum + d.amount, 0);
-            
-            const balance = totalIncome - totalExpenses;
-            const netWorth = totalSavings + totalInvestments - totalDebts;
-            
-            return { balance, netWorth, totalInvestments, totalDebts, totalIncome, totalExpenses };
-        }
-
-        // ===============================================
-        // 🚀 SISTEMA DE ATAJOS DE TECLADO RESTAURADO
-        // ===============================================
-        
-        /**
-         * � Gestor de Atajos de Teclado Robusto
-         * Sistema completo para manejar shortcuts en todos los navegadores
-         */
-        const ShortcutSystem = {
-            shortcuts: new Map(),
-            isActive: true,
-            
-            init() {
-                this.registerDefaultShortcuts();
-                this.attachListener();
-                console.log('✅ ShortcutSystem inicializado correctamente');
-            },
-            
-            /**
-             * Registra atajos por defecto de la aplicación
-             */
-            registerDefaultShortcuts() {
-                // Navegación entre vistas
-                this.register('d', () => appState.setView('dashboard'), 'Ir al Dashboard');
-                this.register('i', () => appState.setView('income'), 'Ir a Ingresos');
-                this.register('g', () => appState.setView('expenses'), 'Ir a Gastos');
-                this.register('n', () => appState.setView('investments'), 'Ir a Inversiones');
-                this.register('p', () => appState.setView('debts'), 'Ir a Deudas');
-                this.register('m', () => appState.setView('goals'), 'Ir a Metas');
-                this.register('a', () => appState.setView('settings'), 'Ir a Ajustes');
-                
-                // Navegación temporal
-                this.register('ArrowLeft', () => {
-                    if (!appState.activeModal) appState.changeMonth(-1);
-                }, 'Mes anterior');
-                this.register('ArrowRight', () => {
-                    if (!appState.activeModal) appState.changeMonth(1);
-                }, 'Mes siguiente');
-                  // Funciones especiales
-                this.register('Escape', () => {
-                    if (appState.activeModal) appState.closeModal();
-                }, 'Cerrar modal');
-                // Shortcut para calendario restaurado
-                this.register('c', () => {
-                    if (!appState.activeModal) appState.openModal('calendar');
-                }, 'Abrir calendario');
-                this.register('h', () => {
-                    if (!appState.activeModal) appState.openModal('shortcuts');
-                }, 'Mostrar atajos');
-                this.register('t', () => {
-                    appState.togglePrivacy();
-                    NotificationSystem.info('Privacidad', 
-                        `Modo privado ${appState.isPrivate ? 'activado' : 'desactivado'}`);
-                }, 'Alternar privacidad');
-            },
-            
-            /**
-             * Registra un nuevo atajo
-             */
-            register(key, callback, description = '') {
-                this.shortcuts.set(key.toLowerCase(), { callback, description });
-            },
-            
-            /**
-             * Elimina un atajo
-             */
-            unregister(key) {
-                this.shortcuts.delete(key.toLowerCase());
-            },
-            
-            /**
-             * Verifica si una tecla debería ser ignorada
-             */
-            shouldIgnoreEvent(event) {
-                const activeElement = document.activeElement;
-                const isInputField = activeElement && 
-                    ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeElement.tagName);
-                const isContentEditable = activeElement && 
-                    activeElement.contentEditable === 'true';
-                
-                return isInputField || isContentEditable;
-            },
-            
-            /**
-             * Maneja el evento de teclado
-             */
-            handleKeyDown(event) {
-                if (!this.isActive || this.shouldIgnoreEvent(event)) {
-                    return;
-                }
-                
-                const key = event.key.toLowerCase();
-                const shortcut = this.shortcuts.get(key);
-                
-                if (shortcut) {
-                    event.preventDefault();
-                    try {
-                        shortcut.callback(event);
-                    } catch (error) {
-                        console.error('Error executing shortcut:', error);
-                        NotificationSystem.error('Error', 'Error al ejecutar atajo de teclado');
-                    }
-                }
-            },
-            
-            /**
-             * Adjunta el listener de eventos
-             */
-            attachListener() {
-                document.addEventListener('keydown', (event) => {
-                    this.handleKeyDown(event);
-                }, { passive: false });
-            },
-            
-            /**
-             * Obtiene lista de atajos registrados
-             */
-            getShortcutsList() {
-                return Array.from(this.shortcuts.entries()).map(([key, data]) => ({
-                    key: key.toUpperCase(),
-                    description: data.description
-                }));
-            },
-            
-            /**
-             * Activa/desactiva el sistema de shortcuts
-             */            setActive(active) {
-                this.isActive = active;
-            }        };
-
-        // 🎯 DEBUG: Verificar que ShortcutSystem está definido
-        console.log('🎯 SHORTCUT SYSTEM STATUS:', typeof ShortcutSystem !== 'undefined' ? '✅ DEFINIDO' : '❌ NO DEFINIDO');
-
-        // ===============================================
-        // 🚀 INICIALIZACIÓN MEJORADA PARA LIVE SERVER
-        // ===============================================
-        
-        // Función de inicialización robusta        // Variable para controlar que startNebula solo se ejecute una vez
-        let nebulaStarted = false;
-        window.nebulaStarted = false; // También global para debugging
-          function startNebula() {
-            if (nebulaStarted) {
-                console.log('⚠️ Nebula ya está iniciado, ignorando llamada duplicada');
-                return;
-            }
-            
-            // Verificar si ya se renderizó la aplicación (indica éxito previo)
-            if (document.querySelector('#content-root').innerHTML.trim() !== '') {
-                console.log('⚠️ Aplicación ya renderizada, ignorando startNebula duplicado');
-                nebulaStarted = true;
-                window.nebulaStarted = true;
-                return;
-            }
-            
-            try {
-                nebulaStarted = true;
-                window.nebulaStarted = true;
-                console.log('🚀 Iniciando Nebula Financial...');
-                
-                // Verificar elementos DOM
-                const elements = ['content-root', 'dock-root', 'parallax-bg', 'modal-root'];
-                const domElements = elements.map(id => document.getElementById(id));
-                
-                if (domElements.some(el => !el)) {
-                    console.error('❌ Elementos DOM faltantes:', elements.filter((_, i) => !domElements[i]));
-                    throw new Error('Elementos DOM no encontrados');
-                }
-                
-                // Asignar elementos a variables globales
-                [contentRoot, dockRoot, parallaxBg, modalRoot] = domElements;
-                
-                // Verificar objetos necesarios
-                if (!THEMES || !ICONS || !appState) {
-                    throw new Error('Objetos globales no definidos');
-                }
-                
-                // 🌍 EXPOSICIÓN GLOBAL CRÍTICA - Para compatibilidad con módulos
-                window.appState = appState;
-                window.THEMES = THEMES;
-                window.ICONS = ICONS;
-                window.renderApp = renderApp;
-                
-                // Función global para aplicar autoformato numérico
-                window.formatThousands = function(value) {
-                    if (!value) return '';
-                    // Remover todo excepto números
-                    const cleanValue = value.toString().replace(/[^\d]/g, '');
-                    // Aplicar formato con puntos cada 3 dígitos
-                    return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                };
-                
-                window.applyThousandsFormatting = function(input) {
-                    if (!input) return;
-                    
-                    // Evento input para formateo en tiempo real
-                    input.addEventListener('input', (e) => {
-                        const cursorPosition = e.target.selectionStart;
-                        const oldValue = e.target.value;
-                        const newValue = window.formatThousands(oldValue);
-                        
-                        // Solo actualizar si cambió el valor
-                        if (newValue !== oldValue) {
-                            e.target.value = newValue;
-                            
-                            // Mantener posición del cursor
-                            const newCursorPosition = cursorPosition + (newValue.length - oldValue.length);
-                            e.target.setSelectionRange(newCursorPosition, newCursorPosition);
-                        }
-                    });
-                    
-                    // Formatear valor inicial si existe
-                    if (input.value) {
-                        input.value = window.formatThousands(input.value);
-                    }
-                };
-                
-                window.applyNumericFormatting = function() {
-                    // Aplicar formateo automático de miles a todos los inputs numéricos
-                    document.querySelectorAll('.numeric-input').forEach(input => {
-                        window.applyThousandsFormatting(input);
-                    });
-                    
-                    // También aplicar a inputs de actualización de inversiones
-                    document.querySelectorAll('.update-investment-input').forEach(input => {
-                        window.applyThousandsFormatting(input);
-                    });
-                };
-                
-                console.log('✅ Objetos globales expuestos correctamente');
-                
-                // Inicializar sistemas
-                ShortcutSystem.init();
-                NotificationSystem.init();
-                
-                // Renderizar aplicación
-                renderApp();
-                
-                // 🔐 INICIALIZAR SISTEMA DE AUTENTICACIÓN NEBULA
-                if (typeof NebulaAuthUI !== 'undefined' && window.NebulaAuth) {
-                    console.log('🔐 Inicializando sistema de autenticación Nebula...');
-                    
-                    // Usar la instancia global de NebulaAuth
-                    window.nebulaAuth = window.NebulaAuth; // Alias para compatibilidad
-                    window.nebulaAuthUI = new NebulaAuthUI(window.NebulaAuth);
-                    
-                    // Configurar listener de estado de autenticación
-                    window.nebulaAuth.addAuthListener((authData) => {
-                        const { user, profile, isAuthenticated } = authData;
-                        if (isAuthenticated && user && profile) {
-                            console.log('🔐 Usuario autenticado:', user.displayName);
-                            appState.user = {
-                                name: user.displayName || profile.displayName || 'Usuario',
-                                email: user.email || profile.email,
-                                photoURL: user.photoURL || profile.photoURL,
-                                uid: user.uid,
-                                provider: 'google',
-                                profile: profile
-                            };
-                            
-                            // Cargar datos del usuario desde el perfil
-                            if (profile.financialData) {
-                                Object.assign(appState, profile.financialData);
-                            }
-                            
-                            // Solo renderizar si renderApp está disponible
-                            if (typeof renderApp === 'function') {
-                                renderApp();
-                            } else {
-                                console.log('⏳ renderApp no disponible aún');
-                            }
-                        } else {
-                            console.log('👤 Usuario no autenticado');
-                            // Limpiar datos de usuario pero mantener datos locales
-                            appState.user = null;
-                        }
-                    });
-                    
-                    // La inicialización de NebulaAuth se hace automáticamente en el constructor
-                    console.log('✅ Sistema de autenticación Nebula configurado');
-                    
-                } else {
-                    console.log('⚠️ Sistema de autenticación Nebula no disponible');
-                    
-                    // 🔥 Fallback a Firebase Authentication básico
-                    if (window.firebaseAuth && window.onAuthStateChanged) {
-                        window.onAuthStateChanged(window.firebaseAuth, (user) => {
-                            if (user) {
-                                console.log('🔥 Usuario autenticado detectado:', user.displayName);
-                                if (!appState.user || appState.user.uid !== user.uid) {
-                                    appState.user = {
-                                        name: user.displayName || 'Usuario de Google',
-                                        email: user.email,
-                                        photoURL: user.photoURL,
-                                        uid: user.uid,
-                                        provider: 'google'
-                                    };
-                                    renderApp();
-                                }
-                            } else {
-                                console.log('🔥 No hay usuario autenticado');
-                            }
-                        });
-                    } else {
-                        console.log('⚠️ Firebase no disponible, usando autenticación local');
-                    }
-                }
-                
-                // Configurar dock
-                setTimeout(() => {
-                    if (typeof updateDockGlider === 'function') {
-                        updateDockGlider();
-                    }
-                }, 200);
-                  // Mostrar mensaje de bienvenida si es la primera vez
-                const isFirstVisit = (typeof window.NebulaSecurityUtils !== 'undefined') ? 
-                    !window.NebulaSecurityUtils.secureGetItem('nebula_visited') :
-                    !localStorage.getItem('nebula_visited');
-                if (isFirstVisit) {
-                    if (typeof window.NebulaSecurityUtils !== 'undefined') {
-                        window.NebulaSecurityUtils.secureSetItem('nebula_visited', true);
-                    } else {
-                        localStorage.setItem('nebula_visited', 'true');
-                    }
-                    setTimeout(() => {
-                        NotificationSystem.info('¡Bienvenido!', 
-                            'Presiona H para ver los atajos de teclado disponibles', 6000);
-                    }, 2000);
-                }
-                
-                console.log('✅ Nebula iniciada correctamente');
-                
-            } catch (error) {
-                nebulaStarted = false; // Reset para permitir reintento
-                window.nebulaStarted = false;
-                console.error('❌ Error en inicialización:', error);
-                
-                // Mostrar página de error
-                document.body.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%); color: white; font-family: 'Inter', Arial, sans-serif;">
-                        <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-radius: 20px; backdrop-filter: blur(10px); max-width: 500px;">
-                            <h1 style="font-size: 3rem; margin-bottom: 1rem;">🌌</h1>
-                            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: #e2e8f0;">Nebula Financial</h2>
-                            <p style="margin-bottom: 1.5rem; color: #cbd5e1; font-size: 1.1rem;">Iniciando tu universo financiero...</p>
-                            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 2rem; text-align: left;">
-                                <small style="color: #fcd34d; font-family: monospace;">${error.message}</small>
-                            </div>
-                            <button onclick="location.reload()" style="background: linear-gradient(45deg, #22c55e, #16a34a); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: transform 0.2s; margin-right: 10px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                🔄 Recargar App
-                            </button>
-                            <button onclick="if(NebulaSecurityUtils) { NebulaSecurityUtils.clearSecurityData(); } else { localStorage.clear(); } location.reload()" style="background: linear-gradient(45deg, #f59e0b, #d97706); border: none; color: white; padding: 14px 28px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                🗑️ Limpiar Datos
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-          // Función de espera para DOM con verificación robusta
-        function waitForDOM() {
-            console.log('📋 Verificando estado DOM:', document.readyState);
-            
-            // Verificar que los elementos críticos existan
-            const criticalElements = ['app-container', 'content-root', 'dock-root', 'parallax-bg', 'modal-root'];
-            const allElementsExist = criticalElements.every(id => {
-                const element = document.getElementById(id);
-                console.log(`📋 Elemento ${id}:`, element ? '✅ Encontrado' : '❌ No encontrado');
-                return element !== null;
-            });
-            
-            if (document.readyState === 'complete' && allElementsExist) {
-                console.log('✅ DOM completamente cargado y elementos verificados');
-                startNebula();
-            } else if (document.readyState === 'interactive' && allElementsExist) {
-                console.log('⏳ DOM interactivo, esperando 200ms...');
-                setTimeout(() => {
-                    const stillExist = criticalElements.every(id => document.getElementById(id));
-                    if (stillExist) {
-                        startNebula();
-                    } else {
-                        console.log('🔄 Elementos no listos, esperando evento DOMContentLoaded...');
-                        document.addEventListener('DOMContentLoaded', startNebula);
-                    }
-                }, 200);
-            } else {
-                console.log('🔄 Esperando carga completa del DOM...');
-                document.addEventListener('DOMContentLoaded', () => {
-                    console.log('📋 DOMContentLoaded disparado, reintentando...');
-                    setTimeout(waitForDOM, 50);
-                });
-            }
-        }// Iniciar aplicación
-        waitForDOM();
-
-        // 🧪 SISTEMA DE VALIDACIÓN AUTOMÁTICA
-        function validateNebula() {
-            setTimeout(() => {
-                try {
-                    console.log('🧪 Iniciando validación automática de Nebula...');                    const validationResults = {
-                        shortcuts: false,
-                        notifications: false,
-                        appState: false,
-                        dom: false,
-                        themes: false,
-                        security: false,
-                        inputValidation: false
-                    };
-                    
-                    // Test ShortcutSystem
-                    if (typeof ShortcutSystem !== 'undefined' && ShortcutSystem.init) {
-                        console.log('✅ ShortcutSystem: Definido y funcional');
-                        validationResults.shortcuts = true;
-                    } else {
-                        console.error('❌ ShortcutSystem: No definido o no funcional');
-                    }
-                    
-                    // Test NotificationSystem
-                    if (typeof NotificationSystem !== 'undefined' && NotificationSystem.success) {
-                        console.log('✅ NotificationSystem: Definido y funcional');
-                        validationResults.notifications = true;
-                    } else {
-                        console.error('❌ NotificationSystem: No definido o no funcional');
-                    }                      // Test appState
-                    if (typeof appState !== 'undefined' && appState.activeView && appState.data) {
-                        console.log('✅ appState: Definido y funcional');
-                        validationResults.appState = true;
-                    } else {
-                        console.error('❌ appState: No definido o no funcional', {
-                            defined: typeof appState !== 'undefined',
-                            hasActiveView: typeof appState !== 'undefined' && typeof appState.activeView !== 'undefined',
-                            hasData: typeof appState !== 'undefined' && appState.data
-                        });
-                    }
-                    
-                    // Test DOM elements
-                    const criticalIds = ['content-root', 'dock-root', 'parallax-bg', 'modal-root'];
-                    const domOk = criticalIds.every(id => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            console.log(`✅ DOM ${id}: Encontrado`);
-                            return true;
-                        } else {
-                            console.error(`❌ DOM ${id}: No encontrado`);
-                            return false;
-                        }
-                    });
-                    validationResults.dom = domOk;                    // Test THEMES
-                    if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer && THEMES.crisonVespertino) {
-                        console.log('✅ THEMES: Definido y funcional');
-                        validationResults.themes = true;
-                    } else {
-                        console.error('❌ THEMES: No definido o no funcional', {
-                            defined: typeof THEMES !== 'undefined',
-                            hasAureoAmanecer: typeof THEMES !== 'undefined' && THEMES.aureoAmanecer,
-                            hasCrisonVespertino: typeof THEMES !== 'undefined' && THEMES.crisonVespertino
-                        });
-                    }
-                    
-                    // Test Security System
-                    if (typeof NebulaSecurityUtils !== 'undefined' && NebulaSecurityUtils.encrypt) {
-                        console.log('✅ NebulaSecurityUtils: Sistema de seguridad activo');
-                        validationResults.security = true;
-                        
-                        // Test de cifrado básico
-                        try {
-                            const testData = 'test-encryption';
-                            const encrypted = NebulaSecurityUtils.encrypt(testData);
-                            const decrypted = NebulaSecurityUtils.decrypt(encrypted);
-                            if (decrypted === testData) {
-                                console.log('✅ Cifrado/Descifrado: Funcionando correctamente');
-                            } else {
-                                console.warn('⚠️ Cifrado/Descifrado: Inconsistencia detectada');
-                            }
-                        } catch (error) {
-                            console.error('❌ Error en test de cifrado:', error);
-                        }                    } else {
-                        console.error('❌ NebulaSecurityUtils: No definido o no funcional');
-                    }
-                    
-                    // Test Input Validation System
-                    if (typeof NebulaInputValidator !== 'undefined' && NebulaInputValidator.validateAmount) {
-                        console.log('✅ NebulaInputValidator: Sistema de validación activo');
-                        validationResults.inputValidation = true;
-                        
-                        // Test de validación básico
-                        try {
-                            const testResult = NebulaInputValidator.validateAmount('123.45');
-                            if (testResult.isValid && testResult.value === 123.45) {
-                                console.log('✅ Validación de entrada: Funcionando correctamente');
-                            } else {
-                                console.warn('⚠️ Validación de entrada: Comportamiento inesperado');
-                            }
-                        } catch (error) {
-                            console.error('❌ Error en test de validación:', error);
-                        }
-                    } else {
-                        console.error('❌ NebulaInputValidator: No definido o no funcional');
-                    }
-                    
-                    // Calcular resultados
-                    const totalTests = Object.keys(validationResults).length;
-                    const passedTests = Object.values(validationResults).filter(Boolean).length;
-                    const successRate = (passedTests / totalTests * 100).toFixed(1);
-                    
-                    console.log(`🧪 Validación completada: ${passedTests}/${totalTests} tests pasados (${successRate}%)`);
-                    
-                    if (passedTests === totalTests) {
-                        console.log('🎉 ¡Nebula Financial está funcionando perfectamente!');
-                        // Mostrar notificación de éxito
-                        if (NotificationSystem && NotificationSystem.success) {
-                            NotificationSystem.success('Sistema Validado', 
-                                `Todos los componentes funcionan correctamente (${successRate}%)`, 4000);
-                        }
-                    } else {
-                        console.warn(`⚠️ Algunas validaciones fallaron. Revisa la consola para más detalles.`);
-                        if (NotificationSystem && NotificationSystem.warning) {
-                            NotificationSystem.warning('Validación Parcial', 
-                                `${passedTests}/${totalTests} componentes funcionando`, 6000);
-                        }
-                    }
-                    
-                    // 🔧 Test rápido de atajos si todo está bien
-                    if (validationResults.shortcuts && validationResults.notifications) {
-                        console.log('🎮 Para probar atajos: D=Dashboard, I=Ingresos, G=Gastos, H=Ayuda');
-                    }
-                      } catch (error) {
-                    console.error('❌ Error durante la validación:', error);
-                }
-            }, 5000); // ⏰ CAMBIADO: 5 segundos para asegurar inicialización completa
-        }
-        
-        // Ejecutar validación automáticamente
-        if (typeof window !== 'undefined') {
-            validateNebula();
-        }
-
-        // 🚀 Registro del Service Worker para performance
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('✅ Service Worker registrado:', registration.scope);
-                        
-                        // Verificar actualizaciones
-                        registration.addEventListener('updatefound', () => {
-                            console.log('🔄 Nueva versión del SW disponible');
-                        });
-                    })
-                    .catch(error => {
-                        console.log('❌ Error registrando SW:', error);
-                    });
-            });        }
-
     </script>
       <!-- 🔧 MÓDULOS DE NEBULA FINANCIAL -->
     <script type="module">
@@ -4016,5 +1966,146 @@
         });    </script>    <!-- 🔐 SISTEMA DE AUTENTICACIÓN NEBULA - Integración Completa -->
     <script src="nebula-auth.js"></script>
     <script src="nebula-auth-ui.js"></script>
+
+    <!-- Fase 1: Mejoras de UX/UI -->
+
+        <!-- 1. Feedback Visual Mejorado -->
+        <style>
+            button {
+                transition: all 0.3s ease;
+            }
+            button:hover {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        </style>
+
+        <!-- 2. Accesibilidad -->
+        <script>
+            document.querySelectorAll('button, a').forEach(el => {
+                if (!el.hasAttribute('aria-label')) {
+                    el.setAttribute('aria-label', el.textContent.trim() || 'Botón');
+                }
+            });
+        </script>
+
+        <!-- 3. Diseño Responsivo -->
+        <style>
+            @media (max-width: 768px) {
+                .responsive-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <!-- 4. Indicadores de Progreso -->
+        <style>
+            .loading-spinner {
+                border: 4px solid rgba(0, 0, 0, 0.1);
+                border-left-color: #09f;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+        <script>
+            function showLoadingSpinner() {
+                const spinner = document.createElement('div');
+                spinner.className = 'loading-spinner';
+                document.body.appendChild(spinner);
+            }
+            function hideLoadingSpinner() {
+                const spinner = document.querySelector('.loading-spinner');
+                if (spinner) spinner.remove();
+            }
+        </script>
+
+        <!-- 5. Modo Oscuro/Claro -->
+        <style>
+            :root {
+                --bg-color: #ffffff;
+                --text-color: #000000;
+            }
+            [data-theme='dark'] {
+                --bg-color: #000000;
+                --text-color: #ffffff;
+            }
+            body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                transition: background-color 0.3s, color 0.3s;
+            }
+        </style>
+        <script>
+            function toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            });
+        </script>
+        <button onclick="toggleTheme()">Cambiar Tema</button>
+
+        <!-- Fase 2: Mejoras de Seguridad -->
+
+        <!-- 1. Protección Contra XSS -->
+        <script>
+            function escapeHTML(str) {
+                const div = document.createElement('div');
+                div.appendChild(document.createTextNode(str));
+                return div.innerHTML;
+            }
+            // Usar escapeHTML antes de insertar contenido generado por el usuario en el DOM
+        </script>
+
+        <!-- 2. Cifrado de Datos Sensibles -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+        <script>
+            function encryptData(key, data) {
+                return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+            }
+            function decryptData(key, encryptedData) {
+                const bytes = CryptoJS.AES.decrypt(encryptedData, key);
+                return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+            }
+            // Ejemplo: localStorage.setItem('data', encryptData('secret-key', { example: 'data' }));
+        </script>
+
+        <!-- 3. Política de Seguridad de Contenidos (CSP) -->
+        <!-- Esto debe configurarse en el servidor, pero se documenta aquí -->
+        <!-- Ejemplo: Content-Security-Policy: default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com -->
+
+        <!-- 4. Validación de Entradas -->
+        <script>
+            function validateInput(input, regex) {
+                return regex.test(input);
+            }
+            // Ejemplo: validateInput(userInput, /^[a-zA-Z0-9_]+$/);
+        </script>
+
+        <!-- 5. Autenticación Más Segura -->
+        <script>
+            function setSessionToken(token, expirationMinutes) {
+                const expirationTime = new Date().getTime() + expirationMinutes * 60000;
+                sessionStorage.setItem('sessionToken', encryptData('secret-key', { token, expirationTime }));
+            }
+            function isSessionValid() {
+                const sessionData = sessionStorage.getItem('sessionToken');
+                if (!sessionData) return false;
+                const { expirationTime } = decryptData('secret-key', sessionData);
+                return new Date().getTime() < expirationTime;
+            }
+            // Usar isSessionValid para verificar la validez de la sesión
+        </script>
 </body>
 </html>
