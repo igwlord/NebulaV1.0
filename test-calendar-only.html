@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Calendario - Nebula Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .calendar-month-btn {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .calendar-month-btn:hover {
+            transform: scale(1.05);
+            border-color: #fbbf24;
+        }
+
+        /* Meses con datos - Verde brillante */
+        .month-with-data {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Meses sin datos - Gris oscuro */
+        .month-without-data {
+            background: linear-gradient(135deg, #374151, #1f2937) !important;
+            color: #9ca3af !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mes actual - Dorado */
+        .current-month {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+            border: 2px solid #fbbf24 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+    <div class="text-center">
+        <h1 class="text-3xl font-bold mb-8 text-yellow-400">🗓️ Test Calendario Nebula</h1>
+        
+        <button id="openCalendarBtn" 
+                class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold text-white transition-colors">
+            Abrir Calendario
+        </button>
+
+        <div class="mt-8 p-4 bg-gray-800 rounded-lg">
+            <h3 class="text-lg font-semibold mb-2">Debug Info:</h3>
+            <div id="debugInfo" class="text-sm text-gray-400"></div>
+        </div>
+    </div>
+
+    <!-- Modal Root -->
+    <div id="modal-root"></div>
+
+    <script>
+        // Datos de prueba - simulando meses con y sin datos
+        const testData = {
+            2025: {
+                1: { hasData: true },   // Enero - con datos
+                2: { hasData: false },  // Febrero - sin datos
+                3: { hasData: true },   // Marzo - con datos
+                4: { hasData: false },  // Abril - sin datos
+                5: { hasData: true },   // Mayo - con datos
+                6: { hasData: true },   // Junio - con datos (mes actual)
+                7: { hasData: false },  // Julio - sin datos
+                8: { hasData: false },  // Agosto - sin datos
+                9: { hasData: true },   // Septiembre - con datos
+                10: { hasData: false }, // Octubre - sin datos
+                11: { hasData: true },  // Noviembre - con datos
+                12: { hasData: false }  // Diciembre - sin datos
+            }
+        };
+
+        const monthNames = [
+            'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+            'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+        ];
+
+        let currentYear = 2025;
+        let currentMonth = 6; // Junio
+        let debugInfo = document.getElementById('debugInfo');
+
+        function log(message) {
+            console.log(message);
+            debugInfo.innerHTML += message + '<br>';
+        }
+
+        function createCalendarModal() {
+            log('🗓️ Creando modal del calendario...');
+            
+            const modalHTML = `
+                <div class="modal-overlay" id="calendar-modal">
+                    <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 relative border border-gray-600">
+                        <!-- Header -->
+                        <div class="flex justify-between items-center mb-6">
+                            <button id="prev-year" class="text-2xl hover:text-yellow-400 transition-colors">←</button>
+                            <h3 id="year-display" class="text-2xl font-bold text-yellow-400">${currentYear}</h3>
+                            <button id="next-year" class="text-2xl hover:text-yellow-400 transition-colors">→</button>
+                            <button id="close-calendar" class="absolute top-4 right-4 text-2xl hover:text-red-400 transition-colors">×</button>
+                        </div>
+
+                        <p class="text-center text-gray-400 mb-4">Selecciona un mes para navegar</p>
+
+                        <!-- Grid de Meses -->
+                        <div class="grid grid-cols-3 gap-3 mb-6" id="months-grid">
+                            ${monthNames.map((month, index) => `
+                                <button class="calendar-month-btn p-4 rounded-lg text-center font-semibold ${getMonthClass(index + 1)}"
+                                        data-month="${index + 1}">
+                                    ${month}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <!-- Leyenda simplificada -->
+                        <div class="flex justify-center gap-4 mb-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 rounded bg-gradient-to-r from-green-500 to-green-600"></div>
+                                <span>Con datos</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 rounded bg-gradient-to-r from-gray-500 to-gray-600"></div>
+                                <span>Sin datos</span>
+                            </div>
+                        </div>
+
+                        <!-- Botón ir a hoy -->
+                        <div class="text-center">
+                            <button id="go-to-today" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg font-semibold transition-colors">
+                                📅 Ir a Hoy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const modalRoot = document.getElementById('modal-root');
+            modalRoot.innerHTML = modalHTML;
+            log('✅ Modal HTML insertado');
+
+            // Agregar event listeners
+            addCalendarEventListeners();
+        }
+
+        function getMonthClass(month) {
+            const yearData = testData[currentYear];
+            if (!yearData) return 'month-without-data';
+
+            const monthData = yearData[month];
+            if (!monthData) return 'month-without-data';
+
+            // Mes actual
+            if (month === currentMonth && currentYear === 2025) {
+                return 'current-month';
+            }
+
+            // Con o sin datos
+            return monthData.hasData ? 'month-with-data' : 'month-without-data';
+        }
+
+        function addCalendarEventListeners() {
+            log('🎯 Agregando event listeners...');
+
+            // Cerrar modal
+            const closeBtn = document.getElementById('close-calendar');
+            const modalOverlay = document.getElementById('calendar-modal');
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    log('❌ Cerrando calendario');
+                    modalOverlay.remove();
+                });
+                log('✅ Listener de cerrar agregado');
+            }
+
+            // Click fuera del modal
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    log('❌ Cerrando por click fuera');
+                    modalOverlay.remove();
+                }
+            });
+
+            // Navegación de años
+            const prevYearBtn = document.getElementById('prev-year');
+            const nextYearBtn = document.getElementById('next-year');
+            
+            if (prevYearBtn) {
+                prevYearBtn.addEventListener('click', () => {
+                    currentYear--;
+                    log(`📅 Año anterior: ${currentYear}`);
+                    updateCalendarDisplay();
+                });
+                log('✅ Listener año anterior agregado');
+            }
+
+            if (nextYearBtn) {
+                nextYearBtn.addEventListener('click', () => {
+                    currentYear++;
+                    log(`📅 Año siguiente: ${currentYear}`);
+                    updateCalendarDisplay();
+                });
+                log('✅ Listener año siguiente agregado');
+            }
+
+            // Selección de meses
+            const monthButtons = document.querySelectorAll('[data-month]');
+            monthButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const selectedMonth = parseInt(btn.dataset.month);
+                    log(`📅 Mes seleccionado: ${monthNames[selectedMonth-1]} ${currentYear}`);
+                    // Aquí iría la navegación al mes seleccionado
+                    modalOverlay.remove();
+                });
+            });
+            log(`✅ ${monthButtons.length} listeners de meses agregados`);
+
+            // Ir a hoy
+            const todayBtn = document.getElementById('go-to-today');
+            if (todayBtn) {
+                todayBtn.addEventListener('click', () => {
+                    currentYear = 2025;
+                    currentMonth = 6; // Junio
+                    log('📅 Navegando a hoy: Junio 2025');
+                    updateCalendarDisplay();
+                });
+                log('✅ Listener ir a hoy agregado');
+            }
+        }
+
+        function updateCalendarDisplay() {
+            const yearDisplay = document.getElementById('year-display');
+            const monthsGrid = document.getElementById('months-grid');
+            
+            if (yearDisplay) {
+                yearDisplay.textContent = currentYear;
+            }
+
+            if (monthsGrid) {
+                monthsGrid.innerHTML = monthNames.map((month, index) => `
+                    <button class="calendar-month-btn p-4 rounded-lg text-center font-semibold ${getMonthClass(index + 1)}"
+                            data-month="${index + 1}">
+                        ${month}
+                    </button>
+                `).join('');
+
+                // Re-agregar listeners a los nuevos botones
+                const monthButtons = document.querySelectorAll('[data-month]');
+                monthButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const selectedMonth = parseInt(btn.dataset.month);
+                        log(`📅 Mes seleccionado: ${monthNames[selectedMonth-1]} ${currentYear}`);
+                        document.getElementById('calendar-modal').remove();
+                    });
+                });
+            }
+        }
+
+        // Event listener para abrir el calendario
+        document.getElementById('openCalendarBtn').addEventListener('click', () => {
+            log('🚀 Abriendo calendario...');
+            createCalendarModal();
+        });
+
+        log('🎯 Sistema de calendario inicializado');
+    </script>
+</body>
+</html>

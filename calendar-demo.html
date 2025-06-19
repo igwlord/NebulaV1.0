@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Demo Calendario Épico - Nebula Financial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fcd34d;
+            min-height: 100vh;
+        }
+        
+        .glow {
+            box-shadow: 0 0 20px rgba(252, 211, 77, 0.3);
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="text-center max-w-4xl mx-auto">
+        <!-- Header épico -->
+        <div class="mb-8 animate-float">
+            <h1 class="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                🌌 Calendario Épico
+            </h1>
+            <p class="text-xl text-gray-300 mb-6">
+                Sistema de calendario avanzado con indicadores de datos
+            </p>
+        </div>
+        
+        <!-- Demo del calendario -->
+        <div class="bg-slate-900/80 backdrop-blur-xl rounded-3xl p-8 border border-yellow-400/30 glow mb-8">
+            <h2 class="text-2xl font-bold mb-6 text-yellow-400">✨ Características Épicas</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-6 h-6 bg-green-500/20 border-2 border-green-400 rounded"></div>
+                        <span class="text-green-400">Días con datos financieros</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <div class="w-6 h-6 bg-gray-500/20 border-2 border-gray-400 rounded"></div>
+                        <span class="text-gray-400">Días sin datos</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <div class="w-6 h-6 bg-blue-500/30 border-2 border-blue-400 rounded"></div>
+                        <span class="text-blue-300">Día actual</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <div class="w-6 h-6 bg-yellow-400/30 border-2 border-yellow-400 rounded"></div>
+                        <span class="text-yellow-300">Día seleccionado</span>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-800/50 rounded-lg p-4">
+                        <h3 class="font-bold text-yellow-400 mb-2">🎯 Vista de Año</h3>
+                        <p class="text-sm text-gray-300">12 mini calendarios con estadísticas</p>
+                    </div>
+                    
+                    <div class="bg-slate-800/50 rounded-lg p-4">
+                        <h3 class="font-bold text-yellow-400 mb-2">📅 Vista de Mes</h3>
+                        <p class="text-sm text-gray-300">Calendario detallado con navegación</p>
+                    </div>
+                    
+                    <div class="bg-slate-800/50 rounded-lg p-4">
+                        <h3 class="font-bold text-yellow-400 mb-2">⌨️ Atajos</h3>
+                        <p class="text-sm text-gray-300">Tecla 'C' para abrir</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botones de demo -->
+        <div class="flex flex-wrap gap-4 justify-center">
+            <button onclick="openMainApp()" 
+                    class="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 
+                           text-white rounded-2xl font-bold hover:scale-105 transition-all duration-200 
+                           shadow-lg hover:shadow-green-500/25 glow">
+                🚀 Abrir App Principal
+            </button>
+            
+            <button onclick="window.open('/debug-monitor.html', '_blank')" 
+                    class="px-8 py-4 bg-gradient-to-r from-purple-500 to-violet-500 
+                           text-white rounded-2xl font-bold hover:scale-105 transition-all duration-200 
+                           shadow-lg hover:shadow-purple-500/25">
+                🔍 Monitor de Debug
+            </button>
+        </div>
+        
+        <!-- Información técnica -->
+        <div class="mt-8 text-sm text-gray-400">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-800/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">🎨 Diseño</h4>
+                    <p>Glassmorphism moderno con efectos de brillo</p>
+                </div>
+                
+                <div class="bg-slate-800/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">📊 Datos</h4>
+                    <p>Integración automática con transacciones</p>
+                </div>
+                
+                <div class="bg-slate-800/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">⚡ Performance</h4>
+                    <p>Renderizado optimizado y responsive</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openMainApp() {
+            window.open('/', '_blank');
+        }
+        
+        // Efectos de partículas de fondo
+        function createStars() {
+            const numStars = 50;
+            const body = document.body;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'fixed w-1 h-1 bg-yellow-400 rounded-full opacity-30';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.animation = 'twinkle 3s infinite';
+                body.appendChild(star);
+            }
+        }
+        
+        // Agregar CSS para el twinkle
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes twinkle {
+                0%, 100% { opacity: 0.3; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.2); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Crear estrellas cuando la página carga
+        document.addEventListener('DOMContentLoaded', createStars);
+        
+        console.log('🌌 Demo del Calendario Épico iniciada');
+        console.log('📅 Para probar el calendario, abre la aplicación principal y presiona "C"');
+        console.log('✨ O haz clic en el botón del calendario en la esquina superior derecha');
+    </script>
+</body>
+</html>

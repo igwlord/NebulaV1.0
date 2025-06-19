@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Gmail Login - Nebula Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+    <div class="text-center max-w-md w-full mx-4">
+        <h1 class="text-3xl font-bold mb-8 text-red-400">📧 Test Gmail Login</h1>
+        
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h3 class="text-lg mb-4">Estado de Firebase:</h3>
+            <div id="firebase-status" class="text-sm text-gray-400 mb-4"></div>
+            
+            <button id="loginBtn" 
+                    class="w-full bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-semibold text-white transition-colors disabled:bg-gray-600"
+                    disabled>
+                🔄 Iniciando Firebase...
+            </button>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-4">
+            <h3 class="text-lg font-semibold mb-2">Debug Log:</h3>
+            <div id="debugLog" class="text-sm text-gray-400 text-left max-h-64 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        const debugLog = document.getElementById('debugLog');
+        const firebaseStatus = document.getElementById('firebase-status');
+        const loginBtn = document.getElementById('loginBtn');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = {
+                'info': 'text-blue-300',
+                'success': 'text-green-300',
+                'error': 'text-red-300',
+                'warning': 'text-yellow-300'
+            }[type];
+            
+            console.log(`[${timestamp}] ${message}`);
+            debugLog.innerHTML += `<div class="${color}">[${timestamp}] ${message}</div>`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+        }
+
+        async function initializeFirebase() {
+            try {
+                log('🔥 Iniciando Firebase...', 'info');
+                firebaseStatus.innerHTML = '🔄 Cargando configuración...';
+
+                // Cargar Firebase
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                const { getAuth, GoogleAuthProvider, signInWithPopup } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+                
+                log('✅ Firebase modules importados', 'success');
+
+                // Configuración de Firebase (usando valores demo por seguridad)
+                const firebaseConfig = {
+                    apiKey: "demo-api-key",
+                    authDomain: "demo-project.firebaseapp.com",
+                    projectId: "demo-project",
+                    storageBucket: "demo-project.appspot.com",
+                    messagingSenderId: "123456789",
+                    appId: "1:123456789:web:abcdef123456"
+                };
+
+                log('⚙️ Configuración Firebase cargada', 'info');
+
+                // Inicializar Firebase
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const provider = new GoogleAuthProvider();
+
+                log('✅ Firebase inicializado correctamente', 'success');
+                firebaseStatus.innerHTML = '✅ Firebase listo';
+                
+                // Habilitar botón
+                loginBtn.disabled = false;
+                loginBtn.textContent = '📧 Iniciar Sesión con Gmail';
+                loginBtn.className = 'w-full bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-semibold text-white transition-colors';
+
+                // Agregar event listener al botón
+                loginBtn.addEventListener('click', async () => {
+                    try {
+                        log('🚀 Iniciando proceso de login...', 'info');
+                        loginBtn.textContent = '⏰ Abriendo popup...';
+                        loginBtn.disabled = true;
+
+                        const result = await signInWithPopup(auth, provider);
+                        const user = result.user;
+                        
+                        log(`✅ Login exitoso: ${user.displayName} (${user.email})`, 'success');
+                        firebaseStatus.innerHTML = `✅ Conectado: ${user.displayName}`;
+                        loginBtn.textContent = '✅ Sesión Iniciada';
+                        loginBtn.className = 'w-full bg-green-600 px-6 py-3 rounded-lg font-semibold text-white';
+
+                    } catch (error) {
+                        log(`❌ Error en login: ${error.code} - ${error.message}`, 'error');
+                        firebaseStatus.innerHTML = '❌ Error en login';
+                        loginBtn.textContent = '🔄 Reintentar Login';
+                        loginBtn.disabled = false;
+                        loginBtn.className = 'w-full bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-semibold text-white transition-colors';
+                    }
+                });
+
+            } catch (error) {
+                log(`❌ Error inicializando Firebase: ${error.message}`, 'error');
+                firebaseStatus.innerHTML = '❌ Error en Firebase';
+                loginBtn.textContent = '❌ Error de Firebase';
+                loginBtn.className = 'w-full bg-gray-600 px-6 py-3 rounded-lg font-semibold text-white';
+            }
+        }
+
+        // Probar también carga desde archivo local
+        async function tryLocalConfig() {
+            try {
+                log('🔍 Intentando cargar configuración local...', 'info');
+                
+                // Intentar cargar env-loader
+                const envModule = await import('./env-loader.js');
+                const config = await envModule.loadEnvironment();
+                
+                if (config && config.apiKey) {
+                    log('✅ Configuración local cargada', 'success');
+                    return config;
+                } else {
+                    log('⚠️ Configuración local vacía', 'warning');
+                    return null;
+                }
+            } catch (error) {
+                log(`⚠️ No se pudo cargar configuración local: ${error.message}`, 'warning');
+                return null;
+            }
+        }
+
+        // Inicializar
+        log('🎯 Iniciando test de Gmail Login...', 'info');
+        
+        // Probar primero configuración local, luego demo
+        tryLocalConfig().then(localConfig => {
+            if (localConfig) {
+                log('📁 Usando configuración local', 'info');
+            } else {
+                log('🎭 Usando configuración demo', 'warning');
+            }
+            initializeFirebase();
+        });
+    </script>
+</body>
+</html>

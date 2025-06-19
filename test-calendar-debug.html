@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Calendario - Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .debug-info {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #3730a3;
+        }
+        .calendar-test {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 Debug del Calendario Nebula</h1>
+        
+        <div class="debug-info">
+            <h3>Estado Actual:</h3>
+            <div id="debug-output">Cargando...</div>
+        </div>
+        
+        <div class="calendar-test">
+            <h3>Tests del Calendario:</h3>
+            <button onclick="testCalendarOpen()">Abrir Calendario</button>
+            <button onclick="testCalendarButtons()">Test Botones</button>
+            <button onclick="testCalendarState()">Test Estado</button>
+            <button onclick="inspectDOM()">Inspeccionar DOM</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Simular el objeto appState básico para tests
+        const testAppState = {
+            activeModal: null,
+            calendarView: 'months',
+            calendarViewYear: 2025,
+            currentDate: new Date(),
+            
+            openModal(type) {
+                console.log('🎭 Test: Abriendo modal', type);
+                this.activeModal = type;
+                updateDebug();
+            },
+            
+            closeModal() {
+                console.log('🎭 Test: Cerrando modal');
+                this.activeModal = null;
+                updateDebug();
+            }
+        };
+
+        function updateDebug() {
+            const output = document.getElementById('debug-output');
+            output.innerHTML = `
+                <strong>Modal Activo:</strong> ${testAppState.activeModal || 'Ninguno'}<br>
+                <strong>Vista Calendario:</strong> ${testAppState.calendarView}<br>
+                <strong>Año Calendario:</strong> ${testAppState.calendarViewYear}<br>
+                <strong>Fecha Actual:</strong> ${testAppState.currentDate.toLocaleDateString()}<br>
+                <strong>Hora:</strong> ${new Date().toLocaleTimeString()}
+            `;
+        }
+
+        function testCalendarOpen() {
+            console.log('🧪 Test: Intentando abrir calendario...');
+            
+            // Simular apertura
+            testAppState.openModal('calendar');
+            
+            // Verificar elementos que deberían existir
+            const results = document.getElementById('test-results');
+            results.innerHTML = `
+                <div class="debug-info">
+                    <h4>🧪 Resultado Test Apertura:</h4>
+                    <p>✅ Modal marcado como: ${testAppState.activeModal}</p>
+                    <p>✅ Vista configurada como: ${testAppState.calendarView}</p>
+                    <p>✅ Año configurado como: ${testAppState.calendarViewYear}</p>
+                </div>
+            `;
+        }
+
+        function testCalendarButtons() {
+            console.log('🧪 Test: Verificando botones del calendario...');
+            
+            const buttonTests = [
+                'calendar-year-prev',
+                'calendar-year-next', 
+                'year-selector',
+                'today-button',
+                'month-button',
+                'decade-prev',
+                'decade-next',
+                'back-to-months',
+                'today-button-years',
+                'year-button'
+            ];
+            
+            let results = '<div class="debug-info"><h4>🧪 Test Botones:</h4>';
+            
+            buttonTests.forEach(buttonId => {
+                const exists = document.getElementById(buttonId) ? '✅' : '❌';
+                results += `<p>${exists} ${buttonId}</p>`;
+            });
+            
+            // Test por clases
+            const monthButtons = document.querySelectorAll('.month-button').length;
+            const yearButtons = document.querySelectorAll('.year-button').length;
+            
+            results += `<p>📊 Botones de mes encontrados: ${monthButtons}</p>`;
+            results += `<p>📊 Botones de año encontrados: ${yearButtons}</p>`;
+            results += '</div>';
+            
+            document.getElementById('test-results').innerHTML = results;
+        }
+
+        function testCalendarState() {
+            console.log('🧪 Test: Verificando estado global...');
+            
+            const tests = {
+                'window.appState existe': typeof window.appState !== 'undefined',
+                'window.renderModal existe': typeof window.renderModal === 'function',
+                'window.addModalEventListeners existe': typeof window.addModalEventListeners === 'function',
+                'ICONS definido': typeof window.ICONS !== 'undefined',
+                'modalRoot existe': document.getElementById('modal-root') !== null
+            };
+            
+            let results = '<div class="debug-info"><h4>🧪 Test Estado Global:</h4>';
+            
+            Object.entries(tests).forEach(([test, passed]) => {
+                const icon = passed ? '✅' : '❌';
+                results += `<p>${icon} ${test}</p>`;
+            });
+            
+            results += '</div>';
+            
+            document.getElementById('test-results').innerHTML = results;
+        }
+
+        function inspectDOM() {
+            console.log('🧪 Test: Inspeccionando DOM...');
+            
+            const modalRoot = document.getElementById('modal-root');
+            const calendarButton = document.getElementById('calendar-button');
+            
+            let results = '<div class="debug-info"><h4>🧪 Inspección DOM:</h4>';
+            
+            if (modalRoot) {
+                results += `<p>✅ modal-root encontrado</p>`;
+                results += `<p>📊 Contenido actual: ${modalRoot.innerHTML.length} caracteres</p>`;
+            } else {
+                results += `<p>❌ modal-root NO encontrado</p>`;
+            }
+            
+            if (calendarButton) {
+                results += `<p>✅ calendar-button encontrado</p>`;
+                results += `<p>📊 Event listeners: ${calendarButton.getEventListeners ? 'Disponibles' : 'No disponibles'}</p>`;
+            } else {
+                results += `<p>❌ calendar-button NO encontrado</p>`;
+            }
+            
+            results += '</div>';
+            
+            document.getElementById('test-results').innerHTML = results;
+        }
+
+        // Inicializar debug
+        updateDebug();
+        
+        // Log para la consola
+        console.log('🔧 Test de Calendario cargado. Usa las funciones para debuggear.');
+        console.log('📋 Funciones disponibles: testCalendarOpen(), testCalendarButtons(), testCalendarState(), inspectDOM()');
+    </script>
+</body>
+</html>

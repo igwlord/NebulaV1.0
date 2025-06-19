@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Firebase Import</title>
+</head>
+<body>
+    <h1>Test Firebase Config Import</h1>
+    <div id="result"></div>    <script type="module">
+        console.log('🧪 Iniciando test de importación de firebase-config.js');
+        
+        try {
+            // Test the import
+            const { getFirebaseConfig } = await import('./firebase-config.js');
+            console.log('✅ Import successful, getFirebaseConfig:', typeof getFirebaseConfig);
+            
+            if (typeof getFirebaseConfig === 'function') {
+                const config = getFirebaseConfig(); // No longer async
+                console.log('✅ Config loaded:', config);
+                document.getElementById('result').innerHTML = `
+                    <h2>✅ Success!</h2>
+                    <p>Firebase config loaded successfully</p>
+                    <pre>${JSON.stringify(config, null, 2)}</pre>
+                `;
+            } else {
+                throw new Error('getFirebaseConfig is not a function');
+            }
+        } catch (error) {
+            console.error('❌ Error importing firebase-config:', error);
+            document.getElementById('result').innerHTML = `
+                <h2>❌ Error!</h2>
+                <p>${error.message}</p>
+                <pre>${error.stack}</pre>
+            `;
+        }
+    </script>
+</body>
+</html>
