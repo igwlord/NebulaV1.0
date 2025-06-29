@@ -31,6 +31,10 @@ const NebulaAuth = {
         console.log('🔐 Inicializando Nebula Authentication...');
         
         try {
+            // Inicializar variables de protección contra spam
+            this.lastVerificationSent = 0;
+            this.lastPasswordReset = {};
+            
             // Verificar si Firebase está disponible
             if (!window.firebase) {
                 throw new Error('Firebase SDK no está disponible');
@@ -249,13 +253,25 @@ const NebulaAuth = {
 
     /**
      * Enviar email de verificación
+     * ✅ Con protección contra múltiples envíos
      */
     async sendEmailVerification() {
         try {
             const user = firebase.auth().currentUser;
             if (user && !user.emailVerified) {
+                // Verificar si ya se envió un correo recientemente (últimos 60 segundos)
+                const lastSent = this.lastVerificationSent || 0;
+                const now = Date.now();
+                
+                if (now - lastSent < 60000) {
+                    console.log('⚠️ Email de verificación enviado recientemente, esperando...');
+                    this.showNotification('Espera un minuto antes de solicitar otro email', 'warning');
+                    return false;
+                }
+                
                 await user.sendEmailVerification();
-                console.log('✅ Email de verificación enviado');
+                this.lastVerificationSent = now;
+                console.log('✅ Email de verificación enviado (único)');
                 this.showNotification('Email de verificación enviado', 'info');
                 return true;
             }
@@ -276,6 +292,7 @@ const NebulaAuth = {
 
     /**
      * Restablecer contraseña
+     * ✅ Con protección contra múltiples envíos
      */
     async resetPassword(email) {
         console.log('🔐 Enviando reset de contraseña para:', email);
@@ -284,6 +301,17 @@ const NebulaAuth = {
             // Validar email primero
             if (!email || email.trim() === '') {
                 throw new Error('Debes ingresar tu email para recuperar la contraseña');
+            }
+            
+            // Verificar si ya se envió un reset recientemente (últimos 60 segundos)
+            const resetKey = `reset_${email}`;
+            const lastSent = this.lastPasswordReset?.[resetKey] || 0;
+            const now = Date.now();
+            
+            if (now - lastSent < 60000) {
+                console.log('⚠️ Reset de contraseña enviado recientemente para este email');
+                this.showNotification('Espera un minuto antes de solicitar otro reset', 'warning');
+                return false;
             }
             
             if (!this.validateEmail(email)) {
@@ -295,7 +323,11 @@ const NebulaAuth = {
             
             await firebase.auth().sendPasswordResetEmail(email);
             
-            console.log('✅ Email de reset enviado exitosamente');
+            // Guardar timestamp del envío
+            if (!this.lastPasswordReset) this.lastPasswordReset = {};
+            this.lastPasswordReset[resetKey] = now;
+            
+            console.log('✅ Email de reset enviado exitosamente (único)');
             
             // Notificación de éxito más detallada
             this.showNotification(

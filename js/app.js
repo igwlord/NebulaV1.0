@@ -330,7 +330,8 @@ export function renderApp() {
         dockRoot.innerHTML = renderDock();
     }
     
-    addEventListeners();
+    // ⚠️ ELIMINADO: addEventListeners() - Ya se llama desde index.html
+    // addEventListeners(); // <- ESTA LLAMADA DUPLICADA CAUSABA ENVÍO DE 3 CORREOS
     
     // Actualizar glider después del renderizado
     setTimeout(() => updateDockGlider(), 100);

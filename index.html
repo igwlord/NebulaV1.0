@@ -1947,7 +1947,14 @@
             
             addEventListeners();
             
-            // 🔧 ASEGURAR QUE LOS FORMULARIOS DE AUTH ESTÉN DISPONIBLES
+            // � RESETEAR PROTECCIÓN DE LISTENERS AL CAMBIAR DE VISTA
+            // Esto permite re-registrar listeners cuando el DOM cambia
+            if (appState.user) {
+                // Si el usuario está logueado, permitir re-registro para vistas internas
+                authListenersRegistered = false;
+            }
+            
+            // �🔧 ASEGURAR QUE LOS FORMULARIOS DE AUTH ESTÉN DISPONIBLES
             // Solo si estamos en la vista de login (usuario no autenticado)
             if (!appState.user) {
                 setTimeout(() => {
@@ -2935,8 +2942,17 @@
         }        /**
          * 🎮 Gestor de Event Listeners Mejorado
          * Maneja todos los eventos de la interfaz de usuario
+         * ✅ Con protección contra registros duplicados
          */
+        let listenersRegistered = false;
+        
         function addEventListeners() {
+            // ⚠️ PROTECCIÓN CONTRA REGISTROS DUPLICADOS
+            if (listenersRegistered) {
+                console.log('⚠️ Event listeners ya registrados, evitando duplicación');
+                return;
+            }
+            
             // Eventos de autenticación tradicionales (Google, Guest)
             document.querySelectorAll('.login-button').forEach(btn => 
                 btn.addEventListener('click', e => appState.login(e.currentTarget.dataset.loginMethod))
@@ -2947,13 +2963,25 @@
             // SOLO agregar si estamos en la página de login (usuario no autenticado)
             setupAuthListeners();
             
+            // Marcar como registrados
+            listenersRegistered = true;
+            console.log('✅ Event listeners registrados una sola vez');
+            
             // Configurar el resto de listeners
             setupAdditionalListeners();
         }
 
+        let authListenersRegistered = false;
+        
         function setupAuthListeners() {
             // Verificar si estamos en el login (no hay elementos de auth si el usuario está logueado)
             if (appState.user) return;
+            
+            // ⚠️ PROTECCIÓN CONTRA REGISTROS DUPLICADOS DE AUTH
+            if (authListenersRegistered) {
+                console.log('⚠️ Auth listeners ya registrados, evitando duplicación');
+                return;
+            }
             
             // Botones principales de login ultra simple
             const googleLoginBtn = document.getElementById('google-login-btn');
@@ -3128,7 +3156,9 @@
                 });
             });
             
-            console.log('✅ Listeners de auth ultra simple configurados');
+            // Marcar auth listeners como registrados
+            authListenersRegistered = true;
+            console.log('✅ Listeners de auth ultra simple configurados (una sola vez)');
         }
 
         function setupAdditionalListeners() {
