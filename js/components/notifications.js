@@ -8,13 +8,12 @@
  * @version 2.0.0
  */
 
-import { createIcon, ICONS } from '../utils/helpers.js';
-
 /**
  * 🔔 Sistema de Notificaciones
  * Maneja todas las notificaciones in-app de Nebula Financial
  */
-export const NotificationSystem = {
+
+const NotificationSystem = {
     container: null,
     
     /**
@@ -43,12 +42,11 @@ export const NotificationSystem = {
             this.init();
         }
         
-        const id = Date.now().toString();
-        const iconMap = {
-            success: ICONS.checkCircle,
-            error: ICONS.xCircle,
-            warning: ICONS.alertTriangle,
-            info: ICONS.info
+        const id = Date.now().toString();        const iconMap = {
+            success: window.ICONS?.checkCircle,
+            error: window.ICONS?.xCircle,
+            warning: window.ICONS?.alertTriangle,
+            info: window.ICONS?.info
         };
         
         const notification = document.createElement('div');
@@ -65,7 +63,7 @@ export const NotificationSystem = {
         notification.innerHTML = `
             <div class="flex items-center gap-3 p-4 rounded-lg backdrop-blur-md border ${colorClasses[type]} shadow-lg min-w-80 max-w-md">
                 <div class="flex-shrink-0">
-                    ${createIcon(iconMap[type] || ICONS.info, 'w-5 h-5')}
+                    ${window.createIcon ? window.createIcon((window.ICONS && iconMap[type]) || window.ICONS?.info, 'w-5 h-5') : '🔔'}
                 </div>
                 <div class="flex-1">
                     <p class="text-sm font-medium">${message}</p>
@@ -75,7 +73,7 @@ export const NotificationSystem = {
                     class="flex-shrink-0 p-1 rounded-full hover:bg-white/20 transition-colors"
                     aria-label="Cerrar notificación"
                 >
-                    ${createIcon(ICONS.x, 'w-4 h-4')}
+                    ${window.createIcon ? window.createIcon(window.ICONS?.x, 'w-4 h-4') : '✕'}
                 </button>
             </div>
         `;

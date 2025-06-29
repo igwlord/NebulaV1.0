@@ -251,14 +251,35 @@ let contentRoot, dockRoot, parallaxBg, modalRoot;
  * Controla el flujo de renderizado según el estado actual
  */
 export function renderApp() {
+    // Inicializar elementos DOM si no están disponibles
+    if (!contentRoot || !dockRoot || !parallaxBg || !modalRoot) {
+        console.log('🔧 Inicializando elementos DOM...');
+        contentRoot = document.getElementById('content-root');
+        dockRoot = document.getElementById('dock-root');
+        parallaxBg = document.getElementById('parallax-bg');
+        modalRoot = document.getElementById('modal-root');
+        
+        // Verificar que los elementos existen
+        if (!contentRoot || !dockRoot || !parallaxBg || !modalRoot) {
+            console.error('❌ Elementos DOM críticos no encontrados');
+            return;
+        }
+    }
+    
     // Aplicar tema visual
     document.body.style.setProperty('--bg-gradient', appState.theme.gradient);
     parallaxBg.innerHTML = renderParallaxBackground();
-    
-    if (appState.isLoading) {
+      if (appState.isLoading) {
         contentRoot.innerHTML = renderLoadingScreen();
         dockRoot.innerHTML = '';
     } else if (!appState.user) {
+        // Auto-login como invitado para evitar pantalla de login
+        console.log('🚀 Auto-iniciando sesión como invitado...');
+        setTimeout(() => {
+            handleLogin('guest');
+        }, 100);
+        
+        // Mientras tanto, mostrar pantalla de login
         contentRoot.innerHTML = renderLoginView();
         dockRoot.innerHTML = '';
     } else {
@@ -1109,10 +1130,10 @@ function addFormEventListeners() {
                 console.error('Error al cerrar sesión:', error);
                 NotificationSystem.show('Error al cerrar sesión', 'error');
             }
-        });
-    }
+        });    }
     
-    // Borrar todos los datos    const clearAllDataButton = document.getElementById('clear-all-data-button');
+    // Borrar todos los datos
+    const clearAllDataButton = document.getElementById('clear-all-data-button');
     if (clearAllDataButton) {
         clearAllDataButton.addEventListener('click', async () => {
             // CloudSonnet4: Modal elegante para eliminar datos
@@ -1444,3 +1465,10 @@ function showErrorScreen(error) {
 //    Esto eliminaría las llamadas manuales a renderApp() y garantizaría UI
 //    siempre actualizada. Usar patrón Observer o similar para detectar cambios
 //    en propiedades específicas y actualizar solo las partes necesarias del DOM.
+
+// 🌐 EXPOSICIÓN GLOBAL DE FUNCIONES CRÍTICAS
+window.initializeApp = initializeApp;
+window.renderApp = renderApp;
+window.showErrorScreen = showErrorScreen;
+
+console.log('✅ app.js - Funciones expuestas globalmente');

@@ -8,13 +8,12 @@
  * @version 2.0.0
  */
 
-import { createIcon, ICONS } from '../utils/helpers.js';
-
 /**
  * 🪟 Sistema de Modales
  * Maneja todos los modales de la aplicación
  */
-export const ModalSystem = {
+
+const ModalSystem = {
     activeModals: new Set(),
     
     /**
@@ -69,22 +68,22 @@ export const ModalSystem = {
                 <div class="modal-content bg-slate-900/95 backdrop-blur-md rounded-2xl p-6 max-w-md w-full mx-4 border border-white/10">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            ${createIcon(ICONS.calendar, 'w-5 h-5 text-blue-400')}
+                            ${window.createIcon ? window.createIcon(window.ICONS?.calendar, 'w-5 h-5 text-blue-400') : '📅'}
                             Seleccionar Mes
                         </h2>
                         <button onclick="ModalSystem.closeModal()" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white">
-                            ${createIcon(ICONS.x, 'w-4 h-4')}
+                            ${window.createIcon ? window.createIcon(window.ICONS?.x, 'w-4 h-4') : '✕'}
                         </button>
                     </div>
                     
                     <div class="mb-4">
                         <div class="flex items-center justify-between mb-4">
                             <button id="year-prev" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white">
-                                ${createIcon(ICONS.chevronLeft, 'w-4 h-4')}
+                                ${window.createIcon ? window.createIcon(window.ICONS?.chevronLeft, 'w-4 h-4') : '←'}
                             </button>
                             <h3 class="text-lg font-semibold text-white">${currentSelectedDate.getFullYear()}</h3>
                             <button id="year-next" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white">
-                                ${createIcon(ICONS.chevronRight, 'w-4 h-4')}
+                                ${window.createIcon ? window.createIcon(window.ICONS?.chevronRight, 'w-4 h-4') : '→'}
                             </button>
                         </div>
                     </div>
@@ -129,9 +128,9 @@ export const ModalSystem = {
         };
         
         const typeIcons = {
-            info: ICONS.info,
-            warning: ICONS.alertTriangle,
-            danger: ICONS.alertCircle
+            info: window.ICONS?.info || 'ℹ️',
+            warning: window.ICONS?.alertTriangle || '⚠️',
+            danger: window.ICONS?.alertCircle || '🚨'
         };
         
         const confirmClasses = {
@@ -145,7 +144,7 @@ export const ModalSystem = {
                 <div class="modal-content bg-slate-900/95 backdrop-blur-md rounded-2xl p-6 max-w-md w-full mx-4 border border-white/10">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="${typeClasses[type]}">
-                            ${createIcon(typeIcons[type], 'w-6 h-6')}
+                            ${window.createIcon ? window.createIcon(typeIcons[type], 'w-6 h-6') : typeIcons[type]}
                         </div>
                         <h2 class="text-xl font-bold text-white">${title}</h2>
                     </div>
@@ -230,7 +229,7 @@ export const ModalSystem = {
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-bold text-white">${title}</h2>
                         <button onclick="ModalSystem.closeModal()" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white">
-                            ${createIcon(ICONS.x, 'w-4 h-4')}
+                            ${window.createIcon ? window.createIcon(window.ICONS?.x, 'w-4 h-4') : '✕'}
                         </button>
                     </div>
                     
@@ -278,7 +277,7 @@ export const ModalSystem = {
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-xl font-bold text-white">${title}</h2>
                         <button onclick="ModalSystem.closeModal()" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white">
-                            ${createIcon(ICONS.x, 'w-4 h-4')}
+                            ${window.createIcon ? window.createIcon(window.ICONS?.x, 'w-4 h-4') : '✕'}
                         </button>
                     </div>
                     

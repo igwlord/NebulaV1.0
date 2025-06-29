@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Diagnóstico Completo - Nebula Financial</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #0f1419 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .test-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+        }
+        .test-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .test-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .status-pass { background: #10b981; }
+        .status-fail { background: #ef4444; }
+        .status-pending { background: #f59e0b; animation: pulse 2s infinite; }
+        .test-details {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+        .summary {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #22c55e);
+            transition: width 1s ease;
+        }
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .btn {
+            background: linear-gradient(45deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .logs {
+            background: rgba(0,0,0,0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Diagnóstico Completo - Nebula Financial</h1>
+            <p>Verificación completa de todos los sistemas y módulos</p>
+        </div>
+
+        <div class="actions">
+            <button class="btn" onclick="runFullDiagnostic()">🔄 Ejecutar Diagnóstico Completo</button>
+            <button class="btn" onclick="openMainApp()">🚀 Abrir Aplicación Principal</button>
+            <button class="btn" onclick="openFirebaseTest()">🔥 Test Firebase</button>
+        </div>
+
+        <div class="summary" id="summary">
+            <h3>📊 Resumen de Diagnóstico</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 0%"></div>
+            </div>
+            <p id="summary-text">Haz clic en "Ejecutar Diagnóstico Completo" para comenzar</p>
+        </div>
+
+        <div class="test-grid" id="test-grid">
+            <!-- Los tests se generarán dinámicamente -->
+        </div>
+
+        <div class="test-card">
+            <h3>📋 Logs del Sistema</h3>
+            <div class="logs" id="logs">
+                Esperando ejecución del diagnóstico...
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts externos necesarios -->
+    <script src="./env-loader.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="./config/firebase-config.js"></script>
+    <script src="./js/auth/firebase-auth.js"></script>
+
+    <script>
+        let logs = [];
+        let testResults = [];
+
+        // Función para agregar logs
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            logs.push(logEntry);
+            
+            const logsElement = document.getElementById('logs');
+            logsElement.textContent = logs.join('\n');
+            logsElement.scrollTop = logsElement.scrollHeight;
+            
+            console.log(logEntry);
+        }
+
+        // Definición de tests
+        const diagnosticTests = [
+            {
+                id: 'env-vars',
+                name: '🔐 Variables de Entorno',
+                description: 'Verificación de carga de .env y configuración segura',
+                test: async () => {
+                    if (window.NebulaEnv && window.NebulaEnv.loaded) {
+                        const firebaseConfig = window.NebulaEnv.getFirebaseConfig();
+                        return {
+                            pass: firebaseConfig && firebaseConfig.apiKey && firebaseConfig.projectId,
+                            details: firebaseConfig ? `✅ Config cargado: ${firebaseConfig.projectId}` : '❌ Config no disponible'
+                        };
+                    }
+                    return { pass: false, details: '❌ NebulaEnv no disponible' };
+                }
+            },
+            {
+                id: 'firebase-sdk',
+                name: '🔥 Firebase SDK',
+                description: 'Verificación de Firebase SDK y servicios',
+                test: async () => {
+                    const hasFirebase = typeof firebase !== 'undefined';
+                    const hasAuth = hasFirebase && firebase.auth;
+                    const hasFirestore = hasFirebase && firebase.firestore;
+                    const pass = hasFirebase && hasAuth && hasFirestore;
+                    
+                    return {
+                        pass,
+                        details: pass ? 
+                            `✅ Firebase v${firebase.SDK_VERSION || 'Unknown'} - Auth: ✅ Firestore: ✅` :
+                            `❌ Firebase: ${hasFirebase} Auth: ${hasAuth} Firestore: ${hasFirestore}`
+                    };
+                }
+            },
+            {
+                id: 'firebase-config',
+                name: '⚙️ Firebase Configuration',
+                description: 'Verificación de configuración Firebase',
+                test: async () => {
+                    const hasConfig = window.NebulaConfig && window.NebulaConfig.isValid;
+                    const details = hasConfig ? 
+                        `✅ Config válido: ${window.NebulaConfig.firebase.projectId}` :
+                        '❌ Configuración Firebase no válida';
+                    
+                    return { pass: hasConfig, details };
+                }
+            },
+            {
+                id: 'auth-module',
+                name: '🔐 Nebula Auth Module',
+                description: 'Verificación del módulo de autenticación',
+                test: async () => {
+                    const hasAuth = window.NebulaAuth && typeof window.NebulaAuth.init === 'function';
+                    let authState = null;
+                    
+                    if (hasAuth) {
+                        try {
+                            authState = window.NebulaAuth.getState();
+                        } catch (e) {
+                            // Auth module disponible pero no inicializado
+                        }
+                    }
+                    
+                    const details = hasAuth ? 
+                        `✅ Módulo disponible - Estado: ${authState ? (authState.isAuthenticated ? 'Autenticado' : 'No autenticado') : 'No inicializado'}` :
+                        '❌ Módulo no disponible';
+                    
+                    return { pass: hasAuth, details };
+                }
+            },
+            {
+                id: 'settings-module',
+                name: '⚙️ Settings Module',
+                description: 'Verificación del módulo de configuración modernizado',
+                test: async () => {
+                    const hasSettings = window.SettingsModule && typeof window.SettingsModule.render === 'function';
+                    const hasAuth = hasSettings && typeof window.SettingsModule.signInWithGoogle === 'function';
+                    
+                    const details = hasSettings ? 
+                        `✅ Módulo disponible - Auth integrado: ${hasAuth ? '✅' : '❌'}` :
+                        '❌ Módulo no disponible';
+                    
+                    return { pass: hasSettings, details };
+                }
+            },
+            {
+                id: 'app-state',
+                name: '🎨 App State Global',
+                description: 'Verificación del estado global de la aplicación',
+                test: async () => {
+                    const hasAppState = window.appState && typeof window.appState.setTheme === 'function';
+                    const details = hasAppState ? 
+                        '✅ Estado global disponible con soporte de temas' :
+                        '❌ Estado global no disponible';
+                    
+                    return { pass: hasAppState, details };
+                }
+            },
+            {
+                id: 'local-storage',
+                name: '💾 Local Storage',
+                description: 'Verificación de almacenamiento local',
+                test: async () => {
+                    const hasStorage = typeof Storage !== "undefined";
+                    let canWrite = false;
+                    
+                    if (hasStorage) {
+                        try {
+                            localStorage.setItem('test', 'test');
+                            canWrite = localStorage.getItem('test') === 'test';
+                            localStorage.removeItem('test');
+                        } catch (e) {
+                            canWrite = false;
+                        }
+                    }
+                    
+                    const details = hasStorage ? 
+                        `✅ Disponible - Escritura: ${canWrite ? '✅' : '❌'}` :
+                        '❌ No disponible';
+                    
+                    return { pass: hasStorage && canWrite, details };
+                }
+            },
+            {
+                id: 'network',
+                name: '🌐 Conectividad de Red',
+                description: 'Verificación de conectividad y recursos externos',
+                test: async () => {
+                    const isOnline = navigator.onLine;
+                    let canReachFirebase = false;
+                    
+                    if (isOnline) {
+                        try {
+                            const response = await fetch('https://www.gstatic.com/firebasejs/ping', { mode: 'no-cors' });
+                            canReachFirebase = true;
+                        } catch (e) {
+                            canReachFirebase = false;
+                        }
+                    }
+                    
+                    const details = `Red: ${isOnline ? '✅' : '❌'} Firebase: ${canReachFirebase ? '✅' : '❌'}`;
+                    
+                    return { pass: isOnline, details };
+                }
+            }
+        ];
+
+        // Función para ejecutar diagnóstico completo
+        async function runFullDiagnostic() {
+            addLog('🔍 Iniciando diagnóstico completo del sistema...');
+            
+            testResults = [];
+            const testGrid = document.getElementById('test-grid');
+            testGrid.innerHTML = '';
+            
+            // Crear cards para cada test
+            diagnosticTests.forEach(test => {
+                const card = document.createElement('div');
+                card.className = 'test-card';
+                card.id = `test-${test.id}`;
+                card.innerHTML = `
+                    <div class="test-header">
+                        <div class="test-status status-pending" id="status-${test.id}"></div>
+                        <h4>${test.name}</h4>
+                    </div>
+                    <p>${test.description}</p>
+                    <div class="test-details" id="details-${test.id}">Ejecutando...</div>
+                `;
+                testGrid.appendChild(card);
+            });
+            
+            // Ejecutar tests secuencialmente
+            let passedTests = 0;
+            
+            for (let i = 0; i < diagnosticTests.length; i++) {
+                const test = diagnosticTests[i];
+                addLog(`🧪 Ejecutando: ${test.name}`);
+                
+                try {
+                    const result = await test.test();
+                    testResults.push({ id: test.id, ...result });
+                    
+                    const statusElement = document.getElementById(`status-${test.id}`);
+                    const detailsElement = document.getElementById(`details-${test.id}`);
+                    
+                    if (result.pass) {
+                        statusElement.className = 'test-status status-pass';
+                        detailsElement.textContent = result.details;
+                        addLog(`✅ ${test.name}: PASS`);
+                        passedTests++;
+                    } else {
+                        statusElement.className = 'test-status status-fail';
+                        detailsElement.textContent = result.details;
+                        addLog(`❌ ${test.name}: FAIL - ${result.details}`);
+                    }
+                } catch (error) {
+                    addLog(`❌ ${test.name}: ERROR - ${error.message}`);
+                    const statusElement = document.getElementById(`status-${test.id}`);
+                    const detailsElement = document.getElementById(`details-${test.id}`);
+                    statusElement.className = 'test-status status-fail';
+                    detailsElement.textContent = `Error: ${error.message}`;
+                }
+                
+                // Actualizar progreso
+                const progress = ((i + 1) / diagnosticTests.length) * 100;
+                document.getElementById('progress').style.width = `${progress}%`;
+            }
+            
+            // Mostrar resumen final
+            const totalTests = diagnosticTests.length;
+            const percentage = Math.round((passedTests / totalTests) * 100);
+            
+            const summaryText = document.getElementById('summary-text');
+            if (passedTests === totalTests) {
+                summaryText.innerHTML = `🎉 <strong>¡PERFECTO!</strong> Todos los tests pasaron (${passedTests}/${totalTests}) - Sistema completamente funcional`;
+                summaryText.style.color = '#10b981';
+            } else if (percentage >= 75) {
+                summaryText.innerHTML = `⚠️ <strong>Bien</strong> - ${passedTests}/${totalTests} tests pasaron (${percentage}%) - Revisa los fallos menores`;
+                summaryText.style.color = '#f59e0b';
+            } else {
+                summaryText.innerHTML = `❌ <strong>Atención</strong> - Solo ${passedTests}/${totalTests} tests pasaron (${percentage}%) - Revisa la configuración`;
+                summaryText.style.color = '#ef4444';
+            }
+            
+            addLog(`📊 DIAGNÓSTICO COMPLETADO: ${passedTests}/${totalTests} tests exitosos (${percentage}%)`);
+            addLog('🚀 Sistema listo para uso' + (passedTests < totalTests ? ' con algunas limitaciones' : ' completo'));
+        }
+
+        // Funciones de navegación
+        function openMainApp() {
+            window.open('./index.html', '_blank');
+        }
+
+        function openFirebaseTest() {
+            window.open('./test-firebase.html', '_blank');
+        }
+
+        // Inicialización
+        window.addEventListener('load', async () => {
+            addLog('🔍 Página de diagnóstico cargada');
+            addLog('💡 Haz clic en "Ejecutar Diagnóstico Completo" para comenzar la verificación');
+            
+            // Cargar env automáticamente
+            try {
+                if (window.NebulaEnvLoader) {
+                    const envLoader = new NebulaEnvLoader();
+                    await envLoader.loadEnvironment();
+                    window.NebulaEnv = envLoader;
+                    addLog('✅ Variables de entorno cargadas automáticamente');
+                }
+            } catch (error) {
+                addLog('⚠️ Error cargando variables de entorno: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

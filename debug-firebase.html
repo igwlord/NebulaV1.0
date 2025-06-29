@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug Firebase Auth</title>
+    <style>
+        body { font-family: monospace; background: #1a1a2e; color: #00ff00; padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; border: 1px solid #333; border-radius: 5px; }
+        .error { color: #ff4444; border-color: #ff4444; }
+        .success { color: #44ff44; border-color: #44ff44; }
+        .warning { color: #ffaa00; border-color: #ffaa00; }
+        button { background: #333; color: white; border: 1px solid #555; padding: 10px 20px; margin: 5px; cursor: pointer; }
+        button:hover { background: #555; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Firebase Auth - Nebula</h1>
+    
+    <div id="status"></div>
+    
+    <button onclick="testFirebaseAvailable()">Test Firebase Disponible</button>
+    <button onclick="testConfigAvailable()">Test Config Disponible</button>
+    <button onclick="testInitFirebase()">Test Init Firebase</button>
+    <button onclick="testAuthGoogle()">Test Auth Google</button>
+    <button onclick="clearLogs()">Limpiar Logs</button>
+    
+    <div id="logs"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- Nebula Config -->
+    <script src="./env-loader.js"></script>
+    <script src="./config/firebase-config.js"></script>
+    <script src="./js/auth/firebase-auth.js"></script>
+    
+    <script>
+        const logs = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push({ timestamp, message, type });
+            updateLogs();
+        }
+        
+        function updateLogs() {
+            const container = document.getElementById('logs');
+            container.innerHTML = logs.slice(-10).map(log => 
+                `<div class="status ${log.type}">[${log.timestamp}] ${log.message}</div>`
+            ).join('');
+        }
+        
+        function updateStatus() {
+            const status = document.getElementById('status');
+            status.innerHTML = `
+                <div class="status ${window.firebase ? 'success' : 'error'}">
+                    Firebase SDK: ${window.firebase ? '✅ Disponible' : '❌ No disponible'}
+                </div>
+                <div class="status ${window.NebulaConfig ? 'success' : 'error'}">
+                    NebulaConfig: ${window.NebulaConfig ? '✅ Disponible' : '❌ No disponible'}
+                </div>
+                <div class="status ${window.NebulaAuth ? 'success' : 'error'}">
+                    NebulaAuth: ${window.NebulaAuth ? '✅ Disponible' : '❌ No disponible'}
+                </div>
+                <div class="status ${firebase?.apps?.length ? 'success' : 'warning'}">
+                    Firebase Apps: ${firebase?.apps?.length || 0} inicializadas
+                </div>
+            `;
+        }
+        
+        function testFirebaseAvailable() {
+            if (window.firebase) {
+                log('✅ Firebase SDK está disponible', 'success');
+                log(`📊 Firebase version: ${firebase.SDK_VERSION}`, 'info');
+            } else {
+                log('❌ Firebase SDK NO disponible', 'error');
+            }
+        }
+        
+        function testConfigAvailable() {
+            if (window.NebulaConfig) {
+                log('✅ NebulaConfig disponible', 'success');
+                log(`🔧 Config válida: ${window.NebulaConfig.isValid}`, 'info');
+                log(`🔥 Firebase config: ${JSON.stringify(window.NebulaConfig.firebase, null, 2)}`, 'info');
+            } else {
+                log('❌ NebulaConfig NO disponible', 'error');
+            }
+        }
+        
+        async function testInitFirebase() {
+            try {
+                if (!window.firebase) {
+                    throw new Error('Firebase SDK no disponible');
+                }
+                
+                if (!window.NebulaConfig?.firebase) {
+                    throw new Error('Firebase config no disponible');
+                }
+                
+                if (!firebase.apps.length) {
+                    log('🔥 Inicializando Firebase App...', 'info');
+                    firebase.initializeApp(window.NebulaConfig.firebase);
+                    log('✅ Firebase App inicializada', 'success');
+                } else {
+                    log('✅ Firebase App ya inicializada', 'success');
+                }
+                
+                updateStatus();
+                
+            } catch (error) {
+                log(`❌ Error inicializando Firebase: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAuthGoogle() {
+            try {
+                if (!window.NebulaAuth) {
+                    throw new Error('NebulaAuth no disponible');
+                }
+                
+                log('🔐 Intentando login con Google...', 'info');
+                await window.NebulaAuth.signInWithGoogle();
+                log('✅ Login Google exitoso', 'success');
+                
+            } catch (error) {
+                log(`❌ Error en Google Auth: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearLogs() {
+            logs.length = 0;
+            updateLogs();
+        }
+        
+        // Event listeners
+        window.addEventListener('nebula-auth-userSignedIn', (event) => {
+            log(`🔥 Usuario autenticado: ${event.detail.email || 'Anónimo'}`, 'success');
+        });
+        
+        window.addEventListener('nebula-auth-userSignedOut', () => {
+            log('👋 Usuario desconectado', 'warning');
+        });
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Debug tool iniciado', 'info');
+            updateStatus();
+            
+            // Actualizar estado cada 2 segundos
+            setInterval(updateStatus, 2000);
+        });
+    </script>
+</body>
+</html>

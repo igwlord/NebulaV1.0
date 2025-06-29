@@ -70,21 +70,39 @@ const NebulaSecurityUtils = {
     /**
      * Descifrado de datos
      * Corregido para manejar errores de descifrado
-     */
-    decrypt(encryptedText) {
+     */    decrypt(encryptedText) {
         try {
             if (!this.encryptionKey) {
                 console.error('❌ Error: Clave de cifrado no disponible.');
                 return encryptedText;
             }
+            
+            if (!encryptedText || typeof encryptedText !== 'string') {
+                return encryptedText;
+            }
+            
+            // Validar formato básico
+            if (encryptedText.length < 20) {
+                return encryptedText; // Probable que no esté cifrado
+            }
+            
             const bytes = CryptoJS.AES.decrypt(encryptedText, CryptoJS.enc.Hex.parse(this.encryptionKey), {
                 mode: CryptoJS.mode.CBC,
                 padding: CryptoJS.pad.Pkcs7,
                 iv: CryptoJS.enc.Hex.parse('00000000000000000000000000000000')
             });
-            return bytes.toString(CryptoJS.enc.Utf8);
+            
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            
+            // Verificar que el descifrado fue exitoso
+            if (!decrypted || decrypted.length === 0) {
+                console.warn('⚠️ Descifrado resultó en string vacía');
+                return encryptedText;
+            }
+            
+            return decrypted;
         } catch (error) {
-            console.error('❌ Error en descifrado:', error);
+            console.error('❌ Error en descifrado:', error.message);
             return encryptedText; // Fallback
         }
     },
@@ -112,15 +130,31 @@ const NebulaSecurityUtils = {
      * @param {string} key - Clave
      * @param {any} defaultValue - Valor por defecto
      * @returns {any} - Valor descifrado
-     */
-    secureGetItem(key, defaultValue = null) {
+     */    secureGetItem(key, defaultValue = null) {
         try {
             const encryptedValue = localStorage.getItem(`nebula_${key}`);
             if (!encryptedValue) {
                 return defaultValue;
             }
             
+            // Verificar si el valor parece estar cifrado
+            if (encryptedValue.length < 50 || !encryptedValue.match(/^[A-Za-z0-9+/=]+$/)) {
+                // Si no parece cifrado, intentar como JSON normal
+                try {
+                    return JSON.parse(encryptedValue);
+                } catch {
+                    return encryptedValue;
+                }
+            }
+            
             const decryptedValue = this.decrypt(encryptedValue);
+            
+            // Verificar que el descifrado fue exitoso
+            if (!decryptedValue || decryptedValue === encryptedValue) {
+                console.warn(`⚠️ No se pudo descifrar ${key}, limpiando datos corruptos`);
+                localStorage.removeItem(`nebula_${key}`);
+                return defaultValue;
+            }
             
             // Intentar parsear JSON
             try {
@@ -130,7 +164,12 @@ const NebulaSecurityUtils = {
             }
         } catch (error) {
             console.error('❌ Error recuperando datos seguros:', error);
-            // Fallback: recuperación normal
+            // Limpiar valor problemático y fallback
+            try {
+                localStorage.removeItem(`nebula_${key}`);
+            } catch {}
+            
+            // Intentar fallback normal
             const value = localStorage.getItem(key);
             if (!value) return defaultValue;
             
@@ -247,19 +286,35 @@ const NebulaSecurityUtils = {
             return false;
         }
     },
-    
-    /**
-     * Optimización: Liberar recursos no utilizados y evitar acumulaciones innecesarias
+      /**
+     * Limpiar datos de seguridad corruptos
      */
     clearSecurityData() {
-        const keys = Object.keys(localStorage).filter(key => key.startsWith('nebula_'));
-        keys.forEach(key => {
-            localStorage.removeItem(key);
-        });
-        console.log('🧹 Datos de seguridad limpiados');
-
-        // Liberar referencias a objetos grandes
-        this.encryptionKey = null;
+        try {
+            const keys = Object.keys(localStorage).filter(key => key.startsWith('nebula_'));
+            keys.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`🗑️ Datos seguros eliminados: ${key.replace('nebula_', '')}`);
+            });
+            console.log('✅ Limpieza de seguridad completada');
+            
+            // Liberar referencias a objetos grandes
+            this.encryptionKey = null;
+        } catch (error) {
+            console.error('❌ Error limpiando datos de seguridad:', error);
+        }
+    },    /**
+     * Reinicializar sistema de seguridad
+     */
+    reinitializeSecurity() {
+        try {
+            this.clearSecurityData();
+            this.generateEncryptionKey(); // Corregido: usar generateEncryptionKey en lugar de initializeKey
+            this.initializeSecureStorage();
+            console.log('🔄 Sistema de seguridad reinicializado');
+        } catch (error) {
+            console.error('❌ Error reinicializando seguridad:', error);
+        }
     },
 
     /* Protección Contra XSS */

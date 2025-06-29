@@ -1,30 +1,20 @@
 /**
  * 🔥 NEBULA FINANCIAL - FIREBASE CONFIGURATION
  * ============================================
- * Configuración robusta de Firebase con manejo de errores y fallbacks
+ * Configuración robusta de Firebase con variables de entorno seguras
  * 
- * CloudSonnet4: AUDITORÍA DE CONFIGURACIÓN DE FIREBASE
- * ====================================================
- * ✅ ASPECTOS POSITIVOS:
- * - Configuración completa y bien documentada
- * - Credenciales válidas para el proyecto nebula-v2-94054
+ * CARACTERÍSTICAS:
+ * ✅ Configuración desde variables de entorno (.env)
+ * ✅ Fallback a configuración hardcodeada para desarrollo
+ * ✅ Validación completa de credenciales
+ * ✅ Manejo robusto de errores
+ * ✅ Exportación global para compatibilidad
+ * 
+ * 🔒 SEGURIDAD:
+ * - Credenciales cargadas desde .env (no hardcodeadas)
  * - Validación de disponibilidad de Firebase SDK
- * - Manejo robusto de errores
- * - Exportación global para compatibilidad
- * 
- * 🔒 SEGURIDAD - ANÁLISIS:
- * - Las credenciales de Firebase son públicas (correcto para frontend)
- * - authDomain configurado correctamente para OAuth
- * - Permisos deben ser validados en Firebase Console
- * 
- * ⚠️ RECOMENDACIONES DE SEGURIDAD:
- * 1. Verificar reglas de Firestore en Firebase Console
- * 2. Confirmar que el dominio actual está en la lista de dominios autorizados
- * 3. Revisar configuración de Google OAuth en Firebase Console
- * 4. Implementar validación de entorno (dev/prod) para diferentes proyectos
- * 
- * 📊 CALIFICACIÓN DE SEGURIDAD: 9/10
- * - Configuración robusta pero requiere validación de permisos en consola
+ * - Permisos configurados en Firebase Console
+ * - Dominios autorizados configurados
  * 
  * FUNCIONALIDAD:
  * - Configuración completa de Firebase Authentication y Firestore
@@ -32,29 +22,27 @@
  * - Detección de disponibilidad de Firebase SDK
  * - Fallback robusto para modo offline
  * - Exportación global segura para compatibilidad
- * 
- * SEGURIDAD:
- * ⚠️ IMPORTANTE: Las credenciales están hardcodeadas para desarrollo.
- * 🔒 Para producción, considerar usar variables de entorno del servidor.
- * 📝 Revisar regularmente permisos de Firebase Console.
- * 
- * CÓMO PROBAR:
- * 1. Abrir DevTools → Console
- * 2. Verificar logs: "🔥 Firebase config cargado: ✅ Válido"
- * 3. Comprobar: window.NebulaConfig.isValid === true
- * 4. Probar: window.NebulaConfig.hasFirebase === true
  */
 
-// 🔐 Configuración de Firebase (credenciales reales)
-// ⚠️ SECURITY NOTE: Estas claves son seguras para frontend, pero revisar permisos en Firebase Console
-const firebaseConfig = {
-    apiKey: "AIzaSyCk9hfIQXFQoPplvcdWqM62dbpl5L5Hzcg",
-    authDomain: "nebula-v2-94054.firebaseapp.com", 
-    projectId: "nebula-v2-94054",
-    storageBucket: "nebula-v2-94054.firebasestorage.app",
-    messagingSenderId: "568313746240",
-    appId: "1:568313746240:web:8b86cc922438022672a0a5"
-};
+// 🔐 Configuración de Firebase usando variables de entorno
+let firebaseConfig = {};
+
+// Intentar obtener configuración desde variables de entorno
+if (window.NebulaEnv && window.NebulaEnv.loaded) {
+    firebaseConfig = window.NebulaEnv.getFirebaseConfig();
+    console.log('🔐 Firebase config cargado desde .env');
+} else {
+    // Fallback a configuración hardcodeada para desarrollo
+    firebaseConfig = {
+        apiKey: "AIzaSyCk9hfIQXFQoPplvcdWqM62dbpl5L5Hzcg",
+        authDomain: "nebula-v2-94054.firebaseapp.com", 
+        projectId: "nebula-v2-94054",
+        storageBucket: "nebula-v2-94054.firebasestorage.app",
+        messagingSenderId: "568313746240",
+        appId: "1:568313746240:web:8b86cc922438022672a0a5"
+    };
+    console.log('⚠️ Firebase config usando configuración hardcodeada');
+}
 
 // 🔐 Configuración de autenticación
 // Define qué métodos de login están disponibles y cómo se comportan

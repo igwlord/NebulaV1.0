@@ -177,9 +177,7 @@ class NebulaAuthSystem {
         } catch (error) {
             console.error('❌ Error procesando usuario:', error);
         }
-    }
-
-    async loadOrCreateUserProfile(user) {
+    }    async loadOrCreateUserProfile(user) {
         try {
             if (window.NEBULA_DEBUG) {
                 console.log('📋 Cargando perfil de usuario...');
@@ -187,7 +185,7 @@ class NebulaAuthSystem {
 
             const existingProfile = await this.loadUserProfile(user.uid);
 
-            if (existingProfile) {
+            if (existingProfile && typeof existingProfile === 'object' && existingProfile.uid) {
                 if (window.NEBULA_DEBUG) {
                     console.log('✅ Perfil existente encontrado');
                 }

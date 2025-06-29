@@ -15,13 +15,12 @@
  * - Integración con renderDock y updateDockGlider para feedback visual
  */
 
-import { createIcon, ICONS } from '../utils/helpers.js';
-
 /**
  * ⚡ Sistema de Atajos de Teclado
  * Maneja todos los atajos de teclado de la aplicación
  */
-export const ShortcutSystem = {
+
+const ShortcutSystem = {
     shortcuts: new Map(),
     isModalOpen: false,
     
@@ -400,11 +399,11 @@ export const ShortcutSystem = {
             <div class="modal-content bg-slate-900/95 backdrop-blur-md rounded-2xl p-6 max-w-4xl w-full mx-4 scale-95 transition-transform duration-200 border border-white/10">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-                        ${createIcon(ICONS.zap, 'w-6 h-6 text-yellow-400')}
+                        ${window.createIcon ? window.createIcon(window.ICONS?.zap, 'w-6 h-6 text-yellow-400') : '⚡'}
                         Atajos de Teclado
                     </h2>
                     <button onclick="ShortcutSystem.hideShortcuts()" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white">
-                        ${createIcon(ICONS.x, 'w-5 h-5')}
+                        ${window.createIcon ? window.createIcon(window.ICONS?.x, 'w-5 h-5') : '✕'}
                     </button>
                 </div>
                 

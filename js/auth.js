@@ -51,7 +51,7 @@
  * 3. authService.getCurrentUser() → debe retornar usuario actual
  */
 
-class NebulaAuth {
+export class NebulaAuth {
     constructor() {
         this.user = null;
         this.isInitialized = false;
@@ -468,7 +468,7 @@ class NebulaAuth {
 }
 
 // Crear y exportar instancia
-const authService = new NebulaAuth();
+export const authService = new NebulaAuth();
 
 // También mantener compatibilidad global
 window.NebulaAuth = authService;

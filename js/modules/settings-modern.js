@@ -6,7 +6,7 @@
  * 🎨 Módulo de configuración completamente rediseñado
  * Incluye: Temas, Monedas, Perfil de Usuario, Cotizaciones
  */
-const SettingsModule = {
+const ModernSettingsModule = {
     
     // Configuración por defecto
     defaultSettings: {
@@ -32,7 +32,7 @@ const SettingsModule = {
         return `
             <div class="max-w-6xl mx-auto space-y-6">
                 <!-- Header Principal -->
-                <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-2xl">
+                <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 rounded-2xl p-6 text-white">
                     <h1 class="text-3xl font-bold mb-2">⚙️ Ajustes y Personalización</h1>
                     <p class="text-blue-100">Personaliza tu experiencia en Nebula Financial</p>
                 </div>
@@ -66,108 +66,48 @@ const SettingsModule = {
      * Sección de Perfil de Usuario
      */
     renderProfileSection(settings) {
-        // Verificar estado de autenticación
-        const authState = window.NebulaAuth ? window.NebulaAuth.getState() : { isAuthenticated: false };
-        const user = authState.user;
-        
         return `
             <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
                 <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                     👤 Perfil de Usuario
-                    ${authState.isAuthenticated ? 
-                        `<span class="text-xs px-2 py-1 bg-green-500 rounded-full text-white">${authState.isAnonymous ? 'Temporal' : 'Conectado'}</span>` : 
-                        `<span class="text-xs px-2 py-1 bg-gray-500 rounded-full text-white">Sin conectar</span>`
-                    }
                 </h3>
                 
-                <!-- Estado de autenticación -->
-                ${authState.isAuthenticated ? `
-                    <!-- Usuario autenticado -->
-                    <div class="text-center mb-6">
-                        <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-3xl cursor-pointer hover:scale-105 transition-transform" id="avatar-selector">
-                            ${user.photoURL ? `<img src="${user.photoURL}" alt="Avatar" class="w-full h-full rounded-full object-cover">` : settings.profile.avatar}
-                        </div>
-                        
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-sm font-medium text-white/80 mb-1">Nombre</label>
-                                <input type="text" 
-                                       id="profile-name" 
-                                       value="${user.displayName || settings.profile.name}"
-                                       class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-white/80 mb-1">Email</label>
-                                <input type="email" 
-                                       id="profile-email" 
-                                       value="${user.email || settings.profile.email}"
-                                       placeholder="tu@email.com"
-                                       ${user.email ? 'readonly' : ''}
-                                       class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-transparent ${user.email ? 'opacity-70' : ''}">
-                            </div>
-                        </div>
+                <!-- Avatar y nombre -->
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-3xl cursor-pointer hover:scale-105 transition-transform" id="avatar-selector">
+                        ${settings.profile.avatar}
                     </div>
                     
-                    <!-- Info adicional -->
-                    <div class="text-sm text-white/60 text-center mb-4">
-                        <p>Miembro desde</p>
-                        <p class="font-medium">${new Date(user.createdAt || settings.profile.joinDate).toLocaleDateString('es-ES')}</p>
-                        ${user.lastSignIn ? `<p class="text-xs mt-1">Último acceso: ${new Date(user.lastSignIn).toLocaleDateString('es-ES')}</p>` : ''}
-                    </div>
-                    
-                    <!-- Botones de acción -->
-                    <div class="space-y-2">
-                        <button onclick="SettingsModule.saveProfile()" 
-                                class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                            💾 Guardar Perfil
-                        </button>
-                        
-                        ${authState.isAnonymous ? `
-                            <button onclick="SettingsModule.upgradeAccount()" 
-                                    class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                🔗 Guardar Cuenta Permanentemente
-                            </button>
-                        ` : ''}
-                        
-                        <button onclick="SettingsModule.signOut()" 
-                                class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                            🚪 Cerrar Sesión
-                        </button>
-                    </div>
-                ` : `
-                    <!-- Usuario no autenticado -->
-                    <div class="text-center mb-6">
-                        <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-3xl">
-                            �
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-white/80 mb-1">Nombre</label>
+                            <input type="text" 
+                                   id="profile-name" 
+                                   value="${settings.profile.name}"
+                                   class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
                         </div>
                         
-                        <p class="text-white/60 mb-4">Inicia sesión para sincronizar tus datos y acceder desde cualquier dispositivo</p>
-                        
-                        <div class="space-y-3">
-                            <button onclick="SettingsModule.signInWithGoogle()" 
-                                    class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                                </svg>
-                                Iniciar sesión con Google
-                            </button>
-                            
-                            <button onclick="SettingsModule.signInAnonymously()" 
-                                    class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
-                                👻 Continuar sin cuenta
-                            </button>
-                            
-                            <p class="text-xs text-white/50 mt-2">
-                                Con "Continuar sin cuenta" puedes usar la app temporalmente. 
-                                Podrás crear una cuenta permanente más tarde.
-                            </p>
+                        <div>
+                            <label class="block text-sm font-medium text-white/80 mb-1">Email</label>
+                            <input type="email" 
+                                   id="profile-email" 
+                                   value="${settings.profile.email}"
+                                   placeholder="tu@email.com"
+                                   class="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
                         </div>
                     </div>
-                `}
+                </div>
+                
+                <!-- Info adicional -->
+                <div class="text-sm text-white/60 text-center">
+                    <p>Miembro desde</p>
+                    <p class="font-medium">${new Date(settings.profile.joinDate).toLocaleDateString('es-ES')}</p>
+                </div>
+                
+                <button onclick="ModernSettingsModule.saveProfile()" 
+                        class="w-full mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                    💾 Guardar Perfil
+                </button>
             </div>
         `;
     },
@@ -176,29 +116,25 @@ const SettingsModule = {
      * Sección de Tema Visual
      */
     renderThemeSection(settings) {
-        // Mapear nuestros temas con los del sistema existente
         const themes = [
-            { id: 'aureoAmanecer', newId: 'aureo-amanecer', name: 'Áureo Amanecer', colors: ['#1e3a8a', '#7c3aed', '#fcd34d'], emoji: '🌅' },
-            { id: 'crisonVespertino', newId: 'crison-vespertino', name: 'Crisón Vespertino', colors: ['#7c2d12', '#dc2626', '#f59e0b'], emoji: '🌆' },
-            { id: 'aguamarinaCeleste', newId: 'aguamarina-celeste', name: 'Aguamarina Celeste', colors: ['#0c4a6e', '#0891b2', '#06b6d4'], emoji: '🌊' },
-            { id: 'violetaReal', newId: 'violeta-real', name: 'Violeta Real', colors: ['#581c87', '#7c3aed', '#a855f7'], emoji: '🔮' },
-            { id: 'esmeraldaBosque', newId: 'esmeralda-bosque', name: 'Esmeralda Bosque', colors: ['#14532d', '#16a34a', '#22c55e'], emoji: '🌲' },
-            { id: 'rosaAurora', newId: 'rosa-aurora', name: 'Rosa Aurora', colors: ['#831843', '#e11d48', '#f43f5e'], emoji: '🌸' }
+            { id: 'aureo-amanecer', name: 'Áureo Amanecer', colors: ['#1e3a8a', '#7c3aed', '#fcd34d'], emoji: '🌅' },
+            { id: 'crison-vespertino', name: 'Crisón Vespertino', colors: ['#7c2d12', '#dc2626', '#f59e0b'], emoji: '🌆' },
+            { id: 'aguamarina-celeste', name: 'Aguamarina Celeste', colors: ['#0c4a6e', '#0891b2', '#06b6d4'], emoji: '🌊' },
+            { id: 'violeta-real', name: 'Violeta Real', colors: ['#581c87', '#7c3aed', '#a855f7'], emoji: '🔮' },
+            { id: 'esmeralda-bosque', name: 'Esmeralda Bosque', colors: ['#14532d', '#16a34a', '#22c55e'], emoji: '🌲' },
+            { id: 'rosa-aurora', name: 'Rosa Aurora', colors: ['#831843', '#e11d48', '#f43f5e'], emoji: '🌸' }
         ];
 
-        // Obtener el tema actual del appState global si está disponible
-        const currentTheme = window.appState ? window.appState.themeKey : settings.theme;
-        
         return `
             <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
                 <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                     🎨 Tema Visual
                 </h3>
                 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3 mb-4">
                     ${themes.map(theme => `
-                        <button onclick="SettingsModule.changeTheme('${theme.id}')"
-                                class="theme-option p-3 rounded-lg border-2 transition-all ${currentTheme === theme.id ? 'border-yellow-400 scale-105' : 'border-white/20 hover:border-white/40'}"
+                        <button onclick="ModernSettingsModule.changeTheme('${theme.id}')"
+                                class="theme-option p-3 rounded-lg border-2 transition-all ${settings.theme === theme.id ? 'border-yellow-400 scale-105' : 'border-white/20 hover:border-white/40'}"
                                 data-theme="${theme.id}">
                             <div class="w-full h-12 rounded-lg mb-2 bg-gradient-to-r" 
                                  style="background: linear-gradient(45deg, ${theme.colors.join(', ')})"></div>
@@ -208,6 +144,25 @@ const SettingsModule = {
                             </div>
                         </button>
                     `).join('')}
+                </div>
+                
+                <!-- Configuraciones adicionales del tema -->
+                <div class="space-y-3 pt-3 border-t border-white/20">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-white/80">Partículas de estrellas</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="particles-toggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-white/80">Efectos de glassmorphism</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="glassmorphism-toggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                        </label>
+                    </div>
                 </div>
             </div>
         `;
@@ -245,7 +200,7 @@ const SettingsModule = {
                                placeholder="1250.50"
                                step="0.01"
                                class="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
-                        <button onclick="SettingsModule.updateMEP()" 
+                        <button onclick="ModernSettingsModule.updateMEP()" 
                                 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors">
                             🔄
                         </button>
@@ -274,7 +229,7 @@ const SettingsModule = {
                     </div>
                 </div>
                 
-                <button onclick="SettingsModule.saveCurrency()" 
+                <button onclick="ModernSettingsModule.saveCurrency()" 
                         class="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-black py-2 px-4 rounded-lg font-medium transition-colors">
                     💾 Guardar Configuración
                 </button>
@@ -293,7 +248,7 @@ const SettingsModule = {
                 </h3>
                 
                 <div class="space-y-3">
-                    <button onclick="SettingsModule.exportData()" 
+                    <button onclick="ModernSettingsModule.exportData()" 
                             class="w-full flex items-center gap-3 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                         <span class="text-xl">📤</span>
                         <div class="text-left">
@@ -302,7 +257,7 @@ const SettingsModule = {
                         </div>
                     </button>
                     
-                    <button onclick="SettingsModule.importData()" 
+                    <button onclick="ModernSettingsModule.importData()" 
                             class="w-full flex items-center gap-3 bg-purple-500 hover:bg-purple-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                         <span class="text-xl">📥</span>
                         <div class="text-left">
@@ -311,7 +266,7 @@ const SettingsModule = {
                         </div>
                     </button>
                     
-                    <button onclick="SettingsModule.generateReport()" 
+                    <button onclick="ModernSettingsModule.generateReport()" 
                             class="w-full flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                         <span class="text-xl">📊</span>
                         <div class="text-left">
@@ -320,7 +275,7 @@ const SettingsModule = {
                         </div>
                     </button>
                     
-                    <button onclick="SettingsModule.showShortcuts()" 
+                    <button onclick="ModernSettingsModule.showShortcuts()" 
                             class="w-full flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                         <span class="text-xl">⌨️</span>
                         <div class="text-left">
@@ -397,7 +352,7 @@ const SettingsModule = {
                                 Se eliminarán todos tus datos financieros, configuraciones y preferencias. 
                                 Te recomendamos hacer una copia de seguridad antes de continuar.
                             </p>
-                            <button onclick="SettingsModule.confirmClearData()" 
+                            <button onclick="ModernSettingsModule.confirmClearData()" 
                                     class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
                                 Borrar Todos los Datos
                             </button>
@@ -428,31 +383,20 @@ const SettingsModule = {
      * Cambiar tema
      */
     changeTheme(themeId) {
-        console.log('🎨 Cambiando tema a:', themeId);
-        
-        // Usar el sistema de temas existente de la aplicación
-        if (window.appState && window.appState.setTheme) {
-            window.appState.setTheme(themeId);
-            console.log('✅ Tema aplicado via appState.setTheme');
-        } else {
-            console.log('⚠️ appState.setTheme no disponible, guardando en configuración local');
-        }
-        
-        // Guardar en nuestra configuración local también
         const settings = this.getSettings();
         settings.theme = themeId;
         this.saveSettings(settings);
         
-        // Actualizar interfaz local
+        // Aplicar tema inmediatamente si existe la función
+        if (window.changeTheme) {
+            window.changeTheme(themeId);
+        }
+        
+        // Actualizar interfaz
         this.updateThemeUI(themeId);
         
         // Mostrar notificación
         this.showNotification('🎨 Tema cambiado correctamente', 'success');
-        
-        // Emitir evento personalizado para que otros módulos puedan reaccionar
-        window.dispatchEvent(new CustomEvent('themeChanged', { 
-            detail: { themeId } 
-        }));
     },
 
     /**
@@ -643,157 +587,10 @@ const SettingsModule = {
     },
 
     /**
-     * ==============================================
-     * 🔐 FUNCIONES DE AUTENTICACIÓN FIREBASE
-     * ==============================================
-     */
-
-    /**
-     * Iniciar sesión con Google
-     */
-    async signInWithGoogle() {
-        try {
-            this.showNotification('🔑 Iniciando sesión con Google...', 'info');
-            
-            if (window.NebulaAuth) {
-                const result = await NebulaAuth.signInWithGoogle();
-                this.showNotification('✅ ¡Bienvenido! Sesión iniciada correctamente', 'success');
-                
-                // Actualizar la vista después de login exitoso
-                setTimeout(() => {
-                    if (window.showView) {
-                        window.showView('settings');
-                    }
-                }, 1000);
-                
-            } else {
-                throw new Error('Módulo de autenticación no disponible');
-            }
-        } catch (error) {
-            console.error('❌ Error en login con Google:', error);
-            this.showNotification('❌ Error al iniciar sesión: ' + error.message, 'error');
-        }
-    },
-
-    /**
-     * Iniciar sesión anónima
-     */
-    async signInAnonymously() {
-        try {
-            this.showNotification('👻 Iniciando sesión temporal...', 'info');
-            
-            if (window.NebulaAuth) {
-                const result = await NebulaAuth.signInAnonymously();
-                this.showNotification('✅ Sesión temporal iniciada. Podrás guardar permanentemente más tarde', 'success');
-                
-                // Actualizar la vista después de login exitoso
-                setTimeout(() => {
-                    if (window.showView) {
-                        window.showView('settings');
-                    }
-                }, 1000);
-                
-            } else {
-                throw new Error('Módulo de autenticación no disponible');
-            }
-        } catch (error) {
-            console.error('❌ Error en login anónimo:', error);
-            this.showNotification('❌ Error al iniciar sesión temporal: ' + error.message, 'error');
-        }
-    },
-
-    /**
-     * Actualizar cuenta anónima a permanente
-     */
-    async upgradeAccount() {
-        try {
-            this.showNotification('⬆️ Actualizando cuenta a permanente...', 'info');
-            
-            if (window.NebulaAuth) {
-                const result = await NebulaAuth.upgradeAnonymousAccount();
-                this.showNotification('✅ ¡Perfecto! Tu cuenta ahora es permanente', 'success');
-                
-                // Actualizar la vista después de upgrade exitoso
-                setTimeout(() => {
-                    if (window.showView) {
-                        window.showView('settings');
-                    }
-                }, 1000);
-                
-            } else {
-                throw new Error('Módulo de autenticación no disponible');
-            }
-        } catch (error) {
-            console.error('❌ Error actualizando cuenta:', error);
-            this.showNotification('❌ Error al actualizar cuenta: ' + error.message, 'error');
-        }
-    },
-
-    /**
-     * Cerrar sesión
-     */
-    async signOut() {
-        try {
-            const confirmed = confirm('¿Estás seguro de que quieres cerrar sesión?\n\nTus datos locales se mantendrán, pero perderás el acceso a la sincronización.');
-            
-            if (!confirmed) return;
-            
-            this.showNotification('🚪 Cerrando sesión...', 'info');
-            
-            if (window.NebulaAuth) {
-                await NebulaAuth.signOut();
-                this.showNotification('✅ Sesión cerrada correctamente', 'success');
-                
-                // Actualizar la vista después de logout
-                setTimeout(() => {
-                    if (window.showView) {
-                        window.showView('settings');
-                    }
-                }, 1000);
-                
-            } else {
-                throw new Error('Módulo de autenticación no disponible');
-            }
-        } catch (error) {
-            console.error('❌ Error cerrando sesión:', error);
-            this.showNotification('❌ Error al cerrar sesión: ' + error.message, 'error');
-        }
-    },
-
-    /**
-     * Actualizar configuración del usuario desde Firebase
-     */
-    updateUserSettings(user) {
-        if (!user) return;
-        
-        const settings = this.getSettings();
-        
-        // Actualizar datos del perfil con info de Firebase
-        if (user.displayName) {
-            settings.profile.name = user.displayName;
-        }
-        if (user.email) {
-            settings.profile.email = user.email;
-        }
-        if (user.photoURL) {
-            settings.profile.avatar = user.photoURL;
-        }
-        
-        // Actualizar fecha de creación si es nueva
-        if (user.createdAt && !settings.profile.joinDate) {
-            settings.profile.joinDate = user.createdAt;
-        }
-        
-        this.saveSettings(settings);
-        console.log('👤 Configuración de usuario actualizada desde Firebase');
-    },
-
-    /**
      * Inicializar el módulo
      */
     init() {
         console.log('⚙️ Módulo de configuración modernizado inicializado');
-        console.log('🎯 NebulaSettingsModule disponible:', typeof window.NebulaSettingsModule);
         
         // Event listeners para cambios automáticos
         document.addEventListener('change', (e) => {
@@ -808,53 +605,17 @@ const SettingsModule = {
                 this.saveSettings(settings);
             }
         });
-        
-        // Hacer que el módulo esté disponible globalmente para debug
-        window.SettingsModuleDebug = this;
-    },
-
-    /**
-     * Función de debug para forzar actualización
-     */
-    forceUpdate() {
-        console.log('🔄 Forzando actualización del módulo de settings...');
-        
-        // Si existe showView en el contexto global, actualizamos
-        if (window.showView) {
-            window.showView('settings');
-            console.log('✅ Vista actualizada via showView');
-        }
-        
-        // También forzamos una re-renderización del contenido actual si está en settings
-        const contentRoot = document.getElementById('content-root');
-        if (contentRoot) {
-            if (contentRoot.innerHTML.includes('Ajustes y Personalización')) {
-                contentRoot.innerHTML = this.render();
-                this.init(); // Re-inicializar event listeners
-                console.log('✅ Contenido actualizado directamente');
-            } else {
-                console.log('🔄 No estamos en la vista de settings, forzando navegación...');
-                if (window.showView) {
-                    window.showView('settings');
-                }
-            }
-        }
-        
-        this.showNotification('🔄 Módulo de settings actualizado', 'success');
-    },
-
-    // ...existing code...
+    }
 };
 
 // Exportar para uso global
 if (typeof window !== 'undefined') {
-    window.SettingsModule = SettingsModule;
-    window.NebulaSettingsModule = SettingsModule; // Compatibilidad con la aplicación
+    window.ModernSettingsModule = ModernSettingsModule;
     
     // Inicializar cuando el DOM esté listo
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => SettingsModule.init());
+        document.addEventListener('DOMContentLoaded', () => ModernSettingsModule.init());
     } else {
-        SettingsModule.init();
+        ModernSettingsModule.init();
     }
 }

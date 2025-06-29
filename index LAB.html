@@ -92,7 +92,53 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-align: center;
-            animation: nebulaGlow 2s ease-in-out infinite alternate;
+            animation: nebulaGlow 2s ease-in-out infinite alternate;        }
+        
+        /* 🚀 CSS FALLBACK - Para cuando Tailwind no esté disponible */
+        .tailwind-fallback .flex { display: flex; }
+        .tailwind-fallback .items-center { align-items: center; }
+        .tailwind-fallback .justify-center { justify-content: center; }
+        .tailwind-fallback .justify-between { justify-content: space-between; }
+        .tailwind-fallback .space-x-4 > * + * { margin-left: 1rem; }
+        .tailwind-fallback .space-y-4 > * + * { margin-top: 1rem; }
+        .tailwind-fallback .p-4 { padding: 1rem; }
+        .tailwind-fallback .p-6 { padding: 1.5rem; }
+        .tailwind-fallback .bg-opacity-10 { background-color: rgba(255,255,255,0.1); }
+        .tailwind-fallback .rounded-lg { border-radius: 0.5rem; }
+        .tailwind-fallback .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .tailwind-fallback .text-center { text-align: center; }
+        .tailwind-fallback .font-bold { font-weight: bold; }
+        .tailwind-fallback .text-yellow-400 { color: #fbbf24; }
+        .tailwind-fallback .hidden { display: none; }
+        .tailwind-fallback .block { display: block; }
+        .tailwind-fallback .w-full { width: 100%; }
+        .tailwind-fallback .h-full { height: 100%; }
+        .tailwind-fallback .min-h-screen { min-height: 100vh; }
+        .tailwind-fallback .cursor-pointer { cursor: pointer; }
+        .tailwind-fallback .transition-all { transition: all 0.3s ease; }
+        
+        .tailwind-fallback .nebula-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .tailwind-fallback .nebula-btn-primary {
+            background: linear-gradient(45deg, var(--nebula-primary), var(--nebula-secondary));
+            color: white;
+        }
+        
+        .tailwind-fallback .nebula-btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--nebula-accent);
+            border: 1px solid rgba(252,211,77,0.3);
         }
         
         @keyframes nebulaGlow {
@@ -409,178 +455,45 @@
                 justify-content: center;
             }
         }
-
-        /* 🔐 AUTHENTICATION STYLES - Email/Password Forms */
-        .auth-tab {
-            color: rgba(255, 255, 255, 0.6);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .auth-tab.active {
-            color: #fcd34d !important;
-            background: rgba(252, 211, 77, 0.15) !important;
-            box-shadow: 0 0 15px rgba(252, 211, 77, 0.2);
-        }
-        
-        .auth-form input {
-            transition: all 0.3s ease;
-        }
-        
-        .auth-form input:focus {
-            background: rgba(255, 255, 255, 0.12) !important;
-            border-color: #fcd34d !important;
-            box-shadow: 0 0 20px rgba(252, 211, 77, 0.3) !important;
-        }
-        
-        .login-card {
-            background: transparent !important;
-        }
-        
-        /* Mejoras para el contenedor de login */
-        .login-card > div {
-            backdrop-filter: blur(25px) !important;
-            -webkit-backdrop-filter: blur(25px) !important;
-        }
-        
-        /* Logo glow effect */
-        .logo-glow {
-            animation: logoGlow 3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes logoGlow {
-            0% { text-shadow: 0 0 20px rgba(252, 211, 77, 0.5); }
-            100% { text-shadow: 0 0 30px rgba(252, 211, 77, 0.8), 0 0 40px rgba(252, 211, 77, 0.3); }
-        }
-        
-        .auth-form input:focus {
-            outline: none;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(252, 211, 77, 0.3);
-        }
-        
-        .auth-form input::placeholder {
-            transition: color 0.3s ease;
-        }
-        
-        .auth-form input:focus::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-        
-        /* Animación suave para mostrar/ocultar formularios */
-        .auth-form {
-            transition: all 0.3s ease;
-        }
-        
-        .auth-form.hidden {
-            opacity: 0;
-            transform: translateY(10px);
-            pointer-events: none;
-        }
-        
-        /* Estilo para el aviso de verificación de email */
-        #email-verification-notice {
-            animation: slideDown 0.3s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Hover effects para botones de auth */
-        .auth-form button[type="submit"] {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .auth-form button[type="submit"]:hover {
-            box-shadow: 0 8px 25px rgba(252, 211, 77, 0.4);
-        }
-        
-        .auth-form button[type="submit"]:active {
-            transform: translateY(1px);
-        }
-        
-        /* Loading state para botones */
-        .auth-form button[type="submit"]:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none !important;
-        }
     </style>
     
-    <!-- 🔐 CARGA DE VARIABLES DE ENTORNO - PRIMER SCRIPT -->
+    <!-- 🎯 TAILWIND - Sin configuración problemática -->    <!-- 🚀 TAILWIND CSS - Optimizado para Producción -->
     <script>
-        // 🔐 Cargar variables de entorno antes que cualquier otra cosa
-        console.log('🔐 Iniciando carga de variables de entorno...');
-        
-        // Función para cargar env-loader
-        async function loadEnvironmentVariables() {
-            try {
-                // Importar env-loader
-                const envModule = await import('./env-loader.js');
-                
-                // Cargar variables de entorno
-                await window.NebulaEnv.loadEnvironment();
-                
-                console.log('✅ Variables de entorno cargadas correctamente');
-                return true;
-            } catch (error) {
-                console.warn('⚠️ Error cargando variables de entorno:', error);
-                return false;
-            }
-        }
-        
-        // Cargar inmediatamente
-        loadEnvironmentVariables().then(success => {
-            if (success) {
-                console.log('🔐 Sistema de variables de entorno listo');
-            } else {
-                console.log('⚠️ Usando configuración por defecto');
-            }
-        });
-    </script>
-
-    <!-- 🔥 FIREBASE SDK - Carga Prioritaria para Autenticación -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
-    <!-- 🔐 FIREBASE CONFIGURATION - Carga de Configuración Segura -->
-    <script src="./config/firebase-config.js"></script>
-    
-    <!-- 🔐 FIREBASE AUTHENTICATION MODULE - Sistema de Autenticación -->
-    <script src="./js/auth/firebase-auth.js"></script>
-    
-    <!-- 🎯 TAILWIND - Sin configuración problemática -->
-      <!-- 🚀 TAILWIND CDN - Carga Diferida Inteligente -->
-    <script>
-        // 🔥 SUPER CACHE-BUSTING PARA DEPURACIÓN
+        // 🔥 CACHE-BUSTING INTELIGENTE
         const CACHE_BUSTER = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         console.log('🔥 Cache-Buster activo:', CACHE_BUSTER);
         
-        // 🎯 CARGA INTELIGENTE DE TAILWIND
+        // 🎯 CARGA INTELIGENTE DE TAILWIND CON FALLBACK
         const loadTailwind = () => {
             if (!document.getElementById('tailwind-css')) {
                 const script = document.createElement('script');
                 script.id = 'tailwind-css';
-                script.src = 'https://cdn.tailwindcss.com';
+                
+                // 🚀 Usar versión específica para mejor estabilidad
+                script.src = 'https://cdn.tailwindcss.com?v=3.4.1';
                 script.async = true;
+                
+                // 🎯 Configuración de Tailwind para suprimir advertencias
+                script.setAttribute('data-tw-config', JSON.stringify({
+                    experimental: { optimizeUniversalDefaults: true },
+                    corePlugins: { preflight: false }
+                }));
+                
                 script.onload = () => {
-                    console.log('✅ Tailwind CSS cargado exitosamente');
+                    console.log('✅ Tailwind CSS cargado exitosamente (v3.4.1)');
+                    
+                    // 🔇 Suprimir advertencias de desarrollo
+                    if (window.tailwind && window.tailwind.config) {
+                        window.tailwind.config.devMode = false;
+                    }
                 };
+                
                 script.onerror = () => {
-                    console.error('❌ Error cargando Tailwind CSS');
+                    console.warn('⚠️ Tailwind CSS no disponible, usando CSS nativo');
+                    // Aplicar estilos alternativos si Tailwind falla
+                    document.body.classList.add('tailwind-fallback');
                 };
+                
                 document.head.appendChild(script);
                 console.log('🎨 Tailwind CSS cargado dinámicamente');
             }
@@ -649,7 +562,7 @@
         // Cargar CSS no crítico después del DOM
         document.addEventListener('DOMContentLoaded', () => {
             loadCSS('css/styles.css', 'styles-css');
-            // loadCSS('css/optimized.css', 'optimized-css'); // Archivo no existe
+            loadCSS('css/optimized.css', 'optimized-css');
         });
     </script>
 </head>
@@ -700,20 +613,96 @@
             </div>
         </div>
         <div id="notification-container" class="notification-container"></div>
-    </div>
-
-    <!-- 🔒 SEGURIDAD CRÍTICA - Carga Prioritaria -->
+    </div>    <!-- 🔒 SEGURIDAD CRÍTICA - Carga Prioritaria -->
+    <!-- 🔐 CryptoJS - Biblioteca de criptografía -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" 
+            integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer">
+    </script>
+    <script>
+        // 🔒 Verificar que CryptoJS se cargó correctamente
+        if (typeof CryptoJS === 'undefined') {
+            console.warn('⚠️ CryptoJS no se cargó desde CDN, creando fallback...');
+            window.CryptoJS = {
+                AES: {
+                    encrypt: (data, key) => btoa(data + '|' + key),
+                    decrypt: (encrypted, key) => {
+                        try {
+                            const decoded = atob(encrypted);
+                            return decoded.split('|')[0];
+                        } catch {
+                            return encrypted;
+                        }
+                    }
+                },
+                enc: {
+                    Utf8: {
+                        stringify: (data) => data,
+                        parse: (data) => data
+                    }
+                }
+            };
+            console.log('🔧 Fallback CryptoJS activado');
+        } else {
+            console.log('✅ CryptoJS cargado exitosamente');
+        }    </script>
+    
+    <!-- 🔥 FIREBASE - Sistema de Autenticación -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { 
+            getAuth, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut, 
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        
+        // 🔧 Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCk9hfIQXFQoPplvcdWqM62dbpl5L5Hzcg",
+            authDomain: "nebula-v2-94054.firebaseapp.com",
+            projectId: "nebula-v2-94054",
+            storageBucket: "nebula-v2-94054.firebasestorage.app",
+            messagingSenderId: "1052460930493",
+            appId: "1:1052460930493:web:3c7b8c8e8c9f4e5f6g7h8i"
+        };
+        
+        // 🚀 Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+        
+        // ✅ Exponer Firebase globalmente
+        window.firebaseAuth = auth;
+        window.googleProvider = googleProvider;
+        window.signInWithPopup = signInWithPopup;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+        
+        console.log('🔥 Firebase inicializado correctamente');
+        
+        // 🎯 Trigger evento para indicar que Firebase está listo
+        window.dispatchEvent(new CustomEvent('firebaseReady'));
+    </script>
+    
+    <!-- 🔐 Sistema de Autenticación Nebula -->
+    <script src="nebula-auth.js"></script>
+    
     <script src="js/utils/security.js"></script>
     <script src="js/utils/input-validation.js"></script>
     
     <!-- 🚀 SISTEMA DE CARGA MODULAR ÉPICO -->
     <script>
         // 🎯 MÓDULOS NEBULA - Configuración Inteligente
-        const NEBULA_MODULES = {
-            // 🔥 CRÍTICOS - Carga inmediata
+        const NEBULA_MODULES = {            // 🔥 CRÍTICOS - Carga inmediata
             critical: [
                 'js/modules/dashboard.js',
-                'js/modules/dock-navigation.js'
+                'js/modules/dock-navigation.js',
+                'js/components/shortcuts.js',
+                'js/components/notifications.js',
+                'js/components/modals.js'
             ],
             // ⚡ IMPORTANTES - Carga rápida
             important: [
@@ -721,15 +710,14 @@
                 'js/modules/grid-cards.js'
             ],            // 🌟 FUNCIONALES - Carga diferida
             functional: [
-                'js/modules/income-new.js',
-                'js/modules/expenses-new.js',
-                'js/modules/goals-new.js',
-                'js/modules/investments-new.js',
-                'js/modules/debts-new.js'
-            ],
-            // 🎨 EXTRAS - Carga bajo demanda
+                'js/modules/income.js',
+                'js/modules/expenses.js',
+                'js/modules/goals.js',
+                'js/modules/investments.js',
+                'js/modules/debts.js'            ],
+              // 🎨 EXTRAS - Calendario minimalista y componentes adicionales
             extras: [
-                'js/modules/calendar.js'
+                'js/components/calendar-minimal.js'
             ]
         };
         
@@ -846,8 +834,10 @@
     </script>
       <!-- 🌌 APLICACIÓN PRINCIPAL - Motor de Inicialización -->
     <script type="module">
-        // 🚀 NEBULA FINANCIAL v3.0 - LABORATORIO ÉPICO
-        console.log('🌌 Iniciando Nebula Financial v3.0 - LABORATORIO ÉPICO');
+        // 🚀 NEBULA FINANCIAL v3.0 - LABORATORIO ÉPICO        console.log('🌌 Iniciando Nebula Financial v3.0 - LABORATORIO ÉPICO');
+        
+        // 🕐 Marca de tiempo para performance
+        window.nebulaStartTime = Date.now();
         
         // 🌟 FUNCIONES GLOBALES CRÍTICAS - Exponer ANTES de cargar módulos
         const formatNumberWithDots = (value) => {
@@ -883,51 +873,129 @@
         console.log('🕐 TIMESTAMP CARGA:', new Date().toISOString(), 'Cache-bust activo');
         console.log('🔄 VERSION CÓDIGO:', `v3.0_LAB_EPIC_${buildTimestamp}`);
         console.log('🚀 OPTIMIZACIONES ÉPICAS APLICADAS');
-        
-        // 🌟 FUNCIÓN DE ESPERA INTELIGENTE PARA MÓDULOS
+          // 🌟 FUNCIÓN DE ESPERA INTELIGENTE PARA MÓDULOS (CON TIMEOUT DE SEGURIDAD)
         const waitForModules = () => {
             return new Promise((resolve) => {
+                let attempts = 0;
+                const maxAttempts = 60; // 3 segundos máximo (60 * 50ms)
+                
                 const checkModules = () => {
+                    attempts++;
+                    
                     if (window.nebulaModuleLoader && window.nebulaModuleLoader.loadedCount >= 4) {
+                        console.log('✅ Módulos cargados exitosamente');
                         resolve();
+                    } else if (attempts >= maxAttempts) {
+                        console.log('⚡ Timeout de módulos - Continuando con inicialización básica');
+                        resolve(); // Continuar aunque no todos los módulos estén listos
                     } else {
                         setTimeout(checkModules, 50);
                     }
                 };
                 checkModules();
             });
-        };        // 🚀 INICIALIZACIÓN ÉPICA DE LA APLICACIÓN
+        };        // 🚀 INICIALIZACIÓN ÉPICA DE LA APLICACIÓN (CON PROTECCIÓN ANTI-LOOP)
         const initNebulaEpic = async () => {
             try {
                 console.log('⏳ Esperando módulos críticos...');
                 await waitForModules();
                 
-                // 🎯 IMPORTAR SOLO THEMES (appState ya está embebido)
-                const { THEMES } = await import('./js/utils/helpers.js');
+                // 🎯 IMPORTAR THEMES CON FALLBACK DE SEGURIDAD
+                try {
+                    const { THEMES } = await import('./js/utils/helpers.js');
+                    window.THEMES = THEMES;
+                    console.log('✅ THEMES cargado exitosamente');
+                } catch (themeError) {
+                    console.warn('⚠️ Error cargando THEMES, usando fallback:', themeError);
+                    // Fallback básico para THEMES
+                    window.THEMES = {
+                        current: 'dark',
+                        available: ['dark', 'light']
+                    };
+                }
                 
-                // 🌍 HACER THEMES DISPONIBLE PARA startNebula
-                window.THEMES = THEMES;
-                
-                console.log('✅ THEMES cargado, iniciando aplicación...');
+                console.log('✅ Iniciando aplicación...');
                 
                 // 🚀 INICIALIZAR APLICACIÓN - startNebula hará el resto
                 startNebula();
                 
                 console.log('🎉 Nebula Financial inicializado correctamente');
                 
-                // � EFECTOS VISUALES ÉPICOS POST-CARGA
+                // ✨ EFECTOS VISUALES ÉPICOS POST-CARGA
                 document.body.classList.add('nebula-loaded');
+                
+                // 🧪 EJECUTAR VALIDACIÓN AUTOMÁTICA
+                setTimeout(() => validateNebula(), 1000);
                 
             } catch (error) {
                 console.error('❌ Error crítico en inicialización:', error);
+                console.error('📊 Stack trace:', error.stack);
                 
-                // 🆘 FALLBACK INTELIGENTE
-                console.log('🔄 Activando fallback a versión estable...');
-                setTimeout(() => {
-                    window.location.href = '/index.html';
-                }, 2000);
+                // 🔍 DIAGNÓSTICO DETALLADO
+                console.log('🔍 Diagnóstico del error:');
+                console.log('- DOM ready state:', document.readyState);
+                console.log('- Módulos cargados:', window.nebulaModuleLoader?.loadedCount || 0);
+                console.log('- THEMES disponible:', typeof window.THEMES !== 'undefined');
+                console.log('- appState disponible:', typeof window.appState !== 'undefined');
+                
+                // 🆘 FALLBACK INTELIGENTE CON REINTENTOS
+                let retryCount = parseInt(sessionStorage.getItem('nebula_retry_count') || '0');
+                if (retryCount < 3) {
+                    retryCount++;
+                    sessionStorage.setItem('nebula_retry_count', retryCount.toString());
+                    console.log(`🔄 Reintento ${retryCount}/3 en 2 segundos...`);
+                    
+                    setTimeout(() => {
+                        console.log('🔄 Recargando aplicación...');
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    console.log('❌ Máximo de reintentos alcanzado, mostrando error crítico');
+                    sessionStorage.removeItem('nebula_retry_count');
+                    showCriticalError(error);
+                }
             }
         };
+        
+        // 🆘 FUNCIÓN PARA MOSTRAR ERROR CRÍTICO
+        function showCriticalError(error) {
+            document.body.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%); color: white; font-family: 'Inter', Arial, sans-serif;">
+                    <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-radius: 20px; backdrop-filter: blur(10px); max-width: 600px;">
+                        <h1 style="font-size: 4rem; margin-bottom: 1rem;">🌌</h1>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: #e2e8f0;">Nebula Financial</h2>
+                        <p style="margin-bottom: 1.5rem; color: #cbd5e1; font-size: 1.2rem;">Error crítico detectado</p>
+                        
+                        <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); padding: 20px; border-radius: 10px; margin-bottom: 2rem; text-align: left;">
+                            <h3 style="color: #ef4444; margin-bottom: 10px; font-size: 1.1rem;">🚨 Detalles del Error:</h3>
+                            <code style="color: #fcd34d; font-family: monospace; font-size: 0.9rem; line-height: 1.4; display: block; white-space: pre-wrap;">${error.message}</code>
+                        </div>
+                        
+                        <div style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); padding: 15px; border-radius: 10px; margin-bottom: 2rem; text-align: left;">
+                            <h4 style="color: #60a5fa; margin-bottom: 8px;">🔧 Información del Sistema:</h4>
+                            <small style="color: #e2e8f0; font-family: monospace; line-height: 1.3;">
+                                Navegador: ${navigator.userAgent}<br>
+                                Hora: ${new Date().toLocaleString()}<br>
+                                URL: ${window.location.href}
+                            </small>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="location.reload()" style="background: linear-gradient(45deg, #22c55e, #16a34a); border: none; color: white; padding: 16px 32px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); transition: transform 0.2s; min-width: 140px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                🔄 Recargar App
+                            </button>
+                            <button onclick="if(typeof NebulaSecurityUtils !== 'undefined') { NebulaSecurityUtils.clearSecurityData(); } else { localStorage.clear(); } sessionStorage.clear(); location.reload()" style="background: linear-gradient(45deg, #f59e0b, #d97706); border: none; color: white; padding: 16px 32px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s; min-width: 140px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                🗑️ Reset Total
+                            </button>
+                        </div>
+                        
+                        <p style="margin-top: 2rem; color: #94a3b8; font-size: 0.9rem;">
+                            Si el problema persiste, contacta al soporte técnico
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
         
         // 🎯 INICIALIZAR CUANDO TODO ESTÉ LISTO
         if (document.readyState === 'loading') {
@@ -1055,38 +1123,6 @@
                 textSecondary: 'text-purple-200/80', 
                 particleType: 'royalAura',
                 sunColor: '#8B5CF6'
-            },            esmeraldaBosque: { 
-                name: 'Esmeralda Bosque', 
-                gradient: 'radial-gradient(ellipse at center, #0c2e1a 0%, #1a472a 40%, #0a1a0f 100%), url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%2322c55e\' fill-opacity=\'0.08\'%3E%3Ccircle cx=\'7\' cy=\'7\' r=\'1\'/%3E%3Ccircle cx=\'27\' cy=\'27\' r=\'1\'/%3E%3Ccircle cx=\'47\' cy=\'47\' r=\'1\'/%3E%3Ccircle cx=\'17\' cy=\'37\' r=\'0.5\'/%3E%3Ccircle cx=\'37\' cy=\'17\' r=\'0.5\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")', 
-                accent: 'text-green-300', 
-                accentBg: 'bg-green-500', 
-                accentGlow: 'shadow-[0_0_25px_rgba(34,197,94,0.8)]', 
-                accentColor: '#22C55E', 
-                accentBorder: 'border-green-300', 
-                accentRing: 'focus:ring-green-300', 
-                positive: 'text-emerald-300', 
-                negative: 'text-red-300', 
-                surface: 'bg-black/20 border-green-200/30 backdrop-blur-md', 
-                textPrimary: 'text-green-50', 
-                textSecondary: 'text-green-200/80', 
-                particleType: 'forestMist',
-                sunColor: '#10B981'
-            },            rosaAurora: { 
-                name: 'Rosa Aurora', 
-                gradient: 'radial-gradient(ellipse at center, #3d1a2e 0%, #5a1e42 40%, #2a0f1a 100%), url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23f43f5e\' fill-opacity=\'0.08\'%3E%3Ccircle cx=\'7\' cy=\'7\' r=\'1\'/%3E%3Ccircle cx=\'27\' cy=\'27\' r=\'1\'/%3E%3Ccircle cx=\'47\' cy=\'47\' r=\'1\'/%3E%3Ccircle cx=\'17\' cy=\'37\' r=\'0.5\'/%3E%3Ccircle cx=\'37\' cy=\'17\' r=\'0.5\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")', 
-                accent: 'text-pink-300', 
-                accentBg: 'bg-pink-500', 
-                accentGlow: 'shadow-[0_0_25px_rgba(244,63,94,0.8)]', 
-                accentColor: '#F43F5E', 
-                accentBorder: 'border-pink-300', 
-                accentRing: 'focus:ring-pink-300', 
-                positive: 'text-emerald-300', 
-                negative: 'text-orange-300', 
-                surface: 'bg-black/20 border-pink-200/30 backdrop-blur-md', 
-                textPrimary: 'text-pink-50', 
-                textSecondary: 'text-pink-200/80', 
-                particleType: 'auroraGlow',
-                sunColor: '#EC4899'
             }
         };/**
          * 🎯 ICONOS SVG VECTORIALES
@@ -1108,10 +1144,12 @@
             chevronRight: `<path d="m9 18 6-6-6-6"/>`,
             history: `<path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/>`,
             mail: `<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>`,
-            zap: `<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>`,
-            x: `<path d="M18 6 6 18M6 6l12 12"/>`,
-            // Nuevos iconos para notificaciones y calendario
-            calendar: `<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`,
+            zap: `<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>`,            x: `<path d="M18 6 6 18M6 6l12 12"/>`,
+              // 📅 Iconos de calendario mejorados y más atractivos
+            calendar: `<rect x="3" y="4" width="18" height="18" rx="3" ry="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="2"/><rect x="3" y="10" width="18" height="2" fill="currentColor"/><circle cx="8" cy="16" r="1.5" fill="currentColor"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/><circle cx="16" cy="16" r="1.5" fill="currentColor"/>`,
+            calendarDays: `<rect x="3" y="4" width="18" height="18" rx="3" ry="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m14 18 2 2 4-4"/>`,
+            calendarCheck: `<rect x="3" y="4" width="18" height="18" rx="3" ry="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/>`,
+            
             check: `<polyline points="20 6 9 17 4 12"/>`,
             alertCircle: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/>`,
             info: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/>`,
@@ -1119,8 +1157,7 @@
             repeat: `<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>`,
             copy: `<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>`,
             logOut: `<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>`,
-            download: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`,
-            userX: `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/>`
+            download: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>`
         };
         
         /**
@@ -1225,7 +1262,7 @@
          */
         const appState = {
             // --- Estado de Usuario y Sesión ---
-            user: null, // Inicialmente null para mostrar login
+            user: JSON.parse(sessionStorage.getItem('financialUser')) || null,
             isLoading: false,
             activeView: 'dashboard',
             activeModal: null,
@@ -1247,7 +1284,7 @@
             
             // --- Estado Temporal de Navegación ---
             currentDate: new Date(),
-            calendarViewYear: new Date().getFullYear(),
+            // calendarViewYear eliminado - sin calendarios
               // --- Datos Financieros Principales ---
             data: (() => {
                 try {
@@ -1296,95 +1333,59 @@
                     localStorage.setItem('isPrivateMode', JSON.stringify(this.isPrivate));
                 }
             },
-            
-            // --- Autenticación ---
+              // --- Autenticación ---
             async login(method) {
-                this.isLoading = true; 
-                renderApp();
-                
-                try {
-                    if (!window.NebulaAuth) {
-                        throw new Error('Sistema de autenticación no disponible');
-                    }
-                    
-                    let user = null;
-                    
-                    switch (method) {
-                        case 'google':
-                            user = await window.NebulaAuth.signInWithGoogle();
-                            break;
-                        case 'guest':
-                            user = await window.NebulaAuth.signInAnonymously();
-                            break;
-                        default:
-                            throw new Error('Método de autenticación no soportado');
-                    }
-                    
-                    // Firebase Auth se encarga de actualizar el estado automáticamente
-                    // a través del listener onAuthStateChanged
-                    console.log('✅ Login exitoso con método:', method);
-                    
-                } catch (error) {
-                    console.error('❌ Error en login:', error);
-                    
-                    // Fallback para modo offline si Firebase falla
-                    this.user = { 
-                        name: method === 'google' ? 'Usuario de Correo (Offline)' : 'Invitado (Offline)',
-                        isOffline: true 
-                    };
-                    sessionStorage.setItem('financialUser', JSON.stringify(this.user));
-                    this.isLoading = false;
-                    renderApp();
-                    
-                    // Mostrar notificación de modo offline
-                    if (window.NotificationSystem) {
-                        window.NotificationSystem.warning(
-                            'Modo Offline', 
-                            'Funcionando sin sincronización en la nube'
-                        );
-                    }
-                }
-            },
-            
-            // Función para manejar cambios de estado de Firebase Auth
-            handleFirebaseAuthChange(user) {
-                if (user) {
-                    this.user = {
-                        uid: user.uid,
-                        name: user.displayName || user.email || 'Usuario',
-                        email: user.email,
-                        photoURL: user.photoURL,
-                        isAnonymous: user.isAnonymous,
-                        emailVerified: user.emailVerified,
-                        isOffline: false
-                    };
-                    sessionStorage.setItem('financialUser', JSON.stringify(this.user));
-                } else {
-                    this.user = null;
-                    sessionStorage.removeItem('financialUser');
-                }
-                
-                this.isLoading = false;
-                renderApp();
-            },
-            
-            // Función para cerrar sesión
-            async logout() {
-                try {
-                    if (window.NebulaAuth && window.NebulaAuth.isAuthenticated()) {
-                        await window.NebulaAuth.signOut();
+                if (method === 'google') {
+                    // 🔐 Login con Google usando Firebase
+                    if (window.NebulaAuth) {
+                        try {
+                            this.isLoading = true;
+                            renderApp();
+                            
+                            console.log('🔐 Intentando login con Google...');
+                            const userCredential = await window.NebulaAuth.loginWithGoogle();
+                            
+                            if (userCredential && userCredential.user) {
+                                this.user = {
+                                    name: userCredential.user.displayName || 'Usuario de Google',
+                                    email: userCredential.user.email,
+                                    photo: userCredential.user.photoURL,
+                                    uid: userCredential.user.uid
+                                };
+                                sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                                console.log('✅ Login exitoso:', this.user.name);
+                            }
+                        } catch (error) {
+                            console.error('❌ Error en login con Google:', error);
+                            // Fallback a modo invitado
+                            this.user = { name: 'Invitado (Error en login)' };
+                            sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                        } finally {
+                            this.isLoading = false;
+                            renderApp();
+                        }
                     } else {
-                        // Logout offline
-                        this.user = null;
-                        sessionStorage.removeItem('financialUser');
+                        console.warn('⚠️ NebulaAuth no disponible, usando fallback');
+                        // Fallback cuando NebulaAuth no está disponible
+                        this.isLoading = true;
                         renderApp();
+                        setTimeout(() => {
+                            this.user = { name: 'Usuario de Correo (Fallback)' };
+                            sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                            this.isLoading = false;
+                            renderApp();
+                        }, 1500);
                     }
-                } catch (error) {
-                    console.error('❌ Error en logout:', error);
-                    // Forzar logout local aunque falle Firebase
-                    this.user = null;
-                    sessionStorage.removeItem('financialUser');
+                } else if (method === 'guest') {
+                    // 👤 Modo invitado
+                    this.isLoading = true;
                     renderApp();
+                    setTimeout(() => {
+                        this.user = { name: 'Invitado' };
+                        sessionStorage.setItem('financialUser', JSON.stringify(this.user));
+                        this.isLoading = false;
+                        renderApp();
+                    }, 1000);
                 }
             },
             
@@ -1411,16 +1412,17 @@
                 this.currentDate.setMonth(this.currentDate.getMonth() + direction); 
                 renderApp(); 
             },
-            
-            setCalendarDate(monthIndex) {
-                this.currentDate = new Date(this.calendarViewYear, monthIndex, 1);
-                this.closeModal(true);
-            },
-            
-            // --- Gestión de Modales ---
-            openModal(modalType) {
-                if (modalType === 'calendar') {
-                    this.calendarViewYear = this.currentDate.getFullYear();
+              // setCalendarDate eliminado - sin calendarios
+              // --- Gestión de Modales ---
+            openModal(modalType) {                if (modalType === 'calendar') {
+                    // 📅 Usar el nuevo calendario minimalista
+                    if (typeof openCalendar === 'function') {
+                        openCalendar();
+                        return;
+                    } else {
+                        console.warn('⚠️ Calendario minimalista no disponible aún');
+                        return;
+                    }
                 }
                 this.activeModal = modalType;
                 renderModal();
@@ -1439,69 +1441,6 @@
                 } else {
                      this.activeModal = null;
                      if (shouldRenderAppAfter) renderApp();
-                }
-            },
-              // --- Navegación de Calendario Mejorada ---
-            changeCalendarYear(direction) { 
-                const newYear = this.calendarViewYear + direction;
-                
-                // Validar rango de años
-                if (newYear >= 1900 && newYear <= 2100) {
-                    this.calendarViewYear = newYear;
-                    renderModal();
-                    
-                    // Feedback visual suave
-                    const yearInput = document.getElementById('calendar-year-input');
-                    if (yearInput) {
-                        yearInput.style.transform = 'scale(1.05)';
-                        setTimeout(() => {
-                            yearInput.style.transform = 'scale(1)';
-                        }, 150);
-                    }
-                } else {
-                    // Feedback para límites alcanzados
-                    if (window.NotificationSystem) {
-                        const limitMessage = newYear < 1900 ? 
-                            'Has alcanzado el año mínimo (1900)' : 
-                            'Has alcanzado el año máximo (2100)';
-                        window.NotificationSystem.warning('Límite de navegación', limitMessage);
-                    }
-                }
-            },
-            
-            setCalendarYear(year) { 
-                if (year >= 1900 && year <= 2100) {
-                    this.calendarViewYear = year;
-                    renderModal();
-                    
-                    // Feedback positivo
-                    if (window.NotificationSystem) {
-                        window.NotificationSystem.info('Calendario', `Navegando a ${year}`);
-                    }
-                } else {
-                    // Feedback de error para años fuera de rango
-                    if (window.NotificationSystem) {
-                        window.NotificationSystem.error('Año inválido', 'Por favor ingresa un año entre 1900 y 2100');
-                    }
-                    
-                    // Restaurar el valor válido en el input
-                    const yearInput = document.getElementById('calendar-year-input');
-                    if (yearInput) {
-                        yearInput.value = this.calendarViewYear;
-                    }
-                }
-            },
-            
-            goToday() { 
-                this.currentDate = new Date(); 
-                this.calendarViewYear = this.currentDate.getFullYear(); 
-                this.closeModal(true);
-                
-                // Feedback de navegación
-                if (window.NotificationSystem) {
-                    const today = new Date();
-                    const monthName = today.toLocaleString('es-ES', { month: 'long' });
-                    window.NotificationSystem.success('Calendario', `Navegando a ${monthName} ${today.getFullYear()}`);
                 }
             },// --- Gestión de Transacciones ---
             addTransaction(t) {
@@ -1893,22 +1832,16 @@
          * 🎯 RENDERIZADOR PRINCIPAL DE LA APLICACIÓN
          * Controla el flujo de renderizado según el estado actual
          */        function renderApp() {
-            console.log('🖼️ renderApp llamado - Estado usuario:', !!appState.user);
-            console.log('🖼️ appState.isLoading:', appState.isLoading);
-            
             // Las partículas de fondo se manejan directamente en parallax-bg
             parallaxBg.innerHTML = renderParallaxBackground();
             
             if (appState.isLoading) {
-                console.log('🖼️ Renderizando pantalla de carga...');
                 contentRoot.innerHTML = renderLoadingScreen();
                 dockRoot.innerHTML = '';
             } else if (!appState.user) {
-                console.log('🖼️ Renderizando vista de login...');
                 contentRoot.innerHTML = renderLoginView();
                 dockRoot.innerHTML = '';
             } else {
-                console.log('🖼️ Renderizando dashboard - usuario logueado');
                 let viewHTML = '';
                 
                 // Agregar selector de mes para vistas que lo requieren
@@ -1946,16 +1879,7 @@
             }
             
             addEventListeners();
-            
-            // 🔧 ASEGURAR QUE LOS FORMULARIOS DE AUTH ESTÉN DISPONIBLES
-            // Solo si estamos en la vista de login (usuario no autenticado)
-            if (!appState.user) {
-                setTimeout(() => {
-                    setupAuthListeners(); // Re-aplicar event listeners para formularios de auth después del renderizado
-                }, 50);
-            }
-            
-            // Actualizar glider después del renderizado
+              // Actualizar glider después del renderizado
             setTimeout(() => updateDockGlider(), 100);
         }
 
@@ -1973,220 +1897,30 @@
         // ===============================================
         
         /**
-         * 🔐 Vista de Login/Autenticación - Versión Simple
-         */
-        function renderLoginView() {
+         * 🔐 Vista de Login/Autenticación
+         */        function renderLoginView() {
             return `
-                <div class="flex flex-col items-center justify-center h-screen p-4 relative" style="z-index: 10;">
-                    <!-- Logo y Título -->
-                    <div class="text-center mb-12">
-                        <h1 class="text-6xl font-black logo-glow mb-4">🌌 Nebula</h1>
-                        <p class="text-xl font-medium text-white/60">Tu universo financiero personal</p>
-                    </div>
-
-                    <!-- Card Principal Ultra Simple -->
-                    <div class="backdrop-blur-lg rounded-2xl p-8 w-full max-w-sm relative z-10" 
-                         style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);">
-                        
+                <div class="flex flex-col items-center justify-center h-screen login-card p-4" style="background-image: url('images/Fondo login Nebula.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+                    <div class="backdrop-blur-lg rounded-3xl shadow-2xl p-8 bg-white/10 border border-white/20 text-center w-full max-w-md">
+                        <div class="mb-6">
+                            <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <img src="images/NebulaICO.png" alt="Nebula" class="w-12 h-12">
+                            </div>
+                            <h1 class="text-4xl font-black text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Nebula</h1>
+                            <p class="mt-2 text-white/80 text-sm">Tu universo financiero personal</p>
+                        </div>
                         <div class="space-y-4">
-                            <!-- Google Login -->
-                            <button id="google-login-btn" class="login-button w-full py-4 rounded-xl flex items-center justify-center gap-3 text-lg font-semibold transition-all" 
-                                    style="background: rgba(255, 255, 255, 0.95); color: #1f2937;">
-                                <svg class="w-6 h-6" viewBox="0 0 24 24">
-                                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            <button data-login-method="google" class="login-button w-full flex items-center justify-center gap-3 bg-white text-gray-700 font-medium py-3.5 px-6 rounded-lg hover:bg-gray-50 hover:shadow-md transition-all duration-200 transform hover:scale-[1.02] border border-gray-200 shadow-lg">
+                                <svg viewBox="0 0 24 24" class="w-5 h-5 flex-shrink-0">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                                 </svg>
-                                INGRESAR CON GOOGLE
+                                Continuar con Google
                             </button>
-                            
-                            <!-- Guest Login -->
-                            <button id="guest-login-btn" class="login-button w-full py-4 rounded-xl flex items-center justify-center gap-3 text-lg font-semibold transition-all" 
-                                    style="background: rgba(255, 255, 255, 0.08); color: white; border: 1px solid rgba(255, 255, 255, 0.2);">
-                                <span class="text-2xl">👤</span>
-                                ENTRAR COMO INVITADO
-                            </button>
-                            
-                            <!-- Email Registration -->
-                            <button id="email-register-btn" class="login-button w-full py-4 rounded-xl flex items-center justify-center gap-3 text-lg font-semibold transition-all" 
-                                    style="background: transparent; color: #fcd34d; border: 1px solid rgba(252, 211, 77, 0.4);">
-                                <span class="text-2xl">✉️</span>
-                                CREAR CUENTA CON OTRO CORREO
-                            </button>
-                        </div>
-                        
-                        <!-- Footer text -->
-                        <div class="mt-6 text-center">
-                            <p class="text-white/40 text-sm">
-                                Al continuar aceptas nuestros términos de uso
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Modal para crear cuenta con email -->
-                <div id="email-register-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-                    <div class="backdrop-blur-lg rounded-2xl p-8 w-full max-w-md" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.15);">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-2xl font-bold text-white">Crear Cuenta</h2>
-                            <button id="close-register-modal" class="text-white/60 hover:text-white text-2xl">×</button>
-                        </div>
-                        
-                        <form id="email-register-form" class="space-y-4">
-                            <div>
-                                <input type="text" id="register-name" placeholder="Tu nombre completo"
-                                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all" required>
-                            </div>
-                            <div>
-                                <input type="email" id="register-email" placeholder="tu@email.com"
-                                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all" required>
-                            </div>
-                            <div>
-                                <input type="password" id="register-password" placeholder="Contraseña (mín. 6 caracteres)"
-                                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all" required>
-                            </div>
-                            
-                            <button type="submit" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 font-bold py-3 rounded-xl hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105">
-                                ✨ Crear Cuenta
-                            </button>
-                        </form>
-                        
-                        <div class="mt-4 text-center">
-                            <button id="switch-to-login" class="text-yellow-400 hover:text-yellow-300 text-sm underline">
-                                ¿Ya tienes cuenta? Inicia sesión
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal de login con email -->
-                <div id="email-login-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-                    <div class="backdrop-blur-lg rounded-2xl p-8 w-full max-w-md" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.15);">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-2xl font-bold text-white">Iniciar Sesión</h2>
-                            <button id="close-login-modal" class="text-white/60 hover:text-white text-2xl">×</button>
-                        </div>
-                        
-                        <form id="email-login-form" class="space-y-4">
-                            <div>
-                                <input type="email" id="login-email" placeholder="tu@email.com"
-                                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all" required>
-                            </div>
-                            <div>
-                                <input type="password" id="login-password" placeholder="Contraseña"
-                                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all" required>
-                            </div>
-                            
-                            <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105">
-                                🚀 Iniciar Sesión
-                            </button>
-                        </form>
-                        
-                        <div class="mt-4 text-center space-y-2">
-                            <button id="forgot-password" class="block w-full text-white/60 hover:text-yellow-400 text-sm">
-                                ¿Olvidaste tu contraseña?
-                            </button>
-                            <button id="switch-to-register" class="text-yellow-400 hover:text-yellow-300 text-sm underline">
-                                ¿No tienes cuenta? Crear una
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        /**
-         * 📧 Formulario de Autenticación con Email
-         */
-        function renderAuthForm() {
-            return `
-                <div class="auth-form-container">
-                    <!-- Tabs Login/Registro -->
-                    <div class="flex bg-white/10 rounded-xl p-1 mb-6 backdrop-blur-sm">
-                        <button id="login-tab" class="auth-tab flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all active" style="background: rgba(252, 211, 77, 0.15); color: #fcd34d;">
-                            Ingresar
-                        </button>
-                        <button id="register-tab" class="auth-tab flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all" style="color: rgba(255, 255, 255, 0.6);">
-                            Crear Cuenta
-                        </button>
-                    </div>
-                    
-                    <!-- Formulario Login -->
-                    <form id="login-form" class="auth-form space-y-4">
-                        <div class="space-y-4">
-                            <div>
-                                <input type="email" 
-                                       id="login-email" 
-                                       placeholder="tu@email.com"
-                                       class="w-full bg-white/8 border border-white/15 rounded-xl px-4 py-4 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all backdrop-blur-sm"
-                                       required>
-                            </div>
-                            <div>
-                                <input type="password" 
-                                       id="login-password" 
-                                       placeholder="Contraseña"
-                                       class="w-full bg-white/8 border border-white/15 rounded-xl px-4 py-4 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all backdrop-blur-sm"
-                                       required>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 font-bold py-4 px-4 rounded-xl hover:from-yellow-500 hover:to-yellow-600 transition-all transform hover:scale-105 hover:shadow-lg text-lg">
-                            🚀 Ingresar
-                        </button>
-                        
-                        <button type="button" id="forgot-password-btn" class="w-full text-sm ${appState.theme.textSecondary} hover:text-yellow-400 transition-colors py-2">
-                            ¿Olvidaste tu contraseña?
-                        </button>
-                    </form>
-                    
-                    <!-- Formulario Registro -->
-                    <form id="register-form" class="auth-form space-y-4 hidden">
-                        <div class="space-y-4">
-                            <div>
-                                <input type="text" 
-                                       id="register-name" 
-                                       placeholder="Tu nombre completo"
-                                       class="w-full bg-white/8 border border-white/15 rounded-xl px-4 py-4 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all backdrop-blur-sm">
-                            </div>
-                            <div>
-                                <input type="email" 
-                                       id="register-email" 
-                                       placeholder="tu@email.com"
-                                       class="w-full bg-white/8 border border-white/15 rounded-xl px-4 py-4 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all backdrop-blur-sm"
-                                       required>
-                            </div>
-                            <div>
-                                <input type="password" 
-                                       id="register-password" 
-                                       placeholder="Contraseña (mín. 6 caracteres)"
-                                       class="w-full bg-white/8 border border-white/15 rounded-xl px-4 py-4 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all backdrop-blur-sm"
-                                       required>
-                            </div>
-                            <div>
-                                <input type="password" 
-                                       id="register-confirm-password" 
-                                       placeholder="Confirmar contraseña"
-                                       class="w-full bg-white/8 border border-white/15 rounded-xl px-4 py-4 text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 focus:outline-none transition-all backdrop-blur-sm"
-                                       required>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-gradient-to-r from-green-400 to-green-500 text-slate-900 font-bold py-4 px-4 rounded-xl hover:from-green-500 hover:to-green-600 transition-all transform hover:scale-105 hover:shadow-lg text-lg">
-                            ✨ Crear Cuenta
-                        </button>
-                        
-                        <div class="text-xs ${appState.theme.textSecondary} text-center py-2">
-                            Al crear una cuenta aceptas nuestros términos de uso
-                        </div>
-                    </form>
-                    
-                    <!-- Mensaje de verificación de email -->
-                    <div id="email-verification-notice" class="hidden mt-4 p-4 bg-blue-500/20 border border-blue-400/30 rounded-xl backdrop-blur-sm">
-                        <div class="text-sm text-blue-300 text-center">
-                            📧 Hemos enviado un email de verificación.<br>
-                            <button id="resend-verification" class="text-yellow-400 hover:text-yellow-300 underline mt-2">
-                                Reenviar email
+                            <button data-login-method="guest" class="login-button w-full bg-white/20 backdrop-blur-sm text-white font-medium py-3.5 px-6 rounded-lg hover:bg-white/30 transition-all duration-200 transform hover:scale-[1.02] border border-white/30 shadow-lg">
+                                🚀 Entrar como Invitado
                             </button>
                         </div>
                     </div>
@@ -2236,8 +1970,7 @@
             } else {
                 timeLabel = `<span class="text-xs px-3 py-1 rounded-full ${appState.theme.accentBg}/20 ${appState.theme.accent} font-medium backdrop-blur-sm border ${appState.theme.accentBorder}/30">🌟 ACTUAL</span>`;
             }
-            
-            return `
+              return `
                 <div class="text-center mb-8 relative">
                     <!-- Título principal centrado con efectos -->
                     <div class="flex flex-col items-center gap-3 mb-6">
@@ -2251,54 +1984,40 @@
                             <div class="absolute inset-0 ${appState.theme.accentGlow} opacity-20 blur-lg"></div>
                         </h1>
                         ${timeLabel}
+                    </div>                    <!-- Botón del calendario elegante y moderno -->
+                    <div class="absolute top-0 right-4">
+                        <button onclick="openCalendar()" 
+                                class="group relative p-4 bg-gradient-to-br from-slate-800 to-slate-900 
+                                       border border-amber-400/30 rounded-2xl shadow-2xl 
+                                       hover:shadow-amber-400/20 transition-all duration-200 
+                                       hover:border-amber-400/60 active:scale-95"
+                                title="Abrir Calendario (Tecla: C)">
+                            
+                            <!-- Ícono del calendario -->
+                            <div class="w-7 h-7 text-amber-300 group-hover:text-amber-200 transition-colors duration-200">
+                                ${createIcon(ICONS.calendar)}
+                            </div>
+                            
+                            <!-- Indicador de atajo elegante -->
+                            <div class="absolute -top-1 -right-1 w-5 h-5 bg-amber-400 text-slate-900 text-xs 
+                                        font-bold rounded-lg flex items-center justify-center shadow-md
+                                        group-hover:bg-amber-300 transition-all duration-200">
+                                C
+                            </div>
+                            
+                            <!-- Efecto de resplandor sutil -->
+                            <div class="absolute inset-0 bg-amber-400/5 rounded-2xl opacity-0 
+                                        group-hover:opacity-100 transition-opacity duration-200"></div>
+                                        
+                            <!-- Borde interior brillante -->
+                            <div class="absolute inset-0 rounded-2xl border border-white/10 
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                        </button>
                     </div>
-                    
-                    <!-- Controles de navegación centrados -->
+                      <!-- Controles de navegación centrados -->
                     <div class="flex items-center justify-center gap-4">                        <button id="month-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes anterior (←)" aria-label="Ir al mes anterior" role="button">
                             ${createIcon(ICONS.chevronLeft, "w-6 h-6")}
                         </button>
-                        
-                        <div class="relative">
-                            <button id="calendar-dropdown-button" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Seleccionar mes (C)" aria-label="Abrir selector de mes" role="button" aria-haspopup="true" aria-expanded="false">
-                                ${createIcon(ICONS.calendar, "w-6 h-6")}
-                            </button>
-                            
-                            <div id="calendar-dropdown" class="hidden absolute left-1/2 transform -translate-x-1/2 top-14 z-50 backdrop-blur-md rounded-xl shadow-lg p-4 ${appState.theme.surface} w-64">
-                                <div class="grid grid-cols-3 gap-2">
-                                    ${Array.from({length: 12}, (_, i) => {
-                                        const monthKey = `${year}-${String(i + 1).padStart(2, '0')}`;
-                                        const hasData = appState.data.transactions[monthKey] && 
-                                                       Object.values(appState.data.transactions[monthKey]).length > 0;
-                                        const isCurrentMonth = i === currentDate.getMonth();
-                                        const isToday = i === today.getMonth() && year === today.getFullYear();
-                                        
-                                        let classes = 'month-dropdown-item p-2 rounded-lg text-sm font-medium transition-all hover:bg-black/10 cursor-pointer text-center backdrop-blur-sm';
-                                        
-                                        if (isCurrentMonth) {
-                                            classes += ` ring-2 ${appState.theme.accentRing} ${appState.theme.accent} ${appState.theme.accentGlow}`;
-                                        } else if (isToday) {
-                                            classes += ` ${appState.theme.accentBg} text-slate-900`;
-                                        } else if (hasData) {
-                                            classes += ` bg-black/20 ${appState.theme.textPrimary} backdrop-blur-md`;
-                                        } else {
-                                            classes += ` ${appState.theme.textSecondary}`;
-                                        }
-                                        
-                                        return `<div class="${classes}" data-month="${i}">${new Date(year, i).toLocaleString('es-ES', {month: 'short'})}</div>`;
-                                    }).join('')}
-                                </div>
-                                
-                                <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-center">
-                                    <button id="today-shortcut" class="text-xs ${appState.theme.textSecondary} hover:${appState.theme.accent} transition-colors px-2 py-1 rounded">
-                                        🏠 Ir a hoy
-                                    </button>
-                                    <div class="flex items-center gap-2 text-xs ${appState.theme.textSecondary}">
-                                        <span class="w-2 h-2 rounded-full ${appState.theme.accentBg}"></span>Hoy
-                                        <span class="w-2 h-2 rounded-full bg-white/20"></span>Con datos
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         
                         <button id="month-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-3 rounded-full transition-all hover:scale-110 ${appState.theme.surface} backdrop-blur-sm" title="Mes siguiente (→)">
                             ${createIcon(ICONS.chevronRight, "w-6 h-6")}
@@ -2314,108 +2033,16 @@
         /**
          * 🎭 Renderizador Principal de Modales
          * Controla qué modal mostrar según el estado activo
-         */
-        function renderModal() {
+         */        function renderModal() {
             modalRoot.innerHTML = '';
             
-            if (appState.activeModal === 'calendar') {
-                modalRoot.innerHTML = renderCalendarModal();
-            } else if (appState.activeModal === 'shortcuts') {
+            if (appState.activeModal === 'shortcuts') {
                 modalRoot.innerHTML = renderShortcutsModal();
             }
             
             if (appState.activeModal) {
                 addModalEventListeners();
             }
-        }
-
-        /**
-         * 📅 Modal de Calendario con Navegación Anual
-         */
-        function renderCalendarModal() {
-            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-            const today = new Date();
-            const currentSelectedDate = appState.currentDate;
-
-            const monthsHTML = months.map((month, index) => {
-                const monthKey = `${appState.calendarViewYear}-${String(index + 1).padStart(2, '0')}`;
-                let monthClass = 'bg-black/20 backdrop-blur-sm';
-                
-                // Indicador visual para meses con datos
-                if (appState.data.transactions[monthKey] && Object.values(appState.data.transactions[monthKey]).length > 0) {
-                    const density = Math.min(Object.values(appState.data.transactions[monthKey]).length / 10, 1);
-                    monthClass = `bg-black/30 opacity-${Math.floor(density * 10) * 10 + 30} backdrop-blur-md`;
-                }
-                
-                // Destacar mes seleccionado actualmente
-                if(appState.calendarViewYear === currentSelectedDate.getFullYear() && index === currentSelectedDate.getMonth()) {
-                     monthClass += ` ring-2 ${appState.theme.accentRing}`;
-                }
-                
-                // Destacar mes actual
-                if(appState.calendarViewYear === today.getFullYear() && index === today.getMonth()) {
-                    monthClass = `${appState.theme.accentBg} text-slate-900`;
-                }
-                
-                return `<button data-month-index="${index}" class="month-button p-4 rounded-lg text-lg font-semibold transition-transform duration-200 hover:scale-110 ${monthClass}" title="${new Date(appState.calendarViewYear, index).toLocaleString('es-ES', {month:'long'})}">${month}</button>`;
-            }).join('');
-            
-            return `
-                <div class="modal-container fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm modal-enter p-4">
-                    <div class="modal-content relative backdrop-blur-md rounded-2xl shadow-lg p-6 ${appState.theme.surface} w-full max-w-md mx-4">
-                        <button class="modal-close-button absolute top-3 right-3 p-2 ${appState.theme.textSecondary} hover:${appState.theme.accent} rounded-full">
-                            ${createIcon(ICONS.x, 'w-6 h-6')}
-                        </button>                        <div class="flex items-center justify-between mb-6">
-                            <button id="calendar-year-prev" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110" title="Año anterior (←)">
-                                ${createIcon(ICONS.chevronLeft, "w-8 h-8")}
-                            </button>
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm ${appState.theme.textSecondary}">Año:</span>
-                                    <input type="number" id="calendar-year-input" value="${appState.calendarViewYear}" class="text-2xl font-bold ${appState.theme.textPrimary} bg-white/10 w-24 text-center focus:outline-none focus:bg-white/20 rounded-lg backdrop-blur-md border border-white/20 focus:border-white/40 transition-all px-2 py-1" aria-label="Año del calendario" min="1900" max="2100" title="Escribe un año o usa las flechas">
-                                </div>
-                                <div class="text-xs ${appState.theme.textSecondary}">
-                                    ${(() => {
-                                        // Contar meses con datos en el año actual
-                                        let monthsWithData = 0;
-                                        for (let i = 1; i <= 12; i++) {
-                                            const monthKey = `${appState.calendarViewYear}-${String(i).padStart(2, '0')}`;
-                                            if (appState.data.transactions[monthKey] && Object.values(appState.data.transactions[monthKey]).length > 0) {
-                                                monthsWithData++;
-                                            }
-                                        }
-                                        return monthsWithData > 0 ? `📊 ${monthsWithData} meses con datos` : '📭 Sin datos registrados';
-                                    })()}
-                                </div>
-                            </div>
-                            <button id="calendar-year-next" class="${appState.theme.textSecondary} hover:${appState.theme.accent} p-2 rounded-full transition-all hover:scale-110" title="Año siguiente (→)">
-                                ${createIcon(ICONS.chevronRight, "w-8 h-8")}
-                            </button>
-                        </div>
-                        
-                        <div class="grid grid-cols-4 gap-4 text-center">${monthsHTML}</div>
-                          <div class="flex items-center justify-between mt-6">
-                            <button id="today-button" class="py-2 px-4 rounded-lg ${appState.theme.textSecondary} hover:${appState.theme.accent} font-bold text-sm transition-all hover:scale-105">
-                                📅 Volver a Hoy
-                            </button>
-                            <div class="flex items-center gap-4 text-xs ${appState.theme.textSecondary}">
-                               <div class="flex items-center gap-1">
-                                   <span class="w-3 h-3 rounded-full ${appState.theme.accentBg}"></span>Actual
-                               </div>
-                               <div class="flex items-center gap-1">
-                                   <span class="w-3 h-3 rounded-full bg-white/20"></span>Con Datos
-                               </div>
-                            </div>
-                       </div>
-                       
-                       <!-- Indicadores de navegación -->
-                       <div class="mt-4 text-center text-xs ${appState.theme.textSecondary} border-t border-white/10 pt-3">
-                           <p>💡 <strong>Navegación:</strong> ← → para cambiar año • Click en mes para seleccionar</p>
-                           <p class="mt-1">📅 Rango disponible: 1900 - 2100</p>
-                       </div>
-                    </div>
-                </div>
-            `;
         }
           /**
          * ⌨️ Modal de Atajos de Teclado Actualizado
@@ -2780,19 +2407,11 @@
                                 </div>
                             </button>
                             
-                            <button id="clear-all-data-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-red-500/20 p-4 rounded-lg transition-colors backdrop-blur-md border border-red-500/30 mb-3">
+                            <button id="clear-all-data-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-red-500/20 p-4 rounded-lg transition-colors backdrop-blur-md border border-red-500/30">
                                 ${createIcon(ICONS.trash, `w-6 h-6 text-red-400`)}
                                 <div>
                                     <p class="font-bold text-red-400">🗑️ Borrar Todos los Datos</p>
                                     <p class="text-sm text-red-300">⚠️ Esta acción no se puede deshacer.</p>
-                                </div>
-                            </button>
-                            
-                            <button id="delete-account-button" class="w-full text-left flex items-center gap-3 ${appState.theme.surface} hover:bg-red-600/20 p-4 rounded-lg transition-colors backdrop-blur-md border border-red-600/50">
-                                ${createIcon(ICONS.userX, `w-6 h-6 text-red-500`)}
-                                <div>
-                                    <p class="font-bold text-red-500">⚠️ Eliminar Cuenta Completa</p>
-                                    <p class="text-sm text-red-400">Elimina tu cuenta de Firebase y todos los datos.</p>
                                 </div>
                             </button>
                         </div>
@@ -2932,209 +2551,15 @@
 
         function updateDockGlider() {
             // El nuevo efecto es puramente CSS, no requiere JavaScript
-        }        /**
+        }/**
          * 🎮 Gestor de Event Listeners Mejorado
          * Maneja todos los eventos de la interfaz de usuario
          */
         function addEventListeners() {
-            // Eventos de autenticación tradicionales (Google, Guest)
+            // Eventos de autenticación
             document.querySelectorAll('.login-button').forEach(btn => 
                 btn.addEventListener('click', e => appState.login(e.currentTarget.dataset.loginMethod))
             );
-            
-            // 📧 NUEVOS EVENT LISTENERS PARA AUTENTICACIÓN CON EMAIL
-            // ====================================================
-            // SOLO agregar si estamos en la página de login (usuario no autenticado)
-            setupAuthListeners();
-            
-            // Configurar el resto de listeners
-            setupAdditionalListeners();
-        }
-
-        function setupAuthListeners() {
-            // Verificar si estamos en el login (no hay elementos de auth si el usuario está logueado)
-            if (appState.user) return;
-            
-            // Botones principales de login ultra simple
-            const googleLoginBtn = document.getElementById('google-login-btn');
-            const guestLoginBtn = document.getElementById('guest-login-btn');
-            const emailRegisterBtn = document.getElementById('email-register-btn');
-            
-            // Google Login
-            if (googleLoginBtn) {
-                googleLoginBtn.addEventListener('click', async () => {
-                    try {
-                        showNotification('Iniciando sesión con Google...', 'info');
-                        await NebulaAuth.signInWithGoogle();
-                    } catch (error) {
-                        console.error('Error en Google login:', error);
-                        showNotification('Error al iniciar sesión con Google', 'error');
-                    }
-                });
-            }
-            
-            // Guest Login
-            if (guestLoginBtn) {
-                guestLoginBtn.addEventListener('click', async () => {
-                    try {
-                        showNotification('Entrando como invitado...', 'info');
-                        await NebulaAuth.signInAnonymously();
-                    } catch (error) {
-                        console.error('Error en guest login:', error);
-                        showNotification('Error al entrar como invitado', 'error');
-                    }
-                });
-            }
-            
-            // Botón para abrir modal de registro con email
-            if (emailRegisterBtn) {
-                emailRegisterBtn.addEventListener('click', () => {
-                    const emailModal = document.getElementById('email-register-modal');
-                    if (emailModal) {
-                        emailModal.classList.remove('hidden');
-                        emailModal.classList.add('flex');
-                    }
-                });
-            }
-            
-            // Gestión de modales
-            const emailRegisterModal = document.getElementById('email-register-modal');
-            const emailLoginModal = document.getElementById('email-login-modal');
-            
-            if (emailRegisterModal && emailLoginModal) {
-                // Cerrar modales
-                const closeRegisterModal = document.getElementById('close-register-modal');
-                const closeLoginModal = document.getElementById('close-login-modal');
-                
-                if (closeRegisterModal) {
-                    closeRegisterModal.addEventListener('click', () => {
-                        emailRegisterModal.classList.add('hidden');
-                        emailRegisterModal.classList.remove('flex');
-                    });
-                }
-                
-                if (closeLoginModal) {
-                    closeLoginModal.addEventListener('click', () => {
-                        emailLoginModal.classList.add('hidden');
-                        emailLoginModal.classList.remove('flex');
-                    });
-                }
-                
-                // Cambiar entre modales
-                const switchToLogin = document.getElementById('switch-to-login');
-                const switchToRegister = document.getElementById('switch-to-register');
-                
-                if (switchToLogin) {
-                    switchToLogin.addEventListener('click', () => {
-                        emailRegisterModal.classList.add('hidden');
-                        emailRegisterModal.classList.remove('flex');
-                        emailLoginModal.classList.remove('hidden');
-                        emailLoginModal.classList.add('flex');
-                    });
-                }
-                
-                if (switchToRegister) {
-                    switchToRegister.addEventListener('click', () => {
-                        emailLoginModal.classList.add('hidden');
-                        emailLoginModal.classList.remove('flex');
-                        emailRegisterModal.classList.remove('hidden');
-                        emailRegisterModal.classList.add('flex');
-                    });
-                }
-                
-                // Cerrar al hacer click en backdrop
-                emailRegisterModal.addEventListener('click', (e) => {
-                    if (e.target === emailRegisterModal) {
-                        emailRegisterModal.classList.add('hidden');
-                        emailRegisterModal.classList.remove('flex');
-                    }
-                });
-                
-                emailLoginModal.addEventListener('click', (e) => {
-                    if (e.target === emailLoginModal) {
-                        emailLoginModal.classList.add('hidden');
-                        emailLoginModal.classList.remove('flex');
-                    }
-                });
-            }
-            
-            // Formularios
-            const registerForm = document.getElementById('email-register-form');
-            const loginForm = document.getElementById('email-login-form');
-            
-            if (registerForm) {
-                registerForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const name = document.getElementById('register-name')?.value;
-                    const email = document.getElementById('register-email')?.value;
-                    const password = document.getElementById('register-password')?.value;
-                    
-                    if (password && password.length < 6) {
-                        showNotification('La contraseña debe tener al menos 6 caracteres', 'error');
-                        return;
-                    }
-                    
-                    if (email && password && name) {
-                        try {
-                            showNotification('Creando cuenta...', 'info');
-                            await NebulaAuth.signUpWithEmail(email, password, name);
-                            emailRegisterModal.classList.add('hidden');
-                            emailRegisterModal.classList.remove('flex');
-                        } catch (error) {
-                            console.error('Error en registro:', error);
-                            showNotification('Error al crear la cuenta', 'error');
-                        }
-                    }
-                });
-            }
-            
-            if (loginForm) {
-                loginForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const email = document.getElementById('login-email')?.value;
-                    const password = document.getElementById('login-password')?.value;
-                    
-                    if (email && password) {
-                        try {
-                            showNotification('Iniciando sesión...', 'info');
-                            await NebulaAuth.signInWithEmail(email, password);
-                            emailLoginModal.classList.add('hidden');
-                            emailLoginModal.classList.remove('flex');
-                        } catch (error) {
-                            console.error('Error en login:', error);
-                            showNotification('Error al iniciar sesión', 'error');
-                        }
-                    }
-                });
-            }
-            
-            // Botón de olvidé contraseña
-            const forgotPassword = document.getElementById('forgot-password');
-            if (forgotPassword) {
-                forgotPassword.addEventListener('click', () => {
-                    showNotification('Función de recuperación próximamente', 'info');
-                });
-            }
-            
-            // Efectos de hover para botones
-            const loginButtons = document.querySelectorAll('.login-button');
-            loginButtons.forEach(button => {
-                button.addEventListener('mouseenter', () => {
-                    button.style.transform = 'translateY(-2px)';
-                });
-                
-                button.addEventListener('mouseleave', () => {
-                    button.style.transform = 'translateY(0)';
-                });
-            });
-            
-            console.log('✅ Listeners de auth ultra simple configurados');
-        }
-
-        function setupAdditionalListeners() {
-            // ====================================================
-            // RESTO DE EVENT LISTENERS EXISTENTES
-            // ====================================================
             
             // Navegación del dock
             document.querySelectorAll('.nav-button').forEach(btn => 
@@ -3372,74 +2797,23 @@
                         `Aplicado: ${THEMES[e.currentTarget.dataset.themeKey].name}`);
                 })
             );
-            
-            // Navegación de meses
+              // Navegación de meses
             const monthPrev = document.getElementById('month-prev');
             if (monthPrev) monthPrev.addEventListener('click', () => appState.changeMonth(-1));
             
             const monthNext = document.getElementById('month-next');
             if (monthNext) monthNext.addEventListener('click', () => appState.changeMonth(1));
-            
-            // Calendario desplegable
-            const calendarDropdownButton = document.getElementById('calendar-dropdown-button');
-            const calendarDropdown = document.getElementById('calendar-dropdown');
-            
-            if (calendarDropdownButton && calendarDropdown) {
-                calendarDropdownButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    calendarDropdown.classList.toggle('hidden');
-                });
-                
-                // Cerrar dropdown al hacer click fuera
-                document.addEventListener('click', (e) => {
-                    if (!calendarDropdown.contains(e.target) && !calendarDropdownButton.contains(e.target)) {
-                        calendarDropdown.classList.add('hidden');
-                    }
-                });
-                
-                // Selección de mes
-                document.querySelectorAll('.month-dropdown-item').forEach(item => {
-                    item.addEventListener('click', (e) => {
-                        const monthIndex = parseInt(e.target.dataset.month);
-                        appState.currentDate = new Date(appState.currentDate.getFullYear(), monthIndex, 1);
-                        calendarDropdown.classList.add('hidden');
-                        renderApp();
-                    });
-                });
-                
-                // Botón "ir a hoy"
-                const todayShortcut = document.getElementById('today-shortcut');
-                if (todayShortcut) {
-                    todayShortcut.addEventListener('click', () => {
-                        appState.currentDate = new Date();
-                        calendarDropdown.classList.add('hidden');
-                        renderApp();
-                        NotificationSystem.info('Navegación', 'Has regresado al mes actual');
-                    });
-                }
-            }
-              // Modal calendar (mantenido para compatibilidad)
-            const openCalendarButton = document.getElementById('open-calendar-button');
-            if(openCalendarButton) openCalendarButton.addEventListener('click', () => appState.openModal('calendar'));
               const openShortcutsButton = document.getElementById('open-shortcuts-button');
             if (openShortcutsButton) openShortcutsButton.addEventListener('click', () => appState.openModal('shortcuts'));
             
             // 🔧 NUEVOS BOTONES DE CONFIGURACIÓN
             const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', async () => {
+            if (logoutButton) {                logoutButton.addEventListener('click', async () => {
                     try {
-                        // Verificar si hay usuario autenticado
-                        if (!appState.user) {
-                            NotificationSystem.info('Info', 'No hay sesión activa');
-                            return;
-                        }
-                        
-                        // Modal elegante para cerrar sesión
+                        // CloudSonnet4: Modal elegante para cerrar sesión
                         const confirmed = await showWarningModal(
-                            '🚪 ¿Cerrar sesión?',
-                            `¿Quieres cerrar sesión de <strong>${appState.user.email}</strong>?<br><br>
-                            Tus datos financieros se mantendrán guardados de forma segura.`,
+                            '¿Cerrar sesión?',
+                            'Tus datos se mantendrán guardados localmente de forma segura.',
                             { 
                                 confirmText: 'Cerrar sesión',
                                 cancelText: 'Permanecer' 
@@ -3447,20 +2821,10 @@
                         );
                         if (!confirmed) return;
                         
-                        NotificationSystem.info('Cerrando sesión...', 'Desconectando de tu cuenta');
-                        
-                        // Usar Firebase Auth para cerrar sesión
-                        if (window.NebulaAuth && window.NebulaAuth.signOut) {
-                            await window.NebulaAuth.signOut();
-                        } else {
-                            // Fallback: limpiar datos localmente
-                            appState.user = null;
-                            
-                            // Limpiar datos de sesión (pero no los datos financieros)
-                            if (NebulaSecurityUtils) {
-                                NebulaSecurityUtils.secureRemoveItem('user_session');
-                                NebulaSecurityUtils.secureRemoveItem('auth_token');
-                            }
+                        // Limpiar datos de sesión (pero no los datos financieros)
+                        if (NebulaSecurityUtils) {
+                            NebulaSecurityUtils.secureRemoveItem('user_session');
+                            NebulaSecurityUtils.secureRemoveItem('auth_token');
                         }
                         
                         NotificationSystem.success('Sesión cerrada', 'Has cerrado sesión exitosamente');
@@ -3620,120 +2984,7 @@
                         NotificationSystem.error('Error', 'No se pudieron borrar los datos');
                     }
                 });
-            }
-            
-            // 🚨 BOTÓN ELIMINAR CUENTA COMPLETA
-            const deleteAccountButton = document.getElementById('delete-account-button');
-            if (deleteAccountButton) {
-                deleteAccountButton.addEventListener('click', async () => {
-                    try {
-                        // Verificar que el usuario esté autenticado
-                        if (!appState.user) {
-                            NotificationSystem.error('Error', 'Debes estar autenticado para eliminar tu cuenta');
-                            return;
-                        }
-                        
-                        // Triple confirmación para eliminar cuenta
-                        const confirmed1 = await showDangerModal(
-                            '⚠️ Eliminar Cuenta Completa',
-                            `¿Estás seguro de que quieres eliminar tu cuenta de Nebula Financial?<br><br>
-                            <strong>Esto eliminará:</strong><br>
-                            • Tu cuenta de Firebase<br>
-                            • Todos tus datos financieros<br>
-                            • Tu acceso a la aplicación<br><br>
-                            ¿Continuar?`,
-                            { 
-                                confirmText: 'Continuar',
-                                cancelText: 'Cancelar' 
-                            }
-                        );
-                        if (!confirmed1) return;
-                        
-                        // Segunda confirmación más específica
-                        const confirmed2 = await showDangerModal(
-                            '🚨 CONFIRMACIÓN CRÍTICA',
-                            `<strong style="color: #ef4444;">ATENCIÓN: Esta acción es IRREVERSIBLE</strong><br><br>
-                            Al eliminar tu cuenta:<br><br>
-                            • Se borrará tu cuenta de Firebase permanentemente<br>
-                            • Perderás todos tus datos financieros<br>
-                            • No podrás recuperar esta información<br>
-                            • Tendrás que crear una nueva cuenta para volver a usar la app<br><br>
-                            ¿Estás 100% seguro de que quieres continuar?`,
-                            { 
-                                confirmText: 'SÍ, ELIMINAR CUENTA',
-                                cancelText: 'No, mantener cuenta' 
-                            }
-                        );
-                        if (!confirmed2) return;
-                        
-                        // Tercera confirmación final
-                        const confirmed3 = await showDangerModal(
-                            '💀 ELIMINACIÓN FINAL',
-                            `<div style="background: #7f1d1d; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0;">
-                                <strong style="color: #fca5a5;">⚠️ ÚLTIMA OPORTUNIDAD ⚠️</strong><br><br>
-                                Estás a punto de eliminar permanentemente:<br>
-                                <strong>📧 ${appState.user.email}</strong><br><br>
-                                <span style="color: #ef4444; font-weight: bold;">Esta acción NO SE PUEDE DESHACER JAMÁS.</span>
-                            </div>
-                            ¿Proceder con la eliminación definitiva?`,
-                            { 
-                                confirmText: '💀 ELIMINAR DEFINITIVAMENTE',
-                                cancelText: '🛡️ Conservar mi cuenta' 
-                            }
-                        );
-                        if (!confirmed3) return;
-                        
-                        // Mostrar progreso
-                        NotificationSystem.info('Eliminando...', 'Procesando eliminación de cuenta...');
-                        
-                        // 1. Limpiar todos los datos locales primero
-                        appState.data = {
-                            transactions: {},
-                            investments: [],
-                            goals: [],
-                            debts: []
-                        };
-                        
-                        // 2. Limpiar localStorage
-                        if (NebulaSecurityUtils) {
-                            NebulaSecurityUtils.secureRemoveItem('financialData');
-                            NebulaSecurityUtils.secureRemoveItem('user_session');
-                            NebulaSecurityUtils.secureRemoveItem('auth_token');
-                            NebulaSecurityUtils.secureRemoveItem('nebula_visited');
-                        } else {
-                            localStorage.clear();
-                        }
-                        
-                        // 3. Eliminar cuenta de Firebase
-                        if (window.NebulaAuth && window.NebulaAuth.deleteUserAccount) {
-                            await window.NebulaAuth.deleteUserAccount();
-                        } else {
-                            // Fallback: cerrar sesión si no está disponible la función de eliminar
-                            if (window.NebulaAuth && window.NebulaAuth.signOut) {
-                                await window.NebulaAuth.signOut();
-                            }
-                            NotificationSystem.warning('Cuenta cerrada', 'Se cerró la sesión. La eliminación completa requiere verificación manual.');
-                        }
-                        
-                        // 4. Resetear estado de la app
-                        appState.user = null;
-                        appState.isLoading = false;
-                        
-                        NotificationSystem.success('Cuenta eliminada', 'Tu cuenta y datos han sido eliminados permanentemente');
-                        
-                        // 5. Recargar la app para mostrar página de login
-                        setTimeout(() => {
-                            location.reload();
-                        }, 2000);
-                        
-                    } catch (error) {
-                        console.error('Error eliminando cuenta:', error);
-                        NotificationSystem.error('Error', `No se pudo eliminar la cuenta: ${error.message}`);
-                    }
-                });
-            }
-            
-            // Actualizar glider al cargar eventos
+            }// Actualizar glider al cargar eventos
             updateDockGlider();
             
             // Observer simple para cambios de tamaño
@@ -3742,52 +2993,13 @@
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(updateDockGlider, 100);
             });
-        }
-
-        function addModalEventListeners() {
+        }        function addModalEventListeners() {
             const modalContainer = document.querySelector('.modal-container');
             if(modalContainer) {
                 modalContainer.addEventListener('click', (e) => {
                     if(e.target === modalContainer) appState.closeModal();
                 });
                 modalContainer.querySelector('.modal-close-button')?.addEventListener('click', () => appState.closeModal());
-            }            if (appState.activeModal === 'calendar') {
-                document.getElementById('calendar-year-prev')?.addEventListener('click', () => appState.changeCalendarYear(-1));
-                document.getElementById('calendar-year-next')?.addEventListener('click', () => appState.changeCalendarYear(1));
-                document.getElementById('today-button')?.addEventListener('click', () => appState.goToday());
-                
-                const yearInput = document.getElementById('calendar-year-input');
-                if (yearInput) {
-                    yearInput.addEventListener('change', e => appState.setCalendarYear(parseInt(e.target.value)));
-                    
-                    // Navegación con teclado para el año
-                    yearInput.addEventListener('keydown', (e) => {
-                        if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
-                            e.preventDefault();
-                            appState.changeCalendarYear(1);
-                        } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
-                            e.preventDefault();
-                            appState.changeCalendarYear(-1);
-                        }
-                    });
-                }
-                
-                // Navegación global del modal con teclado
-                document.addEventListener('keydown', function calendarKeyHandler(e) {
-                    if (appState.activeModal === 'calendar') {
-                        if (e.key === 'ArrowLeft' && !yearInput?.contains(e.target)) {
-                            e.preventDefault();
-                            appState.changeCalendarYear(-1);
-                        } else if (e.key === 'ArrowRight' && !yearInput?.contains(e.target)) {
-                            e.preventDefault();
-                            appState.changeCalendarYear(1);
-                        }
-                    } else {
-                        document.removeEventListener('keydown', calendarKeyHandler);
-                    }
-                });
-                
-                document.querySelectorAll('.month-button').forEach(btn => btn.addEventListener('click', e => appState.setCalendarDate(parseInt(e.currentTarget.dataset.monthIndex))));
             }
         }
           // ===============================================
@@ -3907,14 +3119,17 @@
                 this.register('ArrowRight', () => {
                     if (!appState.activeModal) appState.changeMonth(1);
                 }, 'Mes siguiente');
-                
-                // Funciones especiales
+                  // Funciones especiales
                 this.register('Escape', () => {
                     if (appState.activeModal) appState.closeModal();
                 }, 'Cerrar modal');
+                  // 📅 Atajo para calendario minimalista
                 this.register('c', () => {
-                    if (!appState.activeModal) appState.openModal('calendar');
-                }, 'Abrir calendario');
+                    if (!appState.activeModal && typeof openCalendar === 'function') {
+                        openCalendar();
+                    }
+                }, 'Abrir Calendario Minimalista');
+                
                 this.register('h', () => {
                     if (!appState.activeModal) appState.openModal('shortcuts');
                 }, 'Mostrar atajos');
@@ -4031,27 +3246,6 @@
                 window.THEMES = THEMES;
                 window.ICONS = ICONS;
                 window.renderApp = renderApp;
-                
-                // 🔔 FUNCIÓN GLOBAL DE NOTIFICACIÓN PARA FIREBASE AUTH
-                window.showNotification = function(message, type = 'info') {
-                    if (NotificationSystem) {
-                        switch (type) {
-                            case 'success':
-                                NotificationSystem.success('Autenticación', message);
-                                break;
-                            case 'error':
-                                NotificationSystem.error('Error', message);
-                                break;
-                            case 'warning':
-                                NotificationSystem.warning('Atención', message);
-                                break;
-                            default:
-                                NotificationSystem.info('Información', message);
-                        }
-                    } else {
-                        console.log(`${type.toUpperCase()}: ${message}`);
-                    }
-                };
                   // Función global para aplicar autoformato numérico
                 window.formatThousands = function(value) {
                     if (!value) return '';
@@ -4129,46 +3323,22 @@
                     }, 2000);
                 }
                 
-                // 🔥 CONECTAR FIREBASE AUTH CON APPSTATE
-                // =====================================
-                if (window.NebulaAuth) {
-                    console.log('🔥 Conectando Firebase Auth con appState...');
-                    
-                    // Escuchar eventos de Firebase Auth
-                    window.addEventListener('nebula-auth-userSignedIn', (event) => {
-                        const user = event.detail;
-                        console.log('🔥 Usuario Firebase autenticado:', user);
-                        appState.handleFirebaseAuthChange(user);
-                    });
-                    
-                    window.addEventListener('nebula-auth-userSignedOut', () => {
-                        console.log('🔥 Usuario Firebase desconectado');
-                        appState.handleFirebaseAuthChange(null);
-                    });
-                    
-                    // Verificar si Firebase Auth ya está inicializado
-                    setTimeout(async () => {
-                        try {
-                            if (!window.NebulaAuth.isAuthenticated()) {
-                                console.log('🔥 Inicializando Firebase Auth...');
-                                const success = await window.NebulaAuth.init();
-                                if (success) {
-                                    console.log('🔥 Firebase Auth conectado exitosamente');
-                                } else {
-                                    console.warn('⚠️ Firebase Auth en modo fallback');
-                                }
-                            } else {
-                                console.log('🔥 Firebase Auth ya está activo');
-                            }
-                        } catch (error) {
-                            console.warn('⚠️ Error inicializando Firebase Auth:', error.message);
-                        }
-                    }, 1000);
-                } else {
-                    console.warn('⚠️ NebulaAuth no disponible, funcionando en modo offline');
-                }
-                
                 console.log('✅ Nebula iniciada correctamente');
+                
+                // 🔐 Inicializar sistema de autenticación después de Firebase
+                if (window.NebulaAuth) {
+                    try {
+                        window.NebulaAuth.initialize().then(() => {
+                            console.log('🔐 NebulaAuth inicializado correctamente');
+                        }).catch(error => {
+                            console.warn('⚠️ Error inicializando NebulaAuth:', error);
+                        });
+                    } catch (error) {
+                        console.warn('⚠️ Error en inicialización NebulaAuth:', error);
+                    }
+                } else {
+                    console.warn('⚠️ NebulaAuth no disponible');
+                }
                 
             } catch (error) {
                 console.error('❌ Error en inicialización:', error);
@@ -4228,150 +3398,212 @@
                 });
             }
         }// Iniciar aplicación
-        waitForDOM();
-
-        // 🧪 SISTEMA DE VALIDACIÓN AUTOMÁTICA
+        waitForDOM();        // 🧪 SISTEMA DE VALIDACIÓN AUTOMÁTICA MEJORADO
         function validateNebula() {
             setTimeout(() => {
                 try {
-                    console.log('🧪 Iniciando validación automática de Nebula...');                    const validationResults = {
+                    console.log('🧪 Iniciando validación automática de Nebula...');
+                    
+                    const validationResults = {
                         shortcuts: false,
                         notifications: false,
                         appState: false,
                         dom: false,
                         themes: false,
                         security: false,
-                        inputValidation: false
+                        inputValidation: false,
+                        modules: false,
+                        performance: false
                     };
+                    
+                    let criticalErrors = [];
+                    let warnings = [];
                     
                     // Test ShortcutSystem
                     if (typeof ShortcutSystem !== 'undefined' && ShortcutSystem.init) {
                         console.log('✅ ShortcutSystem: Definido y funcional');
                         validationResults.shortcuts = true;
                     } else {
-                        console.error('❌ ShortcutSystem: No definido o no funcional');
+                        const error = '❌ ShortcutSystem: No definido o no funcional';
+                        console.error(error);
+                        criticalErrors.push(error);
                     }
                     
                     // Test NotificationSystem
                     if (typeof NotificationSystem !== 'undefined' && NotificationSystem.success) {
                         console.log('✅ NotificationSystem: Definido y funcional');
                         validationResults.notifications = true;
+                        
+                        // Test práctico del sistema de notificaciones
+                        try {
+                            NotificationSystem.info('🧪 Sistema validado', 'Validación automática completada', 2000);
+                        } catch (e) {
+                            warnings.push('⚠️ NotificationSystem definido pero no funcional: ' + e.message);
+                        }
                     } else {
-                        console.error('❌ NotificationSystem: No definido o no funcional');
-                    }                      // Test appState
+                        const error = '❌ NotificationSystem: No definido o no funcional';
+                        console.error(error);
+                        criticalErrors.push(error);
+                    }
+                    
+                    // Test appState
                     if (typeof appState !== 'undefined' && appState.activeView && appState.data) {
                         console.log('✅ appState: Definido y funcional');
                         validationResults.appState = true;
+                        
+                        // Validar estructura de datos críticos
+                        const requiredData = ['income', 'expenses', 'investments', 'debts', 'goals'];
+                        const missingData = requiredData.filter(key => !appState.data[key]);
+                        if (missingData.length > 0) {
+                            warnings.push(`⚠️ appState: Faltan datos iniciales para: ${missingData.join(', ')}`);
+                        }
                     } else {
-                        console.error('❌ appState: No definido o no funcional', {
+                        const error = '❌ appState: No definido o no funcional';
+                        console.error(error, {
                             defined: typeof appState !== 'undefined',
                             hasActiveView: typeof appState !== 'undefined' && typeof appState.activeView !== 'undefined',
                             hasData: typeof appState !== 'undefined' && appState.data
                         });
+                        criticalErrors.push(error);
                     }
                     
                     // Test DOM elements
                     const criticalIds = ['content-root', 'dock-root', 'parallax-bg', 'modal-root'];
+                    let domErrors = [];
                     const domOk = criticalIds.every(id => {
                         const element = document.getElementById(id);
                         if (element) {
                             console.log(`✅ DOM ${id}: Encontrado`);
                             return true;
                         } else {
-                            console.error(`❌ DOM ${id}: No encontrado`);
+                            const error = `❌ DOM ${id}: No encontrado`;
+                            console.error(error);
+                            domErrors.push(error);
                             return false;
                         }
                     });
-                    validationResults.dom = domOk;                    // Test THEMES
+                    validationResults.dom = domOk;
+                    if (!domOk) criticalErrors.push(...domErrors);
+                    
+                    // Test THEMES
                     if (typeof THEMES !== 'undefined' && THEMES.aureoAmanecer && THEMES.crisonVespertino) {
                         console.log('✅ THEMES: Definido y funcional');
                         validationResults.themes = true;
                     } else {
-                        console.error('❌ THEMES: No definido o no funcional', {
+                        const error = '❌ THEMES: No definido o no funcional';
+                        console.error(error, {
                             defined: typeof THEMES !== 'undefined',
                             hasAureoAmanecer: typeof THEMES !== 'undefined' && THEMES.aureoAmanecer,
                             hasCrisonVespertino: typeof THEMES !== 'undefined' && THEMES.crisonVespertino
                         });
+                        criticalErrors.push(error);
                     }
                     
                     // Test Security System
                     if (typeof NebulaSecurityUtils !== 'undefined' && NebulaSecurityUtils.encrypt) {
-                        console.log('✅ NebulaSecurityUtils: Sistema de seguridad activo');
+                        console.log('✅ NebulaSecurityUtils: Definido y funcional');
                         validationResults.security = true;
                         
-                        // Test de cifrado básico
+                        // Test básico de cifrado
                         try {
-                            const testData = 'test-encryption';
+                            const testData = 'test_validation';
                             const encrypted = NebulaSecurityUtils.encrypt(testData);
                             const decrypted = NebulaSecurityUtils.decrypt(encrypted);
-                            if (decrypted === testData) {
-                                console.log('✅ Cifrado/Descifrado: Funcionando correctamente');
-                            } else {
-                                console.warn('⚠️ Cifrado/Descifrado: Inconsistencia detectada');
+                            if (decrypted !== testData) {
+                                warnings.push('⚠️ Security: Cifrado/descifrado no funciona correctamente');
                             }
-                        } catch (error) {
-                            console.error('❌ Error en test de cifrado:', error);
-                        }                    } else {
-                        console.error('❌ NebulaSecurityUtils: No definido o no funcional');
-                    }
-                    
-                    // Test Input Validation System
-                    if (typeof NebulaInputValidator !== 'undefined' && NebulaInputValidator.validateAmount) {
-                        console.log('✅ NebulaInputValidator: Sistema de validación activo');
-                        validationResults.inputValidation = true;
-                        
-                        // Test de validación básico
-                        try {
-                            const testResult = NebulaInputValidator.validateAmount('123.45');
-                            if (testResult.isValid && testResult.value === 123.45) {
-                                console.log('✅ Validación de entrada: Funcionando correctamente');
-                            } else {
-                                console.warn('⚠️ Validación de entrada: Comportamiento inesperado');
-                            }
-                        } catch (error) {
-                            console.error('❌ Error en test de validación:', error);
+                        } catch (e) {
+                            warnings.push('⚠️ Security: Error en test de cifrado: ' + e.message);
                         }
                     } else {
-                        console.error('❌ NebulaInputValidator: No definido o no funcional');
+                        warnings.push('⚠️ NebulaSecurityUtils: No definido, usando localStorage básico');
+                        validationResults.security = false;
                     }
                     
-                    // Calcular resultados
+                    // Test Input Validation
+                    if (typeof NebulaInputValidator !== 'undefined' && NebulaInputValidator.validateNumber) {
+                        console.log('✅ NebulaInputValidator: Definido y funcional');
+                        validationResults.inputValidation = true;
+                    } else {
+                        warnings.push('⚠️ NebulaInputValidator: No definido, validación básica activa');
+                        validationResults.inputValidation = false;
+                    }
+                    
+                    // Test Module Loader
+                    if (window.nebulaModuleLoader && window.nebulaModuleLoader.loadedCount > 0) {
+                        console.log('✅ Module Loader: Funcional -', window.nebulaModuleLoader.loadedCount, 'módulos cargados');
+                        validationResults.modules = true;
+                    } else {
+                        const error = '❌ Module Loader: No funcional o sin módulos cargados';
+                        console.error(error);
+                        criticalErrors.push(error);
+                    }
+                    
+                    // Test Performance
+                    const performanceData = {
+                        loadTime: Date.now() - window.nebulaStartTime,
+                        memoryUsage: navigator.memory ? navigator.memory.usedJSHeapSize : 'N/A'
+                    };
+                    console.log('📊 Performance:', performanceData);
+                    validationResults.performance = performanceData.loadTime < 5000; // Menos de 5 segundos
+                    
+                    // 📊 REPORTE FINAL
                     const totalTests = Object.keys(validationResults).length;
                     const passedTests = Object.values(validationResults).filter(Boolean).length;
-                    const successRate = (passedTests / totalTests * 100).toFixed(1);
+                    const successRate = Math.round((passedTests / totalTests) * 100);
                     
-                    console.log(`🧪 Validación completada: ${passedTests}/${totalTests} tests pasados (${successRate}%)`);
+                    console.log(`📊 REPORTE DE VALIDACIÓN:`);
+                    console.log(`✅ Tests pasados: ${passedTests}/${totalTests} (${successRate}%)`);
+                    console.log(`❌ Errores críticos: ${criticalErrors.length}`);
+                    console.log(`⚠️ Advertencias: ${warnings.length}`);
                     
-                    if (passedTests === totalTests) {
-                        console.log('🎉 ¡Nebula Financial está funcionando perfectamente!');
-                        // Mostrar notificación de éxito
-                        if (NotificationSystem && NotificationSystem.success) {
-                            NotificationSystem.success('Sistema Validado', 
-                                `Todos los componentes funcionan correctamente (${successRate}%)`, 4000);
+                    if (criticalErrors.length > 0) {
+                        console.error('🚨 ERRORES CRÍTICOS DETECTADOS:');
+                        criticalErrors.forEach(error => console.error(error));
+                    }
+                    
+                    if (warnings.length > 0) {
+                        console.warn('⚠️ ADVERTENCIAS:');
+                        warnings.forEach(warning => console.warn(warning));
+                    }
+                    
+                    // 🎯 ESTABLECER ESTADO GLOBAL DE VALIDACIÓN
+                    window.nebulaValidationStatus = {
+                        success: criticalErrors.length === 0,
+                        score: successRate,
+                        errors: criticalErrors,
+                        warnings: warnings,
+                        results: validationResults,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    if (criticalErrors.length === 0) {
+                        console.log('🎉 VALIDACIÓN COMPLETADA CON ÉXITO');
+                        
+                        // Limpiar contadores de reintentos si todo está bien
+                        sessionStorage.removeItem('nebula_retry_count');
+                        
+                        // Notificar éxito si el sistema de notificaciones funciona
+                        if (validationResults.notifications) {
+                            setTimeout(() => {
+                                NotificationSystem.success('🧪 Validación', 
+                                    `Sistema validado: ${successRate}% de tests pasados`, 3000);
+                            }, 2000);
                         }
                     } else {
-                        console.warn(`⚠️ Algunas validaciones fallaron. Revisa la consola para más detalles.`);
-                        if (NotificationSystem && NotificationSystem.warning) {
-                            NotificationSystem.warning('Validación Parcial', 
-                                `${passedTests}/${totalTests} componentes funcionando`, 6000);
-                        }
+                        console.error('🚨 VALIDACIÓN FALLÓ - Errores críticos detectados');
                     }
                     
-                    // 🔧 Test rápido de atajos si todo está bien
-                    if (validationResults.shortcuts && validationResults.notifications) {
-                        console.log('🎮 Para probar atajos: D=Dashboard, I=Ingresos, G=Gastos, H=Ayuda');
-                    }
-                      } catch (error) {
-                    console.error('❌ Error durante la validación:', error);
+                } catch (validationError) {
+                    console.error('❌ Error durante la validación:', validationError);
+                    window.nebulaValidationStatus = {
+                        success: false,
+                        error: validationError.message,
+                        timestamp: new Date().toISOString()                    };
                 }
-            }, 5000); // ⏰ CAMBIADO: 5 segundos para asegurar inicialización completa
+            }, 1500); // Esperar 1.5 segundos para que todo esté cargado
         }
         
-        // Ejecutar validación automáticamente
-        if (typeof window !== 'undefined') {
-            validateNebula();
-        }
-
         // 🚀 Registro del Service Worker para performance
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -4387,28 +3619,27 @@
                     .catch(error => {
                         console.log('❌ Error registrando SW:', error);
                     });
-            });        }
+            });
+        }
 
     </script>
-      <!-- 🔧 MÓDULOS DE NEBULA FINANCIAL -->
+    
+    <!-- 🔧 MÓDULOS DE NEBULA FINANCIAL -->
     <script type="module">
         // Cargar módulos de forma asíncrona
         import('./js/modules/investments.js').then(module => {
-            // El módulo ya se auto-inicializa, solo verificamos que esté disponible
             console.log('✅ Módulo de Inversiones cargado');
         }).catch(error => {
             console.error('❌ Error cargando módulo de inversiones:', error);
         });
         
         import('./js/modules/goals.js').then(module => {
-            // El módulo ya se auto-inicializa, solo verificamos que esté disponible
             console.log('✅ Módulo de Metas cargado');
         }).catch(error => {
             console.error('❌ Error cargando módulo de metas:', error);
         });
         
         import('./js/modules/debts.js').then(module => {
-            // El módulo ya se auto-inicializa, solo verificamos que esté disponible
             console.log('✅ Módulo de Deudas cargado');
         }).catch(error => {
             console.error('❌ Error cargando módulo de deudas:', error);

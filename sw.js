@@ -1,11 +1,11 @@
 // ===============================================
 // 🌌 NEBULA FINANCIAL - SERVICE WORKER
-// Versión: 1.6 - CSS Local Sin CDN
+// Versión: 2.4 - Corrección de módulos y sistemas críticos
 // ===============================================
 
-const CACHE_NAME = 'nebula-financial-v1.7';
-const STATIC_CACHE = 'nebula-static-v1.7';
-const DYNAMIC_CACHE = 'nebula-dynamic-v1.7';
+const CACHE_NAME = 'nebula-financial-v2.4';
+const STATIC_CACHE = 'nebula-static-v2.4';
+const DYNAMIC_CACHE = 'nebula-dynamic-v2.4';
 
 // Recursos críticos para cachear inmediatamente
 const CRITICAL_ASSETS = [
@@ -18,7 +18,7 @@ const CRITICAL_ASSETS = [
 ];
 
 // Recursos de terceros que cambiar rara vez
-const THIRD_PARTY_CACHE = 'nebula-third-party-v1.6';
+const THIRD_PARTY_CACHE = 'nebula-third-party-v1.8';
 
 const THIRD_PARTY_ASSETS = [
     'https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js',
