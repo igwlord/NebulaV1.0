@@ -32,16 +32,16 @@ if (window.NebulaEnv && window.NebulaEnv.loaded) {
     firebaseConfig = window.NebulaEnv.getFirebaseConfig();
     console.log('🔐 Firebase config cargado desde .env');
 } else {
-    // Fallback a configuración hardcodeada para desarrollo
+    // Fallback a configuración demo para desarrollo
     firebaseConfig = {
-        apiKey: "AIzaSyCk9hfIQXFQoPplvcdWqM62dbpl5L5Hzcg",
-        authDomain: "nebula-v2-94054.firebaseapp.com", 
-        projectId: "nebula-v2-94054",
-        storageBucket: "nebula-v2-94054.firebasestorage.app",
-        messagingSenderId: "568313746240",
-        appId: "1:568313746240:web:8b86cc922438022672a0a5"
+        apiKey: "demo-api-key-for-development",
+        authDomain: "demo.firebaseapp.com", 
+        projectId: "demo-project",
+        storageBucket: "demo-project.firebasestorage.app",
+        messagingSenderId: "000000000000",
+        appId: "1:000000000000:web:demo"
     };
-    console.log('⚠️ Firebase config usando configuración hardcodeada');
+    console.log('⚠️ Firebase config usando configuración demo - Modo invitado habilitado');
 }
 
 // 🔐 Configuración de autenticación
