@@ -1951,15 +1951,13 @@
             
             // �🔧 ASEGURAR QUE LOS FORMULARIOS DE AUTH ESTÉN DISPONIBLES
             // Solo si estamos en la vista de login (usuario no autenticado)
-            if (!appState.user && !authListenersRegistered) {
+            if (!appState.user) {
                 console.log('🔧 Configurando auth listeners después del renderizado...');
                 setTimeout(() => {
-                    if (!authListenersRegistered) { // Double-check antes de ejecutar
-                        setupAuthListeners(); // Re-aplicar event listeners SOLO si no están registrados
-                    }
-                }, 50);
-            } else if (authListenersRegistered && !appState.user) {
-                console.log('⚠️ Auth listeners ya configurados, omitiendo configuración adicional');
+                    // Forzar reconfiguración para asegurar que los elementos DOM existen
+                    authListenersRegistered = false;
+                    setupAuthListeners();
+                }, 100); // Aumentado el delay para asegurar que el DOM esté listo
             }
             
             // Actualizar glider después del renderizado
@@ -2975,38 +2973,38 @@
         
         function setupAuthListeners() {
             // Verificar si estamos en el login (no hay elementos de auth si el usuario está logueado)
-            if (appState.user) return;
-            
-            // ⚠️ PROTECCIÓN REFORZADA CONTRA REGISTROS DUPLICADOS DE AUTH
-            if (authListenersRegistered) {
-                console.log('⚠️ Auth listeners ya registrados, evitando duplicación TOTAL');
+            if (appState.user) {
+                console.log('⚠️ Usuario logueado, omitiendo setup de auth listeners');
                 return;
             }
             
-            // ⚠️ PROTECCIÓN ADICIONAL: Verificar si ya existen listeners
-            const existingForms = document.querySelectorAll('#email-register-form, #email-login-form');
-            if (existingForms.length > 0 && existingForms[0].hasAttribute('data-listeners-attached')) {
-                console.log('⚠️ Formularios ya tienen listeners adjuntos, evitando duplicación');
-                authListenersRegistered = true;
-                return;
-            }
-            
-            // ⚠️ PROTECCIÓN ADICIONAL: Verificar botones de Google y Guest ya tienen listeners
+            // Verificar que los elementos principales de login existen
             const googleBtn = document.getElementById('google-login-btn');
+            const guestBtn = document.getElementById('guest-login-btn');
+            const emailBtn = document.getElementById('email-register-btn');
+            
+            if (!googleBtn || !guestBtn || !emailBtn) {
+                console.log('⚠️ Elementos de login no encontrados, reintentando en 200ms...', {
+                    google: !!googleBtn,
+                    guest: !!guestBtn, 
+                    email: !!emailBtn
+                });
+                setTimeout(() => setupAuthListeners(), 200);
+                return;
+            }
+            
+            console.log('🎯 Elementos de login encontrados, configurando listeners...');
+            
+            // ⚠️ PROTECCIÓN ADICIONAL: Verificar si ya tienen listeners
             if (googleBtn && googleBtn.hasAttribute('data-listener-attached')) {
                 console.log('⚠️ Botones de login ya tienen listeners, evitando duplicación');
                 authListenersRegistered = true;
                 return;
             }
             
-            // Botones principales de login ultra simple
-            const googleLoginBtn = document.getElementById('google-login-btn');
-            const guestLoginBtn = document.getElementById('guest-login-btn');
-            const emailRegisterBtn = document.getElementById('email-register-btn');
-            
             // Google Login
-            if (googleLoginBtn && !googleLoginBtn.hasAttribute('data-listener-attached')) {
-                googleLoginBtn.addEventListener('click', async () => {
+            if (googleBtn && !googleBtn.hasAttribute('data-listener-attached')) {
+                googleBtn.addEventListener('click', async () => {
                     try {
                         showNotification('Iniciando sesión con Google...', 'info');
                         await NebulaAuth.signInWithGoogle();
@@ -3015,12 +3013,12 @@
                         showNotification('Error al iniciar sesión con Google', 'error');
                     }
                 });
-                googleLoginBtn.setAttribute('data-listener-attached', 'true');
+                googleBtn.setAttribute('data-listener-attached', 'true');
             }
             
             // Guest Login
-            if (guestLoginBtn && !guestLoginBtn.hasAttribute('data-listener-attached')) {
-                guestLoginBtn.addEventListener('click', async () => {
+            if (guestBtn && !guestBtn.hasAttribute('data-listener-attached')) {
+                guestBtn.addEventListener('click', async () => {
                     try {
                         showNotification('Entrando como invitado...', 'info');
                         await NebulaAuth.signInAnonymously();
@@ -3029,19 +3027,19 @@
                         showNotification('Error al entrar como invitado', 'error');
                     }
                 });
-                guestLoginBtn.setAttribute('data-listener-attached', 'true');
+                guestBtn.setAttribute('data-listener-attached', 'true');
             }
             
             // Botón para abrir modal de registro con email
-            if (emailRegisterBtn && !emailRegisterBtn.hasAttribute('data-listener-attached')) {
-                emailRegisterBtn.addEventListener('click', () => {
+            if (emailBtn && !emailBtn.hasAttribute('data-listener-attached')) {
+                emailBtn.addEventListener('click', () => {
                     const emailModal = document.getElementById('email-register-modal');
                     if (emailModal) {
                         emailModal.classList.remove('hidden');
                         emailModal.classList.add('flex');
                     }
                 });
-                emailRegisterBtn.setAttribute('data-listener-attached', 'true');
+                emailBtn.setAttribute('data-listener-attached', 'true');
             }
             
             // Gestión de modales
