@@ -1956,10 +1956,13 @@
             
             // �🔧 ASEGURAR QUE LOS FORMULARIOS DE AUTH ESTÉN DISPONIBLES
             // Solo si estamos en la vista de login (usuario no autenticado)
-            if (!appState.user) {
+            if (!appState.user && !authListenersRegistered) {
+                console.log('🔧 Configurando auth listeners después del renderizado...');
                 setTimeout(() => {
-                    setupAuthListeners(); // Re-aplicar event listeners para formularios de auth después del renderizado
+                    setupAuthListeners(); // Re-aplicar event listeners SOLO si no están registrados
                 }, 50);
+            } else if (authListenersRegistered) {
+                console.log('⚠️ Auth listeners ya configurados, omitiendo configuración adicional');
             }
             
             // Actualizar glider después del renderizado
@@ -2977,9 +2980,17 @@
             // Verificar si estamos en el login (no hay elementos de auth si el usuario está logueado)
             if (appState.user) return;
             
-            // ⚠️ PROTECCIÓN CONTRA REGISTROS DUPLICADOS DE AUTH
+            // ⚠️ PROTECCIÓN REFORZADA CONTRA REGISTROS DUPLICADOS DE AUTH
             if (authListenersRegistered) {
-                console.log('⚠️ Auth listeners ya registrados, evitando duplicación');
+                console.log('⚠️ Auth listeners ya registrados, evitando duplicación TOTAL');
+                return;
+            }
+            
+            // ⚠️ PROTECCIÓN ADICIONAL: Verificar si ya existen listeners
+            const existingForms = document.querySelectorAll('#email-register-form, #email-login-form');
+            if (existingForms.length > 0 && existingForms[0].hasAttribute('data-listeners-attached')) {
+                console.log('⚠️ Formularios ya tienen listeners adjuntos, evitando duplicación');
+                authListenersRegistered = true;
                 return;
             }
             
@@ -3154,6 +3165,12 @@
                 button.addEventListener('mouseleave', () => {
                     button.style.transform = 'translateY(0)';
                 });
+            });
+            
+            // Marcar formularios como procesados
+            const authForms = document.querySelectorAll('#email-register-form, #email-login-form');
+            authForms.forEach(form => {
+                if (form) form.setAttribute('data-listeners-attached', 'true');
             });
             
             // Marcar auth listeners como registrados
@@ -4036,10 +4053,25 @@
         // 🚀 INICIALIZACIÓN MEJORADA PARA LIVE SERVER
         // ===============================================
         
+        // ⚠️ PROTECCIÓN GLOBAL CONTRA MÚLTIPLES INICIALIZACIONES
+        if (window.nebulaInitialized) {
+            console.log('⚠️ Nebula ya inicializada, evitando duplicación');
+            return;
+        }
+        
         // Función de inicialización robusta
         function startNebula() {
             try {
+                // Verificar si ya está inicializada
+                if (window.nebulaInitialized) {
+                    console.log('⚠️ startNebula ya ejecutada, evitando duplicación');
+                    return;
+                }
+                
                 console.log('🚀 Iniciando Nebula Financial...');
+                
+                // Marcar como inicializada inmediatamente
+                window.nebulaInitialized = true;
                 
                 // Verificar elementos DOM
                 const elements = ['content-root', 'dock-root', 'parallax-bg', 'modal-root'];

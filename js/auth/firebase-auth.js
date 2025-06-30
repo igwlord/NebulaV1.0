@@ -129,20 +129,33 @@ const NebulaAuth = {
 
     /**
      * Login con Google
+     * ✅ Con protección contra múltiples intentos simultáneos
      */
     async signInWithGoogle() {
         console.log('🔐 Iniciando login con Google...');
         
         try {
+            // ⚠️ PROTECCIÓN CONTRA MÚLTIPLES POPUPS SIMULTÁNEOS
+            if (this.state.isLoading) {
+                console.log('⚠️ Login ya en proceso, evitando popup múltiple');
+                this.showNotification('Login ya en proceso, espera un momento...', 'warning');
+                return false;
+            }
+            
             this.state.isLoading = true;
             
             const provider = new firebase.auth.GoogleAuthProvider();
             provider.addScope('email');
             provider.addScope('profile');
             
+            // Configurar popup para evitar bloqueo
+            provider.setCustomParameters({
+                prompt: 'select_account'
+            });
+            
             const result = await firebase.auth().signInWithPopup(provider);
             
-            console.log('✅ Login con Google exitoso');
+            console.log('✅ Login con Google exitoso (único)');
             this.showNotification('¡Bienvenido a Nebula Financial!', 'success');
             
             return result.user;
@@ -151,6 +164,9 @@ const NebulaAuth = {
             console.error('❌ Error en login con Google:', error);
             this.handleAuthError(error);
             throw error;
+        } finally {
+            // ⚠️ IMPORTANTE: Resetear estado de loading
+            this.state.isLoading = false;
         }
     },
 
