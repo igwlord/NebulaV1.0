@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Nebula Login - Diagnóstico Final</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f0f23;
+            color: #fcd34d;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .status-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        .error-card {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        .warning-card {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .test-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .test-button:hover {
+            background: #059669;
+        }
+        .emergency-button {
+            background: #ef4444;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+        }
+        .emergency-button:hover {
+            background: #dc2626;
+        }
+        #logs {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Nebula Financial - Diagnóstico de Login</h1>
+        
+        <div class="status-card error-card">
+            <h3>🚨 PROBLEMA REPORTADO</h3>
+            <p><strong>Múltiples pantallas de login y botones que no funcionan</strong></p>
+            <p>Estado: <span id="problem-status">INVESTIGANDO...</span></p>
+        </div>
+        
+        <div class="grid">
+            <div>
+                <h2>🧪 Tests de Emergencia</h2>
+                
+                <div class="status-card">
+                    <h4>⚡ LOGIN INMEDIATO</h4>
+                    <button class="test-button emergency-button" onclick="emergencyLogin()">
+                        🚀 LOGIN DE EMERGENCIA
+                    </button>
+                    <p><small>Funciona siempre, sin depender de botones</small></p>
+                </div>
+                
+                <div class="status-card">
+                    <h4>🔧 Reparación de Botones</h4>
+                    <button class="test-button" onclick="fixMainApp()">🔨 Reparar App Principal</button>
+                    <button class="test-button" onclick="openSimpleLogin()">🌐 Login Alternativo</button>
+                </div>
+                
+                <div class="status-card">
+                    <h4>🔍 Diagnósticos</h4>
+                    <button class="test-button" onclick="runDiagnostic()">📊 Diagnóstico Completo</button>
+                    <button class="test-button" onclick="testFrames()">🖼️ Test iFrames</button>
+                    <button class="test-button" onclick="clearAll()">🧹 Limpiar Todo</button>
+                </div>
+            </div>
+            
+            <div>
+                <h2>📊 Estado del Sistema</h2>
+                <div id="system-status">
+                    <div class="status-card">
+                        <p>🔄 Ejecutando diagnóstico inicial...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2>📝 Logs en Tiempo Real</h2>
+        <div id="logs">Iniciando diagnóstico...\n</div>
+        
+        <div class="status-card warning-card">
+            <h3>⚠️ INSTRUCCIONES DE EMERGENCIA</h3>
+            <ol>
+                <li><strong>Si nada funciona:</strong> Click en "LOGIN DE EMERGENCIA" arriba</li>
+                <li><strong>Si hay múltiples pantallas:</strong> Click en "Limpiar Todo" y luego "LOGIN DE EMERGENCIA"</li>
+                <li><strong>Para usar app normal:</strong> Click en "Reparar App Principal"</li>
+                <li><strong>Como último recurso:</strong> Click en "Login Alternativo"</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const logs = document.getElementById('logs');
+        const systemStatus = document.getElementById('system-status');
+        const problemStatus = document.getElementById('problem-status');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            console.log(message);
+            logs.textContent += logEntry;
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateStatus(html) {
+            systemStatus.innerHTML = html;
+        }
+        
+        // Funciones de emergencia
+        function emergencyLogin() {
+            log('🚨 INICIANDO LOGIN DE EMERGENCIA', 'emergency');
+            
+            try {
+                // Abrir ventana de la app principal
+                const mainWindow = window.open('/', 'nebula-main', 'width=1200,height=800');
+                
+                if (mainWindow) {
+                    log('✅ Ventana principal abierta');
+                    
+                    // Esperar a que cargue y ejecutar login
+                    setTimeout(() => {
+                        try {
+                            if (mainWindow.loginNow) {
+                                log('🚀 Ejecutando loginNow...');
+                                mainWindow.loginNow('guest');
+                                problemStatus.textContent = 'SOLUCIONADO ✅';
+                                log('✅ LOGIN DE EMERGENCIA EXITOSO');
+                            } else if (mainWindow.forceLogin) {
+                                log('🚀 Ejecutando forceLogin...');
+                                mainWindow.forceLogin('guest');
+                                problemStatus.textContent = 'SOLUCIONADO ✅';
+                                log('✅ LOGIN DE EMERGENCIA EXITOSO (forceLogin)');
+                            } else if (mainWindow.NEBULA_SIMPLE_LOGIN) {
+                                log('🚀 Ejecutando NEBULA_SIMPLE_LOGIN...');
+                                mainWindow.NEBULA_SIMPLE_LOGIN('guest');
+                                problemStatus.textContent = 'SOLUCIONADO ✅';
+                                log('✅ LOGIN DE EMERGENCIA EXITOSO (NEBULA_SIMPLE_LOGIN)');
+                            } else {
+                                // Configurar usuario directamente
+                                if (mainWindow.appState) {
+                                    mainWindow.appState.user = {
+                                        name: 'Invitado (Emergencia Total)',
+                                        isOffline: true,
+                                        emergency: true
+                                    };
+                                    if (mainWindow.renderApp) {
+                                        mainWindow.renderApp();
+                                    }
+                                    problemStatus.textContent = 'SOLUCIONADO ✅';
+                                    log('✅ LOGIN DE EMERGENCIA EXITOSO (directo)');
+                                } else {
+                                    throw new Error('No se pudo acceder a appState');
+                                }
+                            }
+                        } catch (error) {
+                            log('❌ Error en login de emergencia: ' + error.message);
+                            log('🔄 Intentando método alternativo...');
+                            openSimpleLogin();
+                        }
+                    }, 2000);
+                } else {
+                    log('❌ No se pudo abrir ventana principal');
+                    openSimpleLogin();
+                }
+            } catch (error) {
+                log('❌ Error crítico: ' + error.message);
+                openSimpleLogin();
+            }
+        }
+        
+        function fixMainApp() {
+            log('🔧 Reparando app principal...');
+            const mainWindow = window.open('/', 'nebula-main', 'width=1200,height=800');
+            
+            if (mainWindow) {
+                setTimeout(() => {
+                    if (mainWindow.fixLogin) {
+                        mainWindow.fixLogin();
+                        log('✅ Reparación ejecutada');
+                    } else {
+                        log('⚠️ Función fixLogin no disponible');
+                    }
+                }, 2000);
+            }
+        }
+        
+        function openSimpleLogin() {
+            log('🌐 Abriendo login alternativo...');
+            window.open('/login-simple.html', 'nebula-simple', 'width=600,height=700');
+        }
+        
+        function runDiagnostic() {
+            log('📊 Ejecutando diagnóstico completo...');
+            
+            // Test de la app principal
+            const testFrame = document.createElement('iframe');
+            testFrame.src = '/';
+            testFrame.style.display = 'none';
+            document.body.appendChild(testFrame);
+            
+            testFrame.onload = function() {
+                try {
+                    const frameWindow = testFrame.contentWindow;
+                    const frameDoc = testFrame.contentDocument;
+                    
+                    const diagnosticResults = {
+                        'Ventana cargada': !!frameWindow,
+                        'Documento accesible': !!frameDoc,
+                        'appState disponible': !!frameWindow.appState,
+                        'loginNow disponible': !!frameWindow.loginNow,
+                        'forceLogin disponible': !!frameWindow.forceLogin,
+                        'Google button': !!frameDoc.getElementById('google-login-btn'),
+                        'Guest button': !!frameDoc.getElementById('guest-login-btn'),
+                        'Email button': !!frameDoc.getElementById('email-register-btn')
+                    };
+                    
+                    log('📊 RESULTADOS DEL DIAGNÓSTICO:');
+                    Object.entries(diagnosticResults).forEach(([key, value]) => {
+                        log(`  ${key}: ${value ? '✅' : '❌'}`);
+                    });
+                    
+                    // Actualizar estado visual
+                    const statusHTML = Object.entries(diagnosticResults).map(([key, value]) => 
+                        `<div class="status-card ${value ? '' : 'error-card'}">
+                            ${key}: ${value ? '✅ OK' : '❌ FALTA'}
+                        </div>`
+                    ).join('');
+                    
+                    updateStatus(statusHTML);
+                    
+                } catch (error) {
+                    log('❌ Error en diagnóstico: ' + error.message);
+                } finally {
+                    setTimeout(() => document.body.removeChild(testFrame), 1000);
+                }
+            };
+        }
+        
+        function testFrames() {
+            log('🖼️ Testando múltiples frames...');
+            
+            // Verificar si hay múltiples ventanas/frames abiertos
+            log('🔍 Verificando ventanas abiertas...');
+            
+            if (window.frames.length > 0) {
+                log(`⚠️ Se encontraron ${window.frames.length} frames`);
+            } else {
+                log('✅ No hay frames adicionales');
+            }
+        }
+        
+        function clearAll() {
+            log('🧹 Limpiando todo...');
+            
+            // Limpiar logs
+            logs.textContent = 'Logs limpiados...\n';
+            
+            // Resetear estado
+            problemStatus.textContent = 'LIMPIADO - LISTO PARA NUEVO TEST';
+            updateStatus('<div class="status-card"><p>🧹 Sistema limpiado</p></div>');
+            
+            log('✅ Limpieza completada');
+        }
+        
+        // Diagnóstico inicial
+        setTimeout(() => {
+            log('🔧 Nebula Login Diagnostic iniciado');
+            runDiagnostic();
+        }, 1000);
+    </script>
+</body>
+</html>

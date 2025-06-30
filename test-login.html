@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Login Nebula</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f0f23;
+            color: #fcd34d;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .test-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #059669;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; }
+        .error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; }
+        .warning { background: rgba(251, 191, 36, 0.2); border: 1px solid #fbbf24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Nebula Login - Diagnóstico y Test</h1>
+        
+        <div id="status"></div>
+        
+        <h2>🧪 Tests Disponibles:</h2>
+        <button class="test-button" onclick="testMainApp()">🌐 Abrir App Principal</button>
+        <button class="test-button" onclick="testElements()">🔍 Verificar Elementos</button>
+        <button class="test-button" onclick="testDirectLogin()">🚀 Test Login Directo</button>
+        <button class="test-button" onclick="clearLogs()">🧹 Limpiar Logs</button>
+        
+        <h2>📊 Resultados del Diagnóstico:</h2>
+        <div id="results"></div>
+        
+        <h2>📝 Logs en Tiempo Real:</h2>
+        <div id="logs" style="background: #000; color: #0f0; padding: 10px; border-radius: 5px; font-family: monospace; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        const logsDiv = document.getElementById('logs');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            console.log(logEntry);
+            
+            const logElement = document.createElement('div');
+            logElement.textContent = logEntry;
+            logElement.style.marginBottom = '2px';
+            
+            if (type === 'error') logElement.style.color = '#ff6b6b';
+            else if (type === 'success') logElement.style.color = '#51cf66';
+            else if (type === 'warning') logElement.style.color = '#ffd43b';
+            
+            logsDiv.appendChild(logElement);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+        
+        function showStatus(message, type = 'info') {
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function testMainApp() {
+            log('🌐 Abriendo aplicación principal...', 'info');
+            window.open('/', '_blank');
+        }
+        
+        function testElements() {
+            log('🔍 Iniciando test de elementos...', 'info');
+            
+            // Abrir la app principal en iframe para poder acceder a sus elementos
+            const iframe = document.createElement('iframe');
+            iframe.src = '/';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = function() {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Verificar elementos principales
+                    const googleBtn = iframeDoc.getElementById('google-login-btn');
+                    const guestBtn = iframeDoc.getElementById('guest-login-btn');
+                    const emailBtn = iframeDoc.getElementById('email-register-btn');
+                    
+                    const results = {
+                        'Google Button': !!googleBtn,
+                        'Guest Button': !!guestBtn,
+                        'Email Button': !!emailBtn,
+                        'appState': !!iframe.contentWindow.appState,
+                        'NebulaAuth': !!iframe.contentWindow.NebulaAuth,
+                        'renderApp': typeof iframe.contentWindow.renderApp === 'function'
+                    };
+                    
+                    log('✅ Resultados del test de elementos:', 'success');
+                    Object.entries(results).forEach(([key, value]) => {
+                        log(`  ${key}: ${value ? '✅' : '❌'}`, value ? 'success' : 'error');
+                    });
+                    
+                    // Mostrar resultados en la UI
+                    resultsDiv.innerHTML = '<h3>🔍 Elementos Encontrados:</h3>' + 
+                        Object.entries(results).map(([key, value]) => 
+                            `<div class="${value ? 'success' : 'error'}">${key}: ${value ? '✅ OK' : '❌ FALTA'}</div>`
+                        ).join('');
+                    
+                    if (googleBtn && guestBtn && emailBtn) {
+                        showStatus('🎉 Todos los elementos de login encontrados correctamente', 'success');
+                    } else {
+                        showStatus('⚠️ Algunos elementos de login no se encontraron', 'warning');
+                    }
+                    
+                } catch (error) {
+                    log('❌ Error accediendo a elementos del iframe: ' + error.message, 'error');
+                    showStatus('❌ Error verificando elementos', 'error');
+                } finally {
+                    // Limpiar iframe
+                    setTimeout(() => document.body.removeChild(iframe), 1000);
+                }
+            };
+        }
+        
+        function testDirectLogin() {
+            log('🚀 Iniciando test de login directo...', 'info');
+            
+            // Abrir ventana de la app principal
+            const testWindow = window.open('/', 'testWindow', 'width=800,height=600');
+            
+            if (testWindow) {
+                testWindow.onload = function() {
+                    try {
+                        // Esperar a que la app se cargue
+                        setTimeout(() => {
+                            // Intentar ejecutar el test directo
+                            if (testWindow.directTest) {
+                                log('🧪 Ejecutando directTest("guest")...', 'info');
+                                testWindow.directTest('guest');
+                                showStatus('🚀 Test de login directo ejecutado', 'success');
+                            } else if (testWindow.emergencyTest) {
+                                log('🧪 Ejecutando emergencyTest("guest")...', 'info');
+                                testWindow.emergencyTest('guest');
+                                showStatus('🚀 Test de emergencia ejecutado', 'success');
+                            } else {
+                                log('❌ Funciones de test no encontradas en la ventana', 'error');
+                                showStatus('❌ Funciones de test no disponibles', 'error');
+                            }
+                        }, 2000);
+                    } catch (error) {
+                        log('❌ Error ejecutando test directo: ' + error.message, 'error');
+                        showStatus('❌ Error en test directo', 'error');
+                    }
+                };
+            } else {
+                log('❌ No se pudo abrir ventana de test', 'error');
+                showStatus('❌ Error abriendo ventana de test', 'error');
+            }
+        }
+        
+        function clearLogs() {
+            logsDiv.innerHTML = '';
+            resultsDiv.innerHTML = '';
+            statusDiv.innerHTML = '';
+            log('🧹 Logs limpiados', 'info');
+        }
+        
+        // Auto-test inicial
+        setTimeout(() => {
+            log('🔧 Nebula Login Test iniciado', 'info');
+            showStatus('🔧 Herramienta de diagnóstico lista', 'success');
+        }, 500);
+    </script>
+</body>
+</html>
