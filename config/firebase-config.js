@@ -41,7 +41,8 @@ if (window.NebulaEnv && window.NebulaEnv.loaded) {
         messagingSenderId: "000000000000",
         appId: "1:000000000000:web:demo"
     };
-    console.log('⚠️ Firebase config usando configuración demo - Modo invitado habilitado');
+    console.log('⚠️ Firebase config usando configuración demo - Activando modo offline automático');
+    console.log('ℹ️ Para usar Firebase real, configura variables de entorno o actualiza firebase-config.js');
 }
 
 // 🔐 Configuración de autenticación
