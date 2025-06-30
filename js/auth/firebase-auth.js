@@ -145,7 +145,7 @@ const NebulaAuth = {
             this.state.isLoading = true;
             
             // 🔥 VERIFICAR SI FIREBASE ESTÁ DISPONIBLE Y CONFIGURADO CORRECTAMENTE
-            if (!firebase.auth || !window.NebulaConfig || window.NebulaConfig.config.apiKey.includes('demo')) {
+            if (!firebase.auth || !window.NebulaConfig || !window.NebulaConfig.config || window.NebulaConfig.config.apiKey.includes('demo')) {
                 console.log('⚠️ Firebase no disponible o en modo demo, usando fallback offline');
                 return this.signInOffline('google');
             }
@@ -195,7 +195,7 @@ const NebulaAuth = {
             this.state.isLoading = true;
             
             // 🔥 VERIFICAR SI FIREBASE ESTÁ DISPONIBLE Y CONFIGURADO CORRECTAMENTE
-            if (!firebase.auth || !window.NebulaConfig || window.NebulaConfig.config.apiKey.includes('demo')) {
+            if (!firebase.auth || !window.NebulaConfig || !window.NebulaConfig.config || window.NebulaConfig.config.apiKey.includes('demo')) {
                 console.log('⚠️ Firebase no disponible o en modo demo, usando fallback offline');
                 return this.signInOffline('guest');
             }
@@ -283,7 +283,7 @@ const NebulaAuth = {
             }
             
             // 🔥 VERIFICAR SI FIREBASE ESTÁ DISPONIBLE Y CONFIGURADO CORRECTAMENTE
-            if (!firebase.auth || !window.NebulaConfig || window.NebulaConfig.config.apiKey.includes('demo')) {
+            if (!firebase.auth || !window.NebulaConfig || !window.NebulaConfig.config || window.NebulaConfig.config.apiKey.includes('demo')) {
                 console.log('⚠️ Firebase no disponible o en modo demo, usando fallback offline');
                 return this.signInEmailOffline(email, password);
             }
@@ -377,7 +377,7 @@ const NebulaAuth = {
             }
             
             // 🔥 VERIFICAR SI FIREBASE ESTÁ DISPONIBLE Y CONFIGURADO CORRECTAMENTE
-            if (!firebase.auth || !window.NebulaConfig || window.NebulaConfig.config.apiKey.includes('demo')) {
+            if (!firebase.auth || !window.NebulaConfig || !window.NebulaConfig.config || window.NebulaConfig.config.apiKey.includes('demo')) {
                 console.log('⚠️ Firebase no disponible o en modo demo, usando fallback offline');
                 return this.createUserEmailOffline(email, password, displayName);
             }

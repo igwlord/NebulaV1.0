@@ -1221,6 +1221,10 @@
             }
         };
         
+        // 🌐 Exponer NotificationSystem globalmente INMEDIATAMENTE
+        window.NotificationSystem = NotificationSystem;
+        console.log('✅ NotificationSystem expuesto globalmente');
+        
         /**
          * 🎮 GESTOR CENTRAL DEL ESTADO
          * Maneja toda la lógica de negocio y persistencia de datos
