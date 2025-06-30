@@ -3005,6 +3005,14 @@
             }
             
             console.log('🎯 Elementos de login encontrados, configurando listeners...');
+            console.log('🔍 Botones encontrados:', {
+                google: !!googleBtn,
+                guest: !!guestBtn,
+                email: !!emailBtn,
+                googleDisabled: googleBtn?.disabled,
+                guestDisabled: guestBtn?.disabled,
+                emailDisabled: emailBtn?.disabled
+            });
             
             // ⚠️ PROTECCIÓN ADICIONAL: Verificar si ya tienen listeners
             if (googleBtn && googleBtn.hasAttribute('data-listener-attached')) {
@@ -3015,7 +3023,11 @@
             
             // Google Login
             if (googleBtn && !googleBtn.hasAttribute('data-listener-attached')) {
-                googleBtn.addEventListener('click', async () => {
+                console.log('🔧 Configurando listener para botón Google...');
+                googleBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🔥 CLICK EN GOOGLE BUTTON DETECTADO!');
                     try {
                         console.log('🔐 Iniciando login con Google...');
                         if (window.NotificationSystem) {
@@ -3030,11 +3042,16 @@
                     }
                 });
                 googleBtn.setAttribute('data-listener-attached', 'true');
+                console.log('✅ Listener Google configurado exitosamente');
             }
             
             // Guest Login
             if (guestBtn && !guestBtn.hasAttribute('data-listener-attached')) {
-                guestBtn.addEventListener('click', async () => {
+                console.log('🔧 Configurando listener para botón Guest...');
+                guestBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🔥 CLICK EN GUEST BUTTON DETECTADO!');
                     try {
                         console.log('🔐 Iniciando login como invitado...');
                         if (window.NotificationSystem) {
@@ -3049,6 +3066,7 @@
                     }
                 });
                 guestBtn.setAttribute('data-listener-attached', 'true');
+                console.log('✅ Listener Guest configurado exitosamente');
             }
             
             // Botón para abrir modal de registro con email
@@ -3207,6 +3225,31 @@
             // Marcar auth listeners como registrados
             authListenersRegistered = true;
             console.log('✅ Listeners de auth ultra simple configurados (una sola vez)');
+            
+            // 🧪 FUNCIÓN DE TEST GLOBAL para verificar login desde consola
+            window.testLogin = function(method = 'guest') {
+                console.log(`🧪 Testing login with method: ${method}`);
+                if (method === 'google') {
+                    const btn = document.getElementById('google-login-btn');
+                    if (btn) {
+                        console.log('🧪 Simulando click en Google button...');
+                        btn.click();
+                    } else {
+                        console.log('❌ Google button no encontrado');
+                    }
+                } else if (method === 'guest') {
+                    const btn = document.getElementById('guest-login-btn');
+                    if (btn) {
+                        console.log('🧪 Simulando click en Guest button...');
+                        btn.click();
+                    } else {
+                        console.log('❌ Guest button no encontrado');
+                    }
+                } else {
+                    appState.login(method);
+                }
+            };
+            console.log('🧪 Función testLogin() disponible - Usar: testLogin("google") o testLogin("guest")');
         }
 
         function setupAdditionalListeners() {
