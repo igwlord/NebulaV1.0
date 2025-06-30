@@ -55,7 +55,7 @@
             padding: 0;
         }        body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--nebula-dark);
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 40%, #0f1419 100%);
             color: var(--nebula-accent);
             overflow-x: hidden;
             min-height: 100vh;
@@ -1773,7 +1773,6 @@
                 [key]: {
                     exists: !!btn,
                     hasListener: btn?.hasAttribute('data-listener-attached'),
-                    hasEmergencyFix: btn?.hasAttribute('data-emergency-fixed'),
                     clickable: btn?.style.pointerEvents !== 'none'
                 }
             })));
@@ -2051,27 +2050,60 @@
             }
         }
         
+        /**
+         * 🚀 FUNCIÓN DE LOGIN ULTRA SIMPLE Y ROBUSTA
+         * Sistema de autenticación simplificado que funciona siempre
+         */
         function simpleLogin(method) {
-            console.log(`🔐 Login simple con método: ${method}`);
+            console.log(`🔐 Iniciando login simple con método: ${method}`);
+            
+            // Mostrar estado de carga
             showLoginStatus(`Iniciando sesión ${method}...`, 'loading');
             
-            // Simular proceso de login
+            // Simular proceso de autenticación
             setTimeout(() => {
-                showLoginStatus(`✅ Sesión iniciada como ${method}`, 'success');
-                
-                // Simular usuario logueado
-                appState.user = {
-                    uid: `${method}_${Date.now()}`,
-                    email: method === 'google' ? 'user@gmail.com' : 'guest@nebula.com',
-                    displayName: method === 'google' ? 'Usuario Google' : 'Usuario Invitado',
-                    method: method
+                const userData = {
+                    google: {
+                        uid: `google_${Date.now()}`,
+                        email: 'usuario@gmail.com',
+                        displayName: 'Usuario Google',
+                        method: 'google',
+                        avatar: '🔵'
+                    },
+                    guest: {
+                        uid: `guest_${Date.now()}`,
+                        email: 'invitado@nebula.com',
+                        displayName: 'Usuario Invitado',
+                        method: 'guest',
+                        avatar: '👤'
+                    },
+                    email: {
+                        uid: `email_${Date.now()}`,
+                        email: 'usuario@email.com',
+                        displayName: 'Usuario Email',
+                        method: 'email',
+                        avatar: '✉️'
+                    }
                 };
                 
-                // Ocultar loading y mostrar app
+                // Configurar usuario en appState
+                appState.user = userData[method];
+                appState.isLoading = false;
+                
+                // Mostrar éxito
+                showLoginStatus(`✅ Sesión iniciada como ${appState.user.displayName}`, 'success');
+                
+                // Ocultar mensaje después de 1 segundo y renderizar app
                 setTimeout(() => {
                     hideLoginStatus();
-                    appState.isLoading = false;
                     renderApp();
+                    
+                    // Mostrar notificación de bienvenida
+                    setTimeout(() => {
+                        if (window.NotificationSystem) {
+                            window.NotificationSystem.success('¡Bienvenido!', `Hola ${appState.user.displayName} 🌌`);
+                        }
+                    }, 500);
                 }, 1000);
             }, 1500);
         }
@@ -2138,91 +2170,12 @@
             addEventListeners();
             
             // 🔧 ASEGURAR QUE LOS FORMULARIOS DE AUTH ESTÉN DISPONIBLES
-            // Solo si estamos en la vista de login (usuario no autenticado) Y no se han configurado aún
-            if (!appState.user && !authListenersRegistered && !window.NEBULA_LOGIN_STATE?.initialized) {
+            // Solo si estamos en la vista de login (usuario no autenticado)
+            if (!appState.user && !authListenersRegistered) {
                 console.log('🔧 Configurando auth listeners después del renderizado...');
                 setTimeout(() => {
                     setupAuthListeners();
-                    
-                    // 🔥 VERIFICACIÓN INMEDIATA ADICIONAL
-                    setTimeout(() => {
-                        const googleBtn = document.getElementById('google-login-btn');
-                        const guestBtn = document.getElementById('guest-login-btn');
-                        const emailBtn = document.getElementById('email-register-btn');
-                        
-                        console.log('🔍 VERIFICACIÓN POST-SETUP:', {
-                            google: !!googleBtn,
-                            guest: !!guestBtn,
-                            email: !!emailBtn,
-                            googleHasListener: googleBtn?.hasAttribute('data-listener-attached'),
-                            guestHasListener: guestBtn?.hasAttribute('data-listener-attached')
-                        });
-                        
-                        // Si los botones existen pero no tienen listeners, aplicar reparación inmediata
-                        if ((googleBtn || guestBtn || emailBtn) && !authListenersRegistered) {
-                            console.log('🔥 APLICANDO REPARACIÓN INMEDIATA - Botones encontrados sin listeners');
-                            
-                            if (googleBtn && !googleBtn.hasAttribute('data-emergency-fixed')) {
-                                googleBtn.addEventListener('click', async (e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log('🔥 EMERGENCY GOOGLE CLICK');
-                                    try {
-                                        appState.isLoading = true;
-                                        renderApp();
-                                        await appState.login('google');
-                                    } catch (error) {
-                                        console.error('Error:', error);
-                                        // Fallback directo
-                                        appState.user = { name: 'Usuario Google (Emergency)', isOffline: true };
-                                        appState.isLoading = false;
-                                        renderApp();
-                                    }
-                                });
-                                googleBtn.setAttribute('data-emergency-fixed', 'true');
-                                googleBtn.style.pointerEvents = 'auto';
-                                googleBtn.style.cursor = 'pointer';
-                                console.log('✅ Google button reparado con listener de emergencia');
-                            }
-                            
-                            if (guestBtn && !guestBtn.hasAttribute('data-emergency-fixed')) {
-                                guestBtn.addEventListener('click', async (e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log('🔥 EMERGENCY GUEST CLICK');
-                                    try {
-                                        appState.isLoading = true;
-                                        renderApp();
-                                        await appState.login('guest');
-                                    } catch (error) {
-                                        console.error('Error:', error);
-                                        // Fallback directo
-                                        appState.user = { name: 'Invitado (Emergency)', isOffline: true };
-                                        appState.isLoading = false;
-                                        renderApp();
-                                    }
-                                });
-                                guestBtn.setAttribute('data-emergency-fixed', 'true');
-                                guestBtn.style.pointerEvents = 'auto';
-                                guestBtn.style.cursor = 'pointer';
-                                console.log('✅ Guest button reparado con listener de emergencia');
-                            }
-                            
-                            if (emailBtn && !emailBtn.hasAttribute('data-emergency-fixed')) {
-                                emailBtn.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log('🔥 EMERGENCY EMAIL CLICK - SIMPLE LOGIN');
-                                    simpleLogin('email');
-                                });
-                                emailBtn.setAttribute('data-emergency-fixed', 'true');
-                                emailBtn.style.pointerEvents = 'auto';
-                                emailBtn.style.cursor = 'pointer';
-                                console.log('✅ Email button reparado con listener simple');
-                            }
-                        }
-                    }, 300);
-                }, 150); // Delay para asegurar que el DOM esté listo
+                }, 150);
             }
             
             // Actualizar glider después del renderizado
@@ -2933,99 +2886,34 @@
                     </div>
                 </nav>`;
         }        function renderParallaxBackground() {
-            if (parallaxBg.children.length > 0 && parallaxBg.dataset.theme === appState.themeKey) return '';
-            parallaxBg.dataset.theme = appState.themeKey;
+            if (parallaxBg.children.length > 0) return '';
 
-            // 🎨 EFECTOS DE PARTÍCULAS OPTIMIZADOS
-            // Todos los temas ahora usan el mismo patrón eficiente de "Aureo Amancer"
-            // para mejorar el rendimiento y reducir los tiempos de carga
-            switch(appState.theme.particleType) {
-                case 'goldenDust': {
-                    // Polvo dorado flotante para Áureo Amanecer - EFECTO DUAL
-                    const particles = Array.from({ length: 120 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 3 + 1;
-                        const duration = Math.random() * 8 + 4;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
-                    }).join('');
+            // � FONDO SIMPLE Y HERMOSO - Estrellas doradas y blancas sobre azul profundo
+            const goldenStars = Array.from({ length: 60 }).map(() => {
+                const leftPos = Math.random() * 100;
+                const topPos = Math.random() * 100;
+                const size = Math.random() * 3 + 1;
+                const twinkle = Math.random() * 3 + 2;
+                return `<div class="absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: #ffd700; box-shadow: 0 0 ${size*2}px #ffd70080; animation: twinkle ${twinkle}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.6 + 0.4};"></div>`;
+            }).join('');
 
-                    const backgroundStars = Array.from({ length: 150 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const twinkle = Math.random() * 3 + 2;
-                        return `<div class="absolute w-px h-px bg-amber-200 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
-                    }).join('');
+            const whiteStars = Array.from({ length: 80 }).map(() => {
+                const leftPos = Math.random() * 100;
+                const topPos = Math.random() * 100;
+                const size = Math.random() * 2 + 0.5;
+                const twinkle = Math.random() * 4 + 2;
+                return `<div class="absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: white; box-shadow: 0 0 ${size*2}px rgba(255,255,255,0.6); animation: twinkle ${twinkle}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.8 + 0.2};"></div>`;
+            }).join('');
 
-                    return particles + backgroundStars;
-                }
-
-                case 'crimsonMist': {
-                    // Niebla carmesí para Crisón Vespertino - EFECTO DUAL MEJORADO
-                    const mist = Array.from({ length: 25 }).map(() => {
-                        const duration = Math.random() * 30 + 15;
-                        const size = Math.random() * 300 + 150;
-                        const startX = Math.random() * 100;
-                        const startY = Math.random() * 100;
-                        return `<div class="particle absolute rounded-full" style="left: ${startX}%; top: ${startY}%; width: ${size}px; height: ${size}px; background: radial-gradient(circle, ${appState.theme.sunColor}08, transparent 70%); animation: drift ${duration}s linear infinite alternate; transform: translateZ(0);"></div>`;
-                    }).join('');
-                    
-                    const sparkles = Array.from({ length: 100 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 2 + 1;
-                        const duration = Math.random() * 6 + 3;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*3}px ${appState.theme.sunColor}80; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.5 + 0.2};"></div>`;
-                    }).join('');
-
-                    const backgroundStars = Array.from({ length: 180 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const pulse = Math.random() * 4 + 3;
-                        return `<div class="absolute w-px h-px bg-rose-300 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: pulse ${pulse}s ease-in-out infinite;"></div>`;
-                    }).join('');
-
-                    return mist + sparkles + backgroundStars;
-                }                case 'aquaFlow': {
-                    // Flujo acuático para Aguamarina Celeste - EFECTO OPTIMIZADO (mismo patrón que Aureo)
-                    const particles = Array.from({ length: 120 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 3 + 1;
-                        const duration = Math.random() * 8 + 4;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
-                    }).join('');
-
-                    const backgroundStars = Array.from({ length: 150 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const twinkle = Math.random() * 3 + 2;
-                        return `<div class="absolute w-px h-px bg-cyan-200 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
-                    }).join('');
-
-                    return particles + backgroundStars;
-                }                case 'royalAura': {
-                    // Aura real para Violeta Real - EFECTO OPTIMIZADO (mismo patrón que Aureo)
-                    const particles = Array.from({ length: 120 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const size = Math.random() * 3 + 1;
-                        const duration = Math.random() * 8 + 4;
-                        return `<div class="particle absolute rounded-full" style="left: ${leftPos}%; top: ${topPos}%; width: ${size}px; height: ${size}px; background: ${appState.theme.sunColor}; box-shadow: 0 0 ${size*2}px ${appState.theme.sunColor}60; animation: float ${duration}s ease-in-out infinite alternate; opacity: ${Math.random() * 0.4 + 0.1};"></div>`;
-                    }).join('');
-
-                    const backgroundStars = Array.from({ length: 150 }).map(() => {
-                        const leftPos = Math.random() * 100;
-                        const topPos = Math.random() * 100;
-                        const twinkle = Math.random() * 3 + 2;
-                        return `<div class="absolute w-px h-px bg-purple-100 rounded-full" style="left:${leftPos}%; top:${topPos}%; animation: twinkle ${twinkle}s ease-in-out infinite alternate;"></div>`;
-                    }).join('');
-
-                    return particles + backgroundStars;
-                }
-
-                default: return '';
-            }
+            return `
+                <style>
+                    @keyframes twinkle {
+                        from { opacity: 0.2; transform: scale(0.8); }
+                        to { opacity: 1; transform: scale(1.2); }
+                    }
+                </style>
+                ${goldenStars}${whiteStars}
+            `;
         }
 
         function updateDockGlider() {
@@ -4466,152 +4354,6 @@
         });
     </script>
 
-    <!-- 🎉 LOGIN ULTRA SIMPLE CONFIGURADO -->
-</body>
-</html>
-    <script>
-        console.log('🔥 INICIANDO SOLUCIÓN DE EMERGENCIA PARA LOGIN');
-        
-        // Función de reparación inmediata que se ejecuta cuando el DOM esté listo
-        function emergencyLoginRepair() {
-            console.log('🔧 REPARACIÓN DE EMERGENCIA DEL LOGIN INICIADA');
-            
-            // Esperar un poco más para asegurar que todos los elementos estén renderizados
-            setTimeout(() => {
-                const googleBtn = document.getElementById('google-login-btn');
-                const guestBtn = document.getElementById('guest-login-btn');
-                const emailBtn = document.getElementById('email-register-btn');
-                
-                console.log('🔍 Verificando botones después de delay:', {
-                    google: !!googleBtn,
-                    guest: !!guestBtn, 
-                    email: !!emailBtn,
-                    userState: !!appState?.user
-                });
-                
-                // Solo proceder si no hay usuario logueado y los botones existen
-                if (!appState?.user && (googleBtn || guestBtn || emailBtn)) {
-                    
-                    // Función de login de emergencia
-                    const emergencyLogin = async (method) => {
-                        console.log(`🚨 EMERGENCY LOGIN: ${method}`);
-                        
-                        try {
-                            if (appState && typeof appState.login === 'function') {
-                                await appState.login(method);
-                            } else {
-                                // Fallback directo sin Firebase
-                                console.log('🔄 Usando fallback directo sin Firebase');
-                                if (window.appState) {
-                                    window.appState.user = { 
-                                        name: method === 'google' ? 'Usuario Google (Emergency)' : 'Invitado (Emergency)',
-                                        isOffline: true,
-                                        emergencyMode: true
-                                    };
-                                    window.appState.isLoading = false;
-                                    if (typeof renderApp === 'function') {
-                                        renderApp();
-                                    }
-                                    
-                                    if (window.NotificationSystem) {
-                                        window.NotificationSystem.success('Login', 'Sesión iniciada en modo de emergencia');
-                                    }
-                                }
-                            }
-                        } catch (error) {
-                            console.error('❌ Error en emergency login:', error);
-                            if (window.NotificationSystem) {
-                                window.NotificationSystem.error('Error', 'Error al iniciar sesión');
-                            }
-                        }
-                    };
-                    
-                    // Aplicar listeners de emergencia
-                    if (googleBtn && !googleBtn.hasAttribute('data-emergency-attached')) {
-                        console.log('🔧 Aplicando listener de emergencia a Google');
-                        googleBtn.addEventListener('click', async (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('🔥 EMERGENCY GOOGLE CLICK DETECTED');
-                            await emergencyLogin('google');
-                        });
-                        googleBtn.setAttribute('data-emergency-attached', 'true');
-                        
-                        // Asegurar que el botón sea clickeable
-                        googleBtn.style.pointerEvents = 'auto';
-                        googleBtn.style.cursor = 'pointer';
-                        googleBtn.style.zIndex = '1000';
-                        googleBtn.disabled = false;
-                    }
-                    
-                    if (guestBtn && !guestBtn.hasAttribute('data-emergency-attached')) {
-                        console.log('🔧 Aplicando listener de emergencia a Guest');
-                        guestBtn.addEventListener('click', async (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('🔥 EMERGENCY GUEST CLICK DETECTED');
-                            await emergencyLogin('guest');
-                        });
-                        guestBtn.setAttribute('data-emergency-attached', 'true');
-                        
-                        // Asegurar que el botón sea clickeable
-                        guestBtn.style.pointerEvents = 'auto';
-                        guestBtn.style.cursor = 'pointer';
-                        guestBtn.style.zIndex = '1000';
-                        guestBtn.disabled = false;
-                    }
-                    
-                    if (emailBtn && !emailBtn.hasAttribute('data-emergency-attached')) {
-                        console.log('🔧 Aplicando listener de emergencia a Email');
-                        emailBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('🔥 EMERGENCY EMAIL CLICK DETECTED');
-                            
-                            const emailModal = document.getElementById('email-register-modal');
-                            if (emailModal) {
-                                emailModal.classList.remove('hidden');
-                                emailModal.classList.add('flex');
-                                console.log('✅ Modal de email abierto (emergency)');
-                            }
-                        });
-                        emailBtn.setAttribute('data-emergency-attached', 'true');
-                        
-                        // Asegurar que el botón sea clickeable
-                        emailBtn.style.pointerEvents = 'auto';
-                        emailBtn.style.cursor = 'pointer';
-                        emailBtn.style.zIndex = '1000';
-                        emailBtn.disabled = false;
-                    }
-                    
-                    console.log('✅ LISTENERS DE EMERGENCIA APLICADOS');
-                    
-                    // Función de test global
-                    window.emergencyTest = function(method = 'guest') {
-                        console.log(`🧪 EMERGENCY TEST: ${method}`);
-                        emergencyLogin(method);
-                    };
-                    
-                    console.log('🧪 Función emergencyTest() disponible - Usar: emergencyTest("google") o emergencyTest("guest")');
-                    
-                } else if (appState?.user) {
-                    console.log('✅ Usuario ya logueado, no se necesita reparación');
-                } else {
-                    console.log('⚠️ Botones de login no encontrados, reintentando...');
-                    // Reintentar una vez más después de otro delay
-                    setTimeout(emergencyLoginRepair, 500);
-                }
-            }, 300);
-        }
-        
-        // Ejecutar reparación cuando el DOM esté completamente listo
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', emergencyLoginRepair);
-        } else {
-            emergencyLoginRepair();
-        }
-        
-        console.log('🔥 SOLUCIÓN DE EMERGENCIA PARA LOGIN CONFIGURADA');
-    </script>
+    <!-- � NEBULA FINANCIAL - LOGIN ULTRA SIMPLE CONFIGURADO -->
 </body>
 </html>
