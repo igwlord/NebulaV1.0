@@ -52,6 +52,12 @@ const NebulaSecurityUtils = {
      */
     encrypt(text) {
         try {
+            // Verificar si CryptoJS está disponible
+            if (typeof CryptoJS === 'undefined') {
+                console.warn('⚠️ CryptoJS no disponible, usando texto plano');
+                return text; // Fallback sin cifrado
+            }
+            
             if (!this.encryptionKey) {
                 this.generateEncryptionKey();
             }
@@ -72,6 +78,12 @@ const NebulaSecurityUtils = {
      * Corregido para manejar errores de descifrado
      */    decrypt(encryptedText) {
         try {
+            // Verificar si CryptoJS está disponible
+            if (typeof CryptoJS === 'undefined') {
+                console.warn('⚠️ CryptoJS no disponible, retornando texto plano');
+                return encryptedText; // Fallback sin descifrado
+            }
+            
             if (!this.encryptionKey) {
                 console.error('❌ Error: Clave de cifrado no disponible.');
                 return encryptedText;
