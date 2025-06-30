@@ -910,8 +910,10 @@
                 
                 console.log('✅ THEMES cargado, iniciando aplicación...');
                 
-                // 🚀 INICIALIZAR APLICACIÓN - startNebula hará el resto
-                startNebula();
+                // 🚀 INICIALIZAR APLICACIÓN - startNebula hará el resto (solo si no está inicializada)
+                if (!window.nebulaInitialized) {
+                    startNebula();
+                }
                 
                 console.log('🎉 Nebula Financial inicializado correctamente');
                 
@@ -1947,21 +1949,16 @@
             
             addEventListeners();
             
-            // � RESETEAR PROTECCIÓN DE LISTENERS AL CAMBIAR DE VISTA
-            // Esto permite re-registrar listeners cuando el DOM cambia
-            if (appState.user) {
-                // Si el usuario está logueado, permitir re-registro para vistas internas
-                authListenersRegistered = false;
-            }
-            
             // �🔧 ASEGURAR QUE LOS FORMULARIOS DE AUTH ESTÉN DISPONIBLES
             // Solo si estamos en la vista de login (usuario no autenticado)
             if (!appState.user && !authListenersRegistered) {
                 console.log('🔧 Configurando auth listeners después del renderizado...');
                 setTimeout(() => {
-                    setupAuthListeners(); // Re-aplicar event listeners SOLO si no están registrados
+                    if (!authListenersRegistered) { // Double-check antes de ejecutar
+                        setupAuthListeners(); // Re-aplicar event listeners SOLO si no están registrados
+                    }
                 }, 50);
-            } else if (authListenersRegistered) {
+            } else if (authListenersRegistered && !appState.user) {
                 console.log('⚠️ Auth listeners ya configurados, omitiendo configuración adicional');
             }
             
@@ -2994,13 +2991,21 @@
                 return;
             }
             
+            // ⚠️ PROTECCIÓN ADICIONAL: Verificar botones de Google y Guest ya tienen listeners
+            const googleBtn = document.getElementById('google-login-btn');
+            if (googleBtn && googleBtn.hasAttribute('data-listener-attached')) {
+                console.log('⚠️ Botones de login ya tienen listeners, evitando duplicación');
+                authListenersRegistered = true;
+                return;
+            }
+            
             // Botones principales de login ultra simple
             const googleLoginBtn = document.getElementById('google-login-btn');
             const guestLoginBtn = document.getElementById('guest-login-btn');
             const emailRegisterBtn = document.getElementById('email-register-btn');
             
             // Google Login
-            if (googleLoginBtn) {
+            if (googleLoginBtn && !googleLoginBtn.hasAttribute('data-listener-attached')) {
                 googleLoginBtn.addEventListener('click', async () => {
                     try {
                         showNotification('Iniciando sesión con Google...', 'info');
@@ -3010,10 +3015,11 @@
                         showNotification('Error al iniciar sesión con Google', 'error');
                     }
                 });
+                googleLoginBtn.setAttribute('data-listener-attached', 'true');
             }
             
             // Guest Login
-            if (guestLoginBtn) {
+            if (guestLoginBtn && !guestLoginBtn.hasAttribute('data-listener-attached')) {
                 guestLoginBtn.addEventListener('click', async () => {
                     try {
                         showNotification('Entrando como invitado...', 'info');
@@ -3023,10 +3029,11 @@
                         showNotification('Error al entrar como invitado', 'error');
                     }
                 });
+                guestLoginBtn.setAttribute('data-listener-attached', 'true');
             }
             
             // Botón para abrir modal de registro con email
-            if (emailRegisterBtn) {
+            if (emailRegisterBtn && !emailRegisterBtn.hasAttribute('data-listener-attached')) {
                 emailRegisterBtn.addEventListener('click', () => {
                     const emailModal = document.getElementById('email-register-modal');
                     if (emailModal) {
@@ -3034,13 +3041,14 @@
                         emailModal.classList.add('flex');
                     }
                 });
+                emailRegisterBtn.setAttribute('data-listener-attached', 'true');
             }
             
             // Gestión de modales
             const emailRegisterModal = document.getElementById('email-register-modal');
             const emailLoginModal = document.getElementById('email-login-modal');
             
-            if (emailRegisterModal && emailLoginModal) {
+            if (emailRegisterModal && emailLoginModal && !emailRegisterModal.hasAttribute('data-listeners-attached')) {
                 // Cerrar modales
                 const closeRegisterModal = document.getElementById('close-register-modal');
                 const closeLoginModal = document.getElementById('close-login-modal');
@@ -3172,6 +3180,10 @@
             authForms.forEach(form => {
                 if (form) form.setAttribute('data-listeners-attached', 'true');
             });
+            
+            // Marcar modales como procesados
+            if (emailRegisterModal) emailRegisterModal.setAttribute('data-listeners-attached', 'true');
+            if (emailLoginModal) emailLoginModal.setAttribute('data-listeners-attached', 'true');
             
             // Marcar auth listeners como registrados
             authListenersRegistered = true;
@@ -4270,16 +4282,20 @@
             
             if (document.readyState === 'complete' && allElementsExist) {
                 console.log('✅ DOM completamente cargado y elementos verificados');
-                startNebula();
+                if (!window.nebulaInitialized) {
+                    startNebula();
+                }
             } else if (document.readyState === 'interactive' && allElementsExist) {
                 console.log('⏳ DOM interactivo, esperando 200ms...');
                 setTimeout(() => {
                     const stillExist = criticalElements.every(id => document.getElementById(id));
-                    if (stillExist) {
+                    if (stillExist && !window.nebulaInitialized) {
                         startNebula();
-                    } else {
+                    } else if (!stillExist) {
                         console.log('🔄 Elementos no listos, esperando evento DOMContentLoaded...');
-                        document.addEventListener('DOMContentLoaded', startNebula);
+                        document.addEventListener('DOMContentLoaded', () => {
+                            if (!window.nebulaInitialized) startNebula();
+                        });
                     }
                 }, 200);
             } else {
